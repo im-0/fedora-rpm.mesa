@@ -31,8 +31,8 @@
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 7.0.1
-Release: 7%{?dist}
+Version: 7.0.2
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -52,6 +52,8 @@ Patch26: mesa-7.0.1-stable-branch.patch
 Patch27: mesa-7.0-use_master-r300.patch
 Patch28: mesa-7.0.1-r300-fix-writemask.patch
 Patch29: mesa-7.0.1-r200-settexoffset.patch
+Patch30: mesa-7.0.2-rx00-vertprog-num-temps-off-by-one.patch
+Patch31: mesa-7.0.2-t_vp_build-use-less-temps.patch
 
 BuildRequires: pkgconfig
 %if %{with_dri}
@@ -179,10 +181,10 @@ chmod a-x progs/demos/glslnoise.c
 %patch18 -p1 -b .selinux-awareness
 %patch23 -p1 -b .bindcontext
 %patch25 -p1 -b .makej
-%patch26 -p1 -b .stable
 %patch27 -p1 -b .r300
 %patch28 -p1 -b .r300-writemask
-%patch29 -p1 -b .r200-settexoffset
+%patch30 -p1 -b .rx00-fix-vp
+%patch31 -p1 -b .vp-temp-fix
 
 # WARNING: The following files are copyright "Mark J. Kilgard" under the GLUT
 # license and are not open source/free software, so we remove them.
@@ -412,6 +414,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Tue Jan 01 2008 Dave Airlie <airlied@redhat.com> 7.0.2-1
+- update to Mesa 7.0.2 final
+- mesa-7.0.2-rx00-vertprog-num-temps-off-by-one.patch - fixes for maniadrive
+- mesa-7.0.2-t_vp_build-use-less-temps.patch - fixes for maniadrive
+
 * Thu Oct 18 2007 Dave Airlie <airlied@redhat.com> 7.0.1-7
 - mesa-7.0.1-stable-branch.patch - Updated with more fixes from stable
 - mesa-7.0.1-r300-fix-writemask.patch - fix r300 fragprog writemask

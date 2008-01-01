@@ -1,0 +1,44 @@
+--- Mesa-7.0.2/src/mesa/drivers/dri/r200/r200_vertprog.c~	2007-12-28 22:41:51.000000000 +0100
++++ Mesa-7.0.2/src/mesa/drivers/dri/r200/r200_vertprog.c	2007-12-28 22:41:51.000000000 +0100
+@@ -408,6 +408,7 @@ static GLboolean r200_translate_vertex_p
+    int fog_temp_i = 0;
+    int free_inputs;
+    int array_count = 0;
++   int u_temp_used;
+ 
+    vp->native = GL_FALSE;
+    vp->translated = GL_TRUE;
+@@ -1051,14 +1052,15 @@ else {
+          dofogfix = 0;
+       }
+ 
++      u_temp_used = (R200_VSF_MAX_TEMPS - 1) - u_temp_i;
+       if (mesa_vp->Base.NumNativeTemporaries <
+-	 (mesa_vp->Base.NumTemporaries + (R200_VSF_MAX_TEMPS - 1 - u_temp_i))) {
++	 (mesa_vp->Base.NumTemporaries + u_temp_used)) {
+ 	 mesa_vp->Base.NumNativeTemporaries =
+-	    mesa_vp->Base.NumTemporaries + (R200_VSF_MAX_TEMPS - 1 - u_temp_i);
++	    mesa_vp->Base.NumTemporaries + u_temp_used;
+       }
+-      if (u_temp_i < mesa_vp->Base.NumTemporaries) {
++      if ((mesa_vp->Base.NumTemporaries + u_temp_used) > R200_VSF_MAX_TEMPS) {
+ 	 if (R200_DEBUG & DEBUG_FALLBACKS) {
+-	    fprintf(stderr, "Ran out of temps, num temps %d, us %d\n", mesa_vp->Base.NumTemporaries, u_temp_i);
++	    fprintf(stderr, "Ran out of temps, num temps %d, us %d\n", mesa_vp->Base.NumTemporaries, u_temp_used);
+ 	 }
+ 	 return GL_FALSE;
+       }
+--- Mesa-7.0.2/src/mesa/drivers/dri/r300/r300_vertprog.c~	2007-12-28 22:42:19.000000000 +0100
++++ Mesa-7.0.2/src/mesa/drivers/dri/r300/r300_vertprog.c	2007-12-28 22:42:19.000000000 +0100
+@@ -101,8 +101,9 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 
+ #define FREE_TEMPS() \
+ 	do { \
+-		if(u_temp_i < vp->num_temporaries) { \
+-			WARN_ONCE("Ran out of temps, num temps %d, us %d\n", vp->num_temporaries, u_temp_i); \
++		int u_temp_used = (VSF_MAX_FRAGMENT_TEMPS - 1) - u_temp_i; \
++		if((vp->num_temporaries + u_temp_used) > VSF_MAX_FRAGMENT_TEMPS) { \
++			WARN_ONCE("Ran out of temps, num temps %d, us %d\n", vp->num_temporaries, u_temp_used); \
+ 			vp->native = GL_FALSE; \
+ 		} \
+ 		u_temp_i=VSF_MAX_FRAGMENT_TEMPS-1; \

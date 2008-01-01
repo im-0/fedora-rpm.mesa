@@ -1,6 +1,6 @@
-diff -up mesa-20070725/configs/linux.build-config mesa-20070725/configs/linux
---- mesa-20070725/configs/linux.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux	2007-07-25 10:33:03.000000000 -0400
+diff -up Mesa-7.0.2/configs/linux.da Mesa-7.0.2/configs/linux
+--- Mesa-7.0.2/configs/linux.da	2007-11-02 05:09:01.000000000 +1000
++++ Mesa-7.0.2/configs/linux	2008-01-02 02:24:07.000000000 +1000
 @@ -8,7 +8,9 @@ CONFIG_NAME = linux
  CC = gcc
  CXX = g++
@@ -12,9 +12,9 @@ diff -up mesa-20070725/configs/linux.build-config mesa-20070725/configs/linux
  PIC_FLAGS  = -fPIC
  
  # Add '-DGLX_USE_TLS' to ARCH_FLAGS to enable TLS support.  Add -m32
-diff -up mesa-20070725/configs/linux-indirect.build-config mesa-20070725/configs/linux-indirect
---- mesa-20070725/configs/linux-indirect.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux-indirect	2007-07-25 10:34:40.000000000 -0400
+diff -up Mesa-7.0.2/configs/linux-indirect.da Mesa-7.0.2/configs/linux-indirect
+--- Mesa-7.0.2/configs/linux-indirect.da	2007-11-02 05:09:01.000000000 +1000
++++ Mesa-7.0.2/configs/linux-indirect	2008-01-02 02:24:07.000000000 +1000
 @@ -15,7 +15,7 @@ CXX = g++
  #MKDEP_OPTIONS = -MF depend
  
@@ -24,7 +24,7 @@ diff -up mesa-20070725/configs/linux-indirect.build-config mesa-20070725/configs
  PIC_FLAGS  = -fPIC
  
  # Add '-DGLX_USE_TLS' to ARCH_FLAGS to enable TLS support.
-@@ -44,7 +44,7 @@ GL_LIB_DEPS   = $(EXTRA_LIB_PATH) -lX11 
+@@ -47,7 +47,7 @@ GL_LIB_DEPS   = $(EXTRA_LIB_PATH) -lX11 
  
  
  # Directories
@@ -33,9 +33,9 @@ diff -up mesa-20070725/configs/linux-indirect.build-config mesa-20070725/configs
  DRIVER_DIRS =
  PROGRAM_DIRS = 
  WINDOW_SYSTEM=dri
-diff -up mesa-20070725/configs/linux-dri.build-config mesa-20070725/configs/linux-dri
---- mesa-20070725/configs/linux-dri.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux-dri	2007-07-25 10:34:31.000000000 -0400
+diff -up Mesa-7.0.2/configs/linux-dri.da Mesa-7.0.2/configs/linux-dri
+--- Mesa-7.0.2/configs/linux-dri.da	2007-11-02 05:09:01.000000000 +1000
++++ Mesa-7.0.2/configs/linux-dri	2008-01-02 02:24:07.000000000 +1000
 @@ -12,8 +12,9 @@ CXX = g++
  #MKDEP = /usr/X11R6/bin/makedepend
  #MKDEP = gcc -M
@@ -56,7 +56,7 @@ diff -up mesa-20070725/configs/linux-dri.build-config mesa-20070725/configs/linu
  CFLAGS = -Wall -Wmissing-prototypes -std=c99 -ffast-math \
  	$(OPT_FLAGS) $(PIC_FLAGS) $(ARCH_FLAGS) $(DEFINES) $(ASM_FLAGS)
  
-@@ -36,7 +35,7 @@ CXXFLAGS = -Wall $(OPT_FLAGS) $(PIC_FLAG
+@@ -41,7 +40,7 @@ CXXFLAGS += -fno-strict-aliasing
  ASM_SOURCES = 
  
  # Library/program dependencies
@@ -65,41 +65,29 @@ diff -up mesa-20070725/configs/linux-dri.build-config mesa-20070725/configs/linu
  
  LIBDRM_CFLAGS = `pkg-config --cflags libdrm`
  LIBDRM_LIB = `pkg-config --libs libdrm`
-@@ -54,10 +53,10 @@ USING_EGL=0
+@@ -59,10 +58,10 @@ USING_EGL=0
  
  # Directories
  ifeq ($(USING_EGL), 1)
 -SRC_DIRS = egl glx/x11 mesa glu glut/glx glw
 +SRC_DIRS = egl glx/x11 mesa glu glut/glx
- PROGRAM_DIRS = egl
+ PROGRAM_DIRS = egl xdemos
  else
 -SRC_DIRS = glx/x11 mesa glu glut/glx glw
 +SRC_DIRS = glx/x11 mesa glu
- PROGRAM_DIRS =
+ PROGRAM_DIRS = xdemos
  endif
  
-@@ -67,4 +66,4 @@ WINDOW_SYSTEM=dri
+@@ -72,4 +71,4 @@ WINDOW_SYSTEM=dri
  # gamma are missing because they have not been converted to use the new
  # interface.
  DRI_DIRS = i810 i915tex i915 i965 mach64 mga r128 r200 r300 radeon s3v \
 -	savage sis tdfx trident unichrome ffb
 +	savage tdfx trident unichrome ffb # sis
-diff -up mesa-20070725/configs/linux-dri-x86.build-config mesa-20070725/configs/linux-dri-x86
---- mesa-20070725/configs/linux-dri-x86.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux-dri-x86	2007-07-25 10:33:03.000000000 -0400
-@@ -6,7 +6,7 @@ include $(TOP)/configs/linux-dri
- CONFIG_NAME = linux-dri-x86
- 
- # Unnecessary on x86, generally.
--PIC_FLAGS = 
-+# PIC_FLAGS = 
- 
- # Add -m32 to CFLAGS:
- ARCH_FLAGS = -m32
-diff -up mesa-20070725/configs/default.build-config mesa-20070725/configs/default
---- mesa-20070725/configs/default.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/default	2007-07-25 10:34:20.000000000 -0400
-@@ -58,8 +58,8 @@ GLW_SOURCES = GLwDrawA.c
+diff -up Mesa-7.0.2/configs/default.da Mesa-7.0.2/configs/default
+--- Mesa-7.0.2/configs/default.da	2007-11-02 01:30:52.000000000 +1000
++++ Mesa-7.0.2/configs/default	2008-01-02 02:25:54.000000000 +1000
+@@ -59,8 +59,8 @@ GLW_SOURCES = GLwDrawA.c
  
  
  # Directories to build
@@ -110,15 +98,16 @@ diff -up mesa-20070725/configs/default.build-config mesa-20070725/configs/defaul
  GLU_DIRS = sgi
  DRIVER_DIRS = x11 osmesa
  # Which subdirs under $(TOP)/progs/ to enter:
-@@ -72,14 +72,14 @@ GL_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -l
+@@ -73,7 +73,7 @@ GL_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -l
  OSMESA_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB)
  GLU_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB) -lm
  GLUT_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GLU_LIB) -l$(GL_LIB) $(EXTRA_LIB_PATH) -lX11 -lXmu -lXt -lXi -lm
 -GLW_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB) $(EXTRA_LIB_PATH) -lXt -lX11
 +GLW_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GL_LIB) -lXm $(EXTRA_LIB_PATH) -lXt -lX11
- APP_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(GLUT_LIB) -l$(GLU_LIB) -l$(GL_LIB) -lm
  
- 
+ # Program dependencies - specific GL/glut libraries added in Makefiles
+ APP_LIB_DEPS = -lm
+@@ -82,7 +82,7 @@ APP_LIB_DEPS = -lm
  
  # Installation directories (for make install)
  INSTALL_DIR = /usr/local
@@ -127,9 +116,9 @@ diff -up mesa-20070725/configs/default.build-config mesa-20070725/configs/defaul
  
  # Where libGL will look for DRI hardware drivers
  DRI_DRIVER_SEARCH_DIR = $(DRI_DRIVER_INSTALL_DIR)
-diff -up mesa-20070725/configs/linux-dri-ppc.build-config mesa-20070725/configs/linux-dri-ppc
---- mesa-20070725/configs/linux-dri-ppc.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux-dri-ppc	2007-07-25 10:33:03.000000000 -0400
+diff -up Mesa-7.0.2/configs/linux-dri-ppc.da Mesa-7.0.2/configs/linux-dri-ppc
+--- Mesa-7.0.2/configs/linux-dri-ppc.da	2007-06-22 08:10:53.000000000 +1000
++++ Mesa-7.0.2/configs/linux-dri-ppc	2008-01-02 02:24:07.000000000 +1000
 @@ -5,7 +5,7 @@ include $(TOP)/configs/linux-dri
  
  CONFIG_NAME = linux-dri-ppc
@@ -139,9 +128,9 @@ diff -up mesa-20070725/configs/linux-dri-ppc.build-config mesa-20070725/configs/
  PIC_FLAGS = -fPIC
  
  ASM_FLAGS = -DUSE_PPC_ASM -DUSE_VMX_ASM
-diff -up mesa-20070725/configs/linux-osmesa16.build-config mesa-20070725/configs/linux-osmesa16
---- mesa-20070725/configs/linux-osmesa16.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux-osmesa16	2007-07-25 10:33:03.000000000 -0400
+diff -up Mesa-7.0.2/configs/linux-osmesa16.da Mesa-7.0.2/configs/linux-osmesa16
+--- Mesa-7.0.2/configs/linux-osmesa16.da	2007-11-02 05:09:01.000000000 +1000
++++ Mesa-7.0.2/configs/linux-osmesa16	2008-01-02 02:24:07.000000000 +1000
 @@ -7,8 +7,10 @@ CONFIG_NAME = linux-osmesa16
  # Compiler and flags
  CC = gcc
@@ -153,9 +142,9 @@ diff -up mesa-20070725/configs/linux-osmesa16.build-config mesa-20070725/configs
 +CFLAGS = $(OPT_FLAGS) $(DEFINES) -DCHAN_BITS=16 -DDEFAULT_SOFTWARE_DEPTH_BITS=31
 +CXXFLAGS = $(OPT_FLAGS) $(DEFINES) 
  
- 
- # Library names
-@@ -17,12 +19,12 @@ OSMESA_LIB_NAME = libOSMesa16.so
+ # Work around aliasing bugs - developers should comment this out
+ CFLAGS += -fno-strict-aliasing
+@@ -20,12 +22,12 @@ OSMESA_LIB_NAME = libOSMesa16.so
  
  
  # Directories
@@ -170,9 +159,9 @@ diff -up mesa-20070725/configs/linux-osmesa16.build-config mesa-20070725/configs
 +OSMESA_LIB_DEPS = -lm -lpthread -lselinux
  GLU_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(OSMESA_LIB)
  APP_LIB_DEPS = -lOSMesa16
-diff -up mesa-20070725/configs/linux-osmesa32.build-config mesa-20070725/configs/linux-osmesa32
---- mesa-20070725/configs/linux-osmesa32.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux-osmesa32	2007-07-25 10:33:03.000000000 -0400
+diff -up Mesa-7.0.2/configs/linux-osmesa32.da Mesa-7.0.2/configs/linux-osmesa32
+--- Mesa-7.0.2/configs/linux-osmesa32.da	2007-11-02 05:09:01.000000000 +1000
++++ Mesa-7.0.2/configs/linux-osmesa32	2008-01-02 02:24:07.000000000 +1000
 @@ -7,8 +7,10 @@ CONFIG_NAME = linux-osmesa32
  # Compiler and flags
  CC = gcc
@@ -184,9 +173,9 @@ diff -up mesa-20070725/configs/linux-osmesa32.build-config mesa-20070725/configs
 +CFLAGS = $(OPT_FLAGS) $(DEFINES) -DCHAN_BITS=32 -DDEFAULT_SOFTWARE_DEPTH_BITS=31
 +CXXFLAGS = $(OPT_FLAGS) $(DEFINES) 
  
- 
- # Library names
-@@ -17,12 +19,12 @@ OSMESA_LIB_NAME = libOSMesa32.so
+ # Work around aliasing bugs - developers should comment this out
+ CFLAGS += -fno-strict-aliasing
+@@ -20,12 +22,12 @@ OSMESA_LIB_NAME = libOSMesa32.so
  
  
  # Directories
@@ -201,20 +190,23 @@ diff -up mesa-20070725/configs/linux-osmesa32.build-config mesa-20070725/configs
 +OSMESA_LIB_DEPS = -lm -lpthread -lselinux
  GLU_LIB_DEPS = -L$(TOP)/$(LIB_DIR) -l$(OSMESA_LIB)
  APP_LIB_DEPS = -lOSMesa32
-diff -up mesa-20070725/configs/linux-osmesa.build-config mesa-20070725/configs/linux-osmesa
---- mesa-20070725/configs/linux-osmesa.build-config	2007-07-25 09:36:03.000000000 -0400
-+++ mesa-20070725/configs/linux-osmesa	2007-07-25 10:33:03.000000000 -0400
-@@ -9,17 +9,18 @@ CONFIG_NAME = linux-osmesa
+diff -up Mesa-7.0.2/configs/linux-osmesa.da Mesa-7.0.2/configs/linux-osmesa
+--- Mesa-7.0.2/configs/linux-osmesa.da	2007-11-02 05:09:01.000000000 +1000
++++ Mesa-7.0.2/configs/linux-osmesa	2008-01-02 02:27:46.000000000 +1000
+@@ -9,20 +9,22 @@ CONFIG_NAME = linux-osmesa
  # Compiler and flags
  CC = gcc
  CXX = g++
 -CFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE -DPTHREADS
 -CXXFLAGS = -O3 -ansi -pedantic -fPIC -ffast-math -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
--
 +DEFINES = -D_POSIX_SOURCE -D_POSIX_C_SOURCE=199309L -D_SVID_SOURCE -D_BSD_SOURCE
 +OPT_FLAGS ?= -O3 -ansi -pendantic -fPIC -ffast-math
 +CFLAGS = $(OPT_FLAGS) $(DEFINES)
-+CXXFLAGS = $(OPT_FLAGS) $(DEFINES) 
++CXXFLAGS = $(OPT_FLAGS) $(DEFINES)
+ 
+ # Work around aliasing bugs - developers should comment this out
+ CFLAGS += -fno-strict-aliasing
+ CXXFLAGS += -fno-strict-aliasing
  
  # Directories
 -SRC_DIRS = mesa glu

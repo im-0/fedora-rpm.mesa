@@ -1,0 +1,81 @@
+--- Mesa-7.0.2/src/mesa/tnl/t_vp_build.c	2007-10-23 18:52:25.000000000 +0200
++++ Mesa-7.0.2.new/src/mesa/tnl/t_vp_build.c	2007-12-28 20:36:50.000000000 +0100
+@@ -890,7 +890,6 @@
+    {
+       struct ureg shininess = get_material(p, 0, STATE_SHININESS);
+       emit_op1(p, OPCODE_MOV, dots,  WRITEMASK_W, swizzle1(shininess,X));
+-      release_temp(p, shininess);
+ 
+       _col0 = make_temp(p, get_scenecolor(p, 0));
+       if (separate)
+@@ -904,7 +903,6 @@
+       struct ureg shininess = get_material(p, 1, STATE_SHININESS);
+       emit_op1(p, OPCODE_MOV, dots, WRITEMASK_Z, 
+ 	       negate(swizzle1(shininess,X)));
+-      release_temp(p, shininess);
+ 
+       _bfc0 = make_temp(p, get_scenecolor(p, 1));
+       if (separate)
+@@ -972,7 +970,6 @@
+ 	    struct ureg tmpPpli = get_temp(p);
+ 
+ 	    VPpli = get_temp(p); 
+-	    half = get_temp(p);
+  
+             /* In homogeneous object coordinates
+              */
+@@ -983,6 +980,9 @@
+ 	     */
+ 	    emit_op2(p, OPCODE_SUB, VPpli, 0, tmpPpli, V); 
+ 
++            /* we're done with tmpPpli now */
++	    release_temp(p, tmpPpli);
++
+ 	    /* Normalize VPpli.  The dist value also used in
+ 	     * attenuation below.
+ 	     */
+@@ -997,10 +997,14 @@
+ 		p->state->unit[i].light_attenuated) {
+ 	       att = calculate_light_attenuation(p, i, VPpli, dist);
+ 	    }
++	    
++	    /* We're done with dist now */
++	    release_temp(p, dist);
+ 	 
+       
+ 	    /* Calculate viewer direction, or use infinite viewer:
+ 	     */
++	    half = get_temp(p);
+ 	    if (p->state->light_local_viewer) {
+ 	       struct ureg eye_hat = get_eye_position_normalized(p);
+ 	       emit_op2(p, OPCODE_SUB, half, 0, VPpli, eye_hat);
+@@ -1011,9 +1015,6 @@
+ 	    }
+ 
+ 	    emit_normalize_vec3(p, half, half);
+-
+-	    release_temp(p, dist);
+-	    release_temp(p, tmpPpli);
+ 	 }
+ 
+ 	 /* Calculate dot products:
+@@ -1021,6 +1022,10 @@
+ 	 emit_op2(p, OPCODE_DP3, dots, WRITEMASK_X, normal, VPpli);
+ 	 emit_op2(p, OPCODE_DP3, dots, WRITEMASK_Y, normal, half);
+ 
++	 /* we're done with VPpli and half now, so free them as to not drive up
++	    our temp usage unnecessary */
++	 release_temp(p, VPpli);
++	 release_temp(p, half);
+ 	
+ 	 /* Front face lighting:
+ 	  */
+@@ -1109,8 +1114,6 @@
+ 	    release_temp(p, specular);
+ 	 }
+ 
+-	 release_temp(p, half);
+-	 release_temp(p, VPpli);
+ 	 release_temp(p, att);
+       }
+    }
