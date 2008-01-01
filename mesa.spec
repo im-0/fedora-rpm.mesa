@@ -32,7 +32,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.0.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -42,7 +42,8 @@ Source0: http://internap.dl.sourceforge.net/sourceforge/mesa3d/MesaLib-%{version
 Source1: http://internap.dl.sourceforge.net/sourceforge/mesa3d/MesaDemos-%{version}.tar.bz2
 Source2: %{manpages}.tar.bz2
 
-Patch0: mesa-7.0-build-config.patch
+Patch0: mesa-7.0.2-stable-branch.patch
+Patch1: mesa-7.0-build-config.patch
 Patch4: mesa-6.5-dont-libglut-me-harder-ok-thx-bye.patch
 Patch5: mesa-6.5.2-xserver-1.1-source-compat.patch
 Patch18: mesa-7.0-selinux-awareness.patch
@@ -175,7 +176,8 @@ This package provides some demo applications for testing Mesa.
 %setup -q -n Mesa-%{version} -b1 -b2
 chmod a-x progs/demos/glslnoise.c
 
-%patch0 -p1 -b .build-config
+%patch0 -p1 -b .stable
+%patch1 -p1 -b .build-config
 %patch4 -p0 -b .dont-libglut-me-harder-ok-thx-bye
 %patch5 -p1 -b .xserver-1.1-compat
 %patch18 -p1 -b .selinux-awareness
@@ -414,6 +416,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Tue Jan 01 2008 Dave Airlie <airlied@redhat.com> 7.0.2-2
+- mesa-7.0.2-stable-branch.patch: add in mesa 7.0.2 stable patches so far
+
 * Tue Jan 01 2008 Dave Airlie <airlied@redhat.com> 7.0.2-1
 - update to Mesa 7.0.2 final
 - mesa-7.0.2-rx00-vertprog-num-temps-off-by-one.patch - fixes for maniadrive

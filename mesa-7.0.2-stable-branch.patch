@@ -1,0 +1,3440 @@
+commit c1eb78f7ff9a6d80a6db06727a521b5aa3871a3d
+Author: Roland Scheidegger <sroland@tungstengraphics.com>
+Date:   Sat Dec 22 18:49:42 2007 +0100
+
+    fix GL_LINE_LOOP with drivers using own render pipeline stage (#12410, #13527)
+    
+    primitive needs to include the begin/end flags (broken since vbo-0.2). Should
+    fix missing first/last line segment on gamma, i810, i915, mga, r200, radeon,
+    s3v, savage, unichrome (r300 already correct). Tested on r200, fixes #13527.
+
+commit 8aa0fd6b206930ababb1bae2acc629e2a945c0c0
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Thu Dec 20 09:07:57 2007 -0700
+
+    glGetActiveUniform fix
+
+commit a1b3a908f557502fc1e5bf4e6357014538778ed8
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Thu Dec 20 09:05:37 2007 -0700
+
+    return correct size from glGetActiveUniform (bug 13751)
+
+commit f9e70d951a3047a2af87ee43ca6c1045a187ef08
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Wed Dec 19 10:44:00 2007 +0800
+
+    i965: allocate GRF registers before building subroutines,
+    it ensures there are sufficient registers for all subroutines.
+
+commit 41ed6be1da92fe8b48f106e7b540bd6a8ad2446a
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Wed Dec 19 10:36:56 2007 +0800
+
+    i965: restore the flag after building the subroutine of the
+    GS thread. fix #13240
+
+commit 27de28fc3ec46cd5cac1e6de52d27922aabe340e
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Dec 18 17:07:11 2007 -0700
+
+    Remove -I$(TOP)/src/mesa/transform
+
+commit dd2f01c229e9a9692fb0c424cb3c587419d04f83
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Dec 18 16:12:34 2007 -0700
+
+    simplify update two-side lighting test (follow-on to previous front/back-face changes)
+
+commit deb5c56c77d385786d0b4fceed01cdee82f5355d
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Dec 18 16:10:06 2007 -0700
+
+    fix NEED_SECONDARY_COLOR for vert/frag progs
+
+commit 0107acded03c510df2093b0b98bca52b5734dd5b
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Mon Dec 17 12:20:56 2007 +0100
+
+    i915tex: Fix issues with glDrawBuffer(GL_NONE).
+    
+    Don't dereference NULL renderbuffer pointer, and make sure the software
+    fallback sticks.
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=13694 .
+
+commit 2ac5e08d1d41377dc873b31875701f59e74242ec
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Dec 14 14:33:53 2007 -0700
+
+    fix polygon cull regression
+
+commit 1837b8c214a362ccecc441f7b6880f623e70b8d6
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Wed Oct 31 17:12:07 2007 -0700
+
+    configs: Fix linking with static libGL and --as-needed
+    
+    Linking of the programs breaks when using a static libGL and the GNU ld
+    option --as-needed. This is because libXext is needed for the XShm
+    functions.
+    (cherry picked from commit 6aaf9bdd418e11d5ccb76a6ab85a8df36b0c8804)
+
+commit 03d2bc1774e3612edca4be48c5aeafaafa2a52b1
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Dec 4 14:06:26 2007 -0700
+
+    fix gl_FrontFacing
+
+commit 385bddbde04ca3ec2a159e8c8a50d9009da25b63
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Dec 4 14:06:01 2007 -0700
+
+    fix span->facing computation and gl_FrontFacing initialization
+
+commit c13542626729a6fe3e4dfbc71f3569119255b668
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Dec 4 14:05:11 2007 -0700
+
+    Fix gl_FrontFacing compilation problem
+
+commit 4be0c981205b5530366a10eb96e06b93a2439391
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Tue Dec 4 10:46:45 2007 +0100
+
+    Use -Bsymbolic for linking all shared objects.
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=10132 .
+    
+    Also remove comment about SONAME, as SONAME only applies to shared libraries.
+    (cherry picked from commit fc7ddea8535f1a9c196bf30f7864414e4ac18b8a)
+
+commit e760aebd5aaecc220c6789fe925897909a876acd
+Author: Brian <brian@i915.localnet.net>
+Date:   Mon Dec 3 14:11:46 2007 -0700
+
+    fix two-side lighting bug/crash
+
+commit 1f6e7d9c297aba2e936352d6ae8a4198b5c64af5
+Author: Brian <brian@i915.localnet.net>
+Date:   Mon Dec 3 14:11:26 2007 -0700
+
+    fix DD_TRI_LIGHT_TWOSIDE bug (#13368)
+
+commit c6d421af05ccdd377df5cade301c5c25814ddf0c
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Mon Dec 3 11:57:14 2007 -0800
+
+    Fix the library name in glw.pc
+    
+    Fix a copy and paste error s/GLU/GLw/ in glw.pc.
+    (cherry picked from commit 2dc85e8078bed67cb5d8bc3e16484f56c61c61ca)
+
+commit 952df5e493198de91b329983dae5366102eb0a25
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Dec 3 11:59:40 2007 -0700
+
+    fix two-sided stencil
+
+commit 45acb8b058fc0f61a1c2687897c5d4042b534760
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Dec 3 11:58:16 2007 -0700
+
+    added missing quote char
+
+commit e8997c0183dbdb59884cc02af81d2faab1beaba1
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Fri Nov 30 11:40:06 2007 +0100
+
+    i915tex: Fix up state changes for i8xx.
+    
+    (cherry picked from commit 2af613e0b8e6f89cc7528ff5a969e18f077e61fc)
+
+commit 169e62f563c4eb7dfa9c456a1ee03168af6b546a
+Author: Brian <brian@i915.localnet.net>
+Date:   Fri Nov 30 15:52:41 2007 -0700
+
+    fix-build: remove ctx->_Facing assignment
+
+commit 1b43babfb126c6318d2f2468ec81b93ee1923774
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Nov 30 13:01:42 2007 -0700
+
+    fix broken two-sided stencil
+
+commit 43e902f774f8c3cd58310eeb44eec9d3f8f81746
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Nov 30 09:08:11 2007 -0700
+
+    better front-plane clip test
+
+commit b0a800e249990de0cbc577f8b48a1a301a3b9361
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Fri Nov 30 11:50:08 2007 +0800
+
+    i965: use uncompressed instruction to ensure only
+    Pixel Mask Copy is modified as the pixel shader thread
+    turns off pixels based on kill instructions.
+
+commit 73d5f232ad5905e6566ddd22f2cbceaac48bd4ad
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Thu Nov 29 08:12:33 2007 -0700
+
+    New ctx->Driver.Map/UnmapTexture() functions for accessing textures from t_vb_program.c
+
+commit f7209541e44c35e64bc9cd4fd8342ee7743b7774
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Thu Nov 29 08:17:37 2007 -0700
+
+    cleanups, comments
+    
+    Conflicts:
+    
+    	src/mesa/tnl/t_vb_program.c
+
+commit 397a32dca7b58b1120874b304e0f39fc314dbb3b
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Wed Nov 28 15:19:46 2007 -0700
+
+    Move _mesa_load_tracked_matrices() from TNL module to prog_statevars.c
+
+commit e0719d7122e1ac0659c8195ae267a45579c4070c
+Author: Roland Scheidegger <sroland@tungstengraphics.com>
+Date:   Thu Nov 29 03:08:18 2007 +0100
+
+    make sure state token values are fully initialized
+
+commit 3f18c0a9f27fded8f52a5f0c5b8ad71f71c46aa2
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Wed Nov 28 10:20:04 2007 +0100
+
+    r200: Fix texture format regression on big endian systems.
+    
+    See https://bugs.freedesktop.org/show_bug.cgi?id=13324 .
+    
+    Also use tx_table_be for VALID_FORMAT, in case r200SetTexImages ever gets
+    called for MESA_FORMAT_RGB888.
+    (cherry picked from commit dc88a96631c21c2bc2cdffefc8947e8924d77c91)
+
+commit b14be6193891dd7f03efcadb674a759acf3722c9
+Author: Delle <delle@ciaoweb.it>
+Date:   Tue Nov 27 18:18:48 2007 -0700
+
+    use DEFAULT_SOFTWARE_DEPTH_BITS
+
+commit 440d6203080650bc112c4759dad6bcb3ed9e7fa2
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 27 10:30:48 2007 -0700
+
+    minor additions to avoid FAQs
+
+commit 8dd9df0f3e53549acc874d891388cfa34ab038c0
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 27 10:28:30 2007 -0700
+
+    document GLSL float f/F suffix bug
+
+commit 6b9534eaf5d617fd8ce3888885913c9665b4ca7c
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 27 10:17:02 2007 -0700
+
+    set fp->UsesKill when emitting OPCODE_KIL
+
+commit c91d374ad7736c5c98010780a5701722d50f4f30
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Nov 26 09:35:31 2007 -0700
+
+    improve 24-bit Z to 32-bit Z conversion
+
+commit 1cab4160bc5b22264023ffde05aeab5bebf87db7
+Author: Keith Whitwell <keith@tungstengraphics.com>
+Date:   Thu Nov 15 15:25:11 2007 +0000
+
+    i915tex: Fix some minor batchbuffer errors.
+
+commit 718d2dfbbddbca3bcaebbd2b57f9e72ca594991d
+Author: Keith Whitwell <keith@tungstengraphics.com>
+Date:   Thu Nov 15 09:59:33 2007 +0000
+
+    i915tex: Catch cases where not all state is emitted for a new batchbuffer.
+    
+    This could lead to incorrect rendering or even lockups.
+
+commit 0967e1270d3b3bc0917fb841314ebb8d04766746
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Fri Nov 9 18:46:55 2007 +0100
+
+    i915tex: Some additional blit fixes and assertions.
+
+commit a08c02f1a85823d7116758c3c0996776932fc530
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Fri Nov 9 18:44:11 2007 +0100
+
+    i915tex: Actually wait for previous commands to complete for glFinish().
+
+commit bdfd9afeadd19c0bd71d904d9d04b01b74b9b70f
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Nov 23 12:01:39 2007 -0700
+
+    Consolidate texture fetch code and use partial derivatives when possible.
+
+commit 1c91a590d6b574a59063a1c276b060b60459565c
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Nov 23 10:28:33 2007 -0700
+
+    fix a few GLSL bugs
+
+commit 65bd7968bf78e77bfa1d30fe2c459bf6b135059c
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Nov 23 10:26:02 2007 -0700
+
+    Fix parsing of gl_FrontLightModelProduct.sceneColor, don't segfault on variable
+    array indexes.
+
+commit 6ccd23b87b9d07ce01bb84d406b64fb18d37a33e
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Nov 23 09:14:27 2007 -0700
+
+    need to check border width in sample_linear_2d() - fixes failed assertion in texwrap.c test
+
+commit 823409b7d09cab74db3715de5f1e1685fe0fc70d
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Thu Nov 22 09:36:13 2007 -0700
+
+    Bump version numbers to 7.0.3 for next release
+
+commit c85d31f4a049193afe2452b4f130671b16fbc32c
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Thu Nov 22 09:33:57 2007 -0700
+
+    Recompute ctx->Point._Size if GL_POINT_SIZE_MIN/MAX changes.
+    
+    Note that all the point size clamping stuff has been redone in Mesa/master.
+
+commit 24af5c44da2b57707976728c9374f44b20b4efe4
+Author: Roland Scheidegger <sroland@tungstengraphics.com>
+Date:   Thu Nov 22 02:55:25 2007 +0100
+
+    fix z buffer read/write issue with rv100-like chips and old ddx
+
+commit 75efacf8eb725049525ed724482ffeace76dd2fd
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 20 08:16:25 2007 -0700
+
+    Initial 7.0.3 relnotes
+
+commit 825e810247db3c210616648f74a96a6f2c42d9d8
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 20 08:15:19 2007 -0700
+
+    bring over Fortran fixes from master
+
+commit e20723cfc18fee93c1a5f5ff346baa8694f53d09
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 20 08:13:14 2007 -0700
+
+    Obsolete
+
+commit 9f39a67c1d71006f58be72091dd37ebe644738fd
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 20 08:13:03 2007 -0700
+
+    Rename glut_fbc.c -> glut_fcb.c (cb=callback)
+
+commit 2044f3f791b0caf36d875691d10c627b3fda49bd
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Nov 19 13:05:10 2007 -0700
+
+    clamp lambda to Min/MaxLod
+
+commit 30d4e8c422b52826f7a14c25103df9f68d59b172
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Nov 19 10:37:41 2007 -0700
+
+    fix some texture format assertions, etc
+
+commit 92d552f6a2688d7fa410a88d3ed96a0144e34a6f
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Nov 19 09:54:41 2007 -0700
+
+    fix out-of-bounds array index (ix=-1)
+
+commit 5adfcbbc4f8ab7438654bac3a423aab9522bb5a1
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Nov 16 10:03:12 2007 -0700
+
+    added gl_dispatch_stub_772()
+
+commit 69969b38197b847abaec5248f67775416adb499c
+Author: Roland Scheidegger <sroland@tungstengraphics.com>
+Date:   Thu Nov 15 00:52:38 2007 +0100
+
+    fix position invariant vertex programs for sw-tnl
+    
+    do the same math as for fixed function pipe, including
+    user clip planes.
+    (mostly resurrected from the dead t_vb_arbprogram.c code)
+
+commit edfee04fcb1431aa079c69b7c0b67e87de4063c7
+Author: Roland Scheidegger <sroland@tungstengraphics.com>
+Date:   Thu Nov 15 01:16:27 2007 +0100
+
+    fix bogus assumption if ddx has set up surface reg for z buffer
+    
+    this is wrong since even if ddx has not set up a surface reg to cover the z
+    buffer we should pretend it has on those rv100 chips since they presumably do
+    not do z buffer tiling if not using hyperz, so we can use linear addressing
+    just the same. Doesn't seem to fix #13080, but it's wrong anyway and the bug
+    almost certainly broke newer non-tcl chips.
+
+commit 28c9930888ffeb66274c27e9a5f980e115df6ee7
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 13 09:51:14 2007 -0700
+
+    add pointer to Gallium3D info
+
+commit e3a35a123efc48e0a69898fd7bda396c9fbe3fff
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue Nov 13 09:50:42 2007 -0700
+
+    DRI memory manager info (fixes dangling link)
+
+commit 412168f2e884d3dd8318c28405683c15c6912c93
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Nov 12 08:21:21 2007 -0700
+
+    remove dependency on libGLU
+
+commit fc0fa0d636a7ca27735d580777d4d4844a515bb4
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Mon Nov 12 07:52:20 2007 -0700
+
+    add glw.pc.in to tarball list, remove from DEPEND_FILES
+
+diff --git a/Makefile b/Makefile
+index fe0c354..dcc60f6 100644
+--- a/Makefile
++++ b/Makefile
+@@ -166,10 +166,10 @@ ultrix-gcc:
+ 
+ # Rules for making release tarballs
+ 
+-DIRECTORY = Mesa-7.0.2
+-LIB_NAME = MesaLib-7.0.2
+-DEMO_NAME = MesaDemos-7.0.2
+-GLUT_NAME = MesaGLUT-7.0.2
++DIRECTORY = Mesa-7.0.3
++LIB_NAME = MesaLib-7.0.3
++DEMO_NAME = MesaDemos-7.0.3
++GLUT_NAME = MesaGLUT-7.0.3
+ 
+ MAIN_FILES = \
+ 	$(DIRECTORY)/Makefile*						\
+@@ -355,6 +355,7 @@ GLW_FILES = \
+ 	$(DIRECTORY)/src/glw/*.[ch]			\
+ 	$(DIRECTORY)/src/glw/Makefile*			\
+ 	$(DIRECTORY)/src/glw/README			\
++	$(DIRECTORY)/src/glw/glw.pc.in			\
+ 	$(DIRECTORY)/src/glw/depend
+ 
+ DEMO_FILES = \
+@@ -424,7 +425,6 @@ DEPEND_FILES = \
+ 	$(TOP)/src/mesa/depend		\
+ 	$(TOP)/src/glx/x11/depend	\
+ 	$(TOP)/src/glw/depend		\
+-	$(TOP)/src/glw/glw.pc.in	\
+ 	$(TOP)/src/glut/glx/depend	\
+ 	$(TOP)/src/glu/sgi/depend
+ 
+diff --git a/bin/mklib b/bin/mklib
+index 499e789..0fb9930 100755
+--- a/bin/mklib
++++ b/bin/mklib
+@@ -209,8 +209,13 @@ case $ARCH in
+ 	if [ $NOPREFIX = 1 ] ; then
+ 	    # No "lib" or ".so" part
+ 	    echo "mklib: Making" $ARCH "shared library: " ${LIBNAME}
+-	    #OPTS="-shared -Wl,-soname,${LIBNAME}"  # soname???
+-	    OPTS="-shared"
++	    case $ARCH in 'Linux' | 'GNU' | GNU/*)
++		OPTS="-Xlinker -Bsymbolic -shared"
++	    ;;
++	    *)
++		OPTS="-shared"
++	    ;;
++	    esac
+ 
+ 	    # Check if objects are 32-bit and we're running in 64-bit
+ 	    # environment.  If so, pass -m32 flag to linker.
+diff --git a/configs/linux-static b/configs/linux-static
+index 2a77d4c..1ee16be 100644
+--- a/configs/linux-static
++++ b/configs/linux-static
+@@ -22,4 +22,5 @@ GLUT_LIB_DEPS =
+ GLW_LIB_DEPS = 
+ 
+ # Need to specify all libraries we may need
+-APP_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -lXmu -lXt -lXi -lpthread -lstdc++ -lm
++APP_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -lXext -lXmu -lXt -lXi -lpthread \
++	-lstdc++ -lm
+diff --git a/configs/linux-x86-64-static b/configs/linux-x86-64-static
+index 06e6fc3..611abf0 100644
+--- a/configs/linux-x86-64-static
++++ b/configs/linux-x86-64-static
+@@ -20,4 +20,5 @@ OSMESA_LIB_DEPS =
+ GLU_LIB_DEPS = 
+ GLUT_LIB_DEPS = 
+ GLW_LIB_DEPS = 
+-APP_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -lXmu -lXt -lXi -lpthread -lstdc++ -lm
++APP_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -lXext -lXmu -lXt -lXi -lpthread \
++	-lstdc++ -lm
+diff --git a/configs/linux-x86-static b/configs/linux-x86-static
+index 2b6478b..645196c 100644
+--- a/configs/linux-x86-static
++++ b/configs/linux-x86-static
+@@ -20,4 +20,5 @@ OSMESA_LIB_DEPS =
+ GLU_LIB_DEPS = 
+ GLUT_LIB_DEPS = 
+ GLW_LIB_DEPS = 
+-APP_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -lXmu -lXt -lXi -lpthread -lstdc++ -lm
++APP_LIB_DEPS = $(EXTRA_LIB_PATH) -lX11 -lXext -lXmu -lXt -lXi -lpthread \
++	-lstdc++ -lm
+diff --git a/docs/fbdev-dri.html b/docs/fbdev-dri.html
+index 0d9e52c..c3724b3 100644
+--- a/docs/fbdev-dri.html
++++ b/docs/fbdev-dri.html
+@@ -34,6 +34,11 @@ in the normal Mesa releases so you'll need to get the latest sources
+ sources from the <a href="repository.html">git repository</a>.
+ </p>
+ 
++<p>
++This fbdev/DRI environment isn't well supported.
++Code and documentation updates/patches are welcomed.
++</p>
++
+ 
+ <h1>2. Compilation</h1>
+ 
+@@ -66,6 +71,7 @@ You'll need fbdev header files.  Check with:
+ </pre>
+ 
+ <p>
++You'll need to get Mesa from git (see above).
+ Compile Mesa with the 'linux-solo' configuration:
+ </p>
+ <pre>
+diff --git a/docs/memory.html b/docs/memory.html
+new file mode 100644
+index 0000000..cd59bd7
+--- /dev/null
++++ b/docs/memory.html
+@@ -0,0 +1,21 @@
++<HTML>
++
++<TITLE>Mesa News</TITLE>
++
++<head><link rel="stylesheet" type="text/css" href="mesa.css"></head>
++
++<BODY>
++
++<body bgcolor="#eeeeee">
++
++<H1>DRI Memory Management</H1>
++
++<p>
++Thomas Hellstr&ouml;m's 
++<a href="http://www.tungstengraphics.com/mm.pdf">Memory Management
++whitepaper</a> describes the goals, design and implementation of the
++new DRI memory management system.
++</p>
++
++</body>
++</html>
+diff --git a/docs/news.html b/docs/news.html
+index 79fc599..13e43f1 100644
+--- a/docs/news.html
++++ b/docs/news.html
+@@ -11,6 +11,23 @@
+ <H1>News</H1>
+ 
+ 
++<h2>November 13, 2007</h2>
++
++<p>
++Gallium3D is the codename for the new Mesa device driver architecture
++which is currently under development.
++A <a href="http://www.tungstengraphics.com/wiki/index.php/Gallium3D"
++target="_parent"> summary</a> of the architecture can be found on the
++Tungsten Graphics website.
++</p>
++<p>
++Gallium3D development is taking place on the <em>gallium-0.1</em> branch
++of the git repository.
++Currently, there's only a software-only driver and an Intel i915/945 driver
++but other drivers will be coming...
++</p>
++
++
+ <h2>November 10, 2007</h2>
+ <p>
+ <a href="relnotes-7.0.2.html">Mesa 7.0.2</a> is released.
+diff --git a/docs/relnotes-7.0.3.html b/docs/relnotes-7.0.3.html
+new file mode 100644
+index 0000000..59090da
+--- /dev/null
++++ b/docs/relnotes-7.0.3.html
+@@ -0,0 +1,60 @@
++<HTML>
++
++<TITLE>Mesa Release Notes</TITLE>
++
++<head><link rel="stylesheet" type="text/css" href="mesa.css"></head>
++
++<BODY>
++
++<body bgcolor="#eeeeee">
++
++<H1>Mesa 7.0.3 Release Notes / (TBD) 2007</H1>
++
++<p>
++Mesa 7.0.3 is a stable release with bug fixes since version 7.0.2.
++</p>
++
++
++<h2>MD5 checksums</h2>
++<pre>
++</pre>
++
++
++<h2>New features</h2>
++<ul>
++</ul>
++
++<h2>Bug fixes</h2>
++<ul>
++<li>Added missing glw.pc.in file to release tarball
++<li>Fix GLUT/Fortran issues
++<li>GLSL gl_FrontLightModelProduct.sceneColor variable wasn't defined
++<li>Fix crash upon GLSL variable array indexes (not yet supported)
++<li>Two-sided stencil test didn't work in software rendering
++<li>Fix two-sided lighting bugs/crashes (bug 13368)
++<li>GLSL gl_FrontFacing didn't work properly
++<li>glGetActiveUniform returned incorrect sizes (bug 13751)
++</ul>
++
++
++<h2>Driver Status</h2>
++
++<pre>
++Driver			Status
++----------------------	----------------------
++DRI drivers		varies with the driver
++XMesa/GLX (on Xlib)	implements OpenGL 2.1
++OSMesa (off-screen)	implements OpenGL 2.1
++Windows/Win32		implements OpenGL 2.1
++Glide (3dfx Voodoo1/2)	implements OpenGL 1.3
++SVGA			unsupported
++Wind River UGL		unsupported
++DJGPP			unsupported
++GGI			unsupported
++BeOS			unsupported
++Allegro			unsupported
++D3D			unsupported
++</pre>
++
++</body>
++</html>
+diff --git a/docs/relnotes.html b/docs/relnotes.html
+index 7464f5c..8469c7f 100644
+--- a/docs/relnotes.html
++++ b/docs/relnotes.html
+@@ -20,6 +20,7 @@ The release notes summarize what's new or changed in each Mesa release.
+ </p>
+ 
+ <UL>
++<LI><A HREF="relnotes-7.0.3.html">7.0.3 release notes</A>
+ <LI><A HREF="relnotes-7.0.2.html">7.0.2 release notes</A>
+ <LI><A HREF="relnotes-7.0.1.html">7.0.1 release notes</A>
+ <LI><A HREF="relnotes-7.0.html">7.0 release notes</A>
+diff --git a/docs/shading.html b/docs/shading.html
+index 0e1a5e1..0a9f5f3 100644
+--- a/docs/shading.html
++++ b/docs/shading.html
+@@ -48,6 +48,7 @@ in Mesa:
+ <li>The inverse trig functions asin(), acos(), and atan() are not implemented
+ <li>The gl_Color and gl_SecondaryColor varying vars are interpolated
+     without perspective correction
++<li>Floating point literal suffixes 'f' and 'F' aren't allowed.
+ </ul>
+ 
+ <p>
+ {
+diff --git a/progs/xdemos/offset.c b/progs/xdemos/offset.c
+index 3e92e68..97170f5 100644
+--- a/progs/xdemos/offset.c
++++ b/progs/xdemos/offset.c
+@@ -47,7 +47,6 @@ PERFORMANCE OF THIS SOFTWARE.
+ 
+ 
+ #include <GL/glx.h>
+-#include <GL/glu.h>
+ #include <X11/keysym.h>
+ #include <stdlib.h>
+ #include <stdio.h>
+@@ -134,7 +133,7 @@ int main(int argc, char** argv) {
+ 
+     /* set up viewing parameters */
+     glMatrixMode(GL_PROJECTION);
+-    gluPerspective(20, 1, 0.1, 20);
++    glFrustum(-1, 1, -1, 1, 6, 20);
+     glMatrixMode(GL_MODELVIEW);
+     glTranslatef(0, 0, -15);
+ 
+diff --git a/src/mesa/Makefile b/src/mesa/Makefile
+index eea8eb9..d0c19f5 100644
+--- a/src/mesa/Makefile
++++ b/src/mesa/Makefile
+@@ -65,7 +65,7 @@ linux-solo: depend subdirs libmesa.a
+ # Stand-alone Mesa libGL, no built-in drivers (DirectFB)
+ 
+ libgl-core: $(CORE_OBJECTS)
+-	@ $(TOP)/bin/mklib -o $(GL_LIB) -linker '$(CC)' -ldflags '$(LDFLAGS) \
++	@ $(TOP)/bin/mklib -o $(GL_LIB) -linker '$(CC)' -ldflags '$(LDFLAGS)' \
+ 		-major $(MESA_MAJOR) -minor $(MESA_MINOR) -patch $(MESA_TINY) \
+ 		-install $(TOP)/$(LIB_DIR) $(MKLIB_OPTIONS) $(CORE_OBJECTS) \
+ 		$(GL_LIB_DEPS)
+diff --git a/src/mesa/drivers/common/driverfuncs.c b/src/mesa/drivers/common/driverfuncs.c
+index adf9aaf..e9b364e 100644
+--- a/src/mesa/drivers/common/driverfuncs.c
++++ b/src/mesa/drivers/common/driverfuncs.c
+@@ -112,6 +112,8 @@ _mesa_init_driver_functions(struct dd_function_table *driver)
+    driver->DeleteTexture = _mesa_delete_texture_object;
+    driver->NewTextureImage = _mesa_new_texture_image;
+    driver->FreeTexImageData = _mesa_free_texture_image_data; 
++   driver->MapTexture = NULL;
++   driver->UnmapTexture = NULL;
+    driver->TextureMemCpy = _mesa_memcpy; 
+    driver->IsTextureResident = NULL;
+    driver->PrioritizeTexture = NULL;
+diff --git a/src/mesa/drivers/dri/Makefile.template b/src/mesa/drivers/dri/Makefile.template
+index 9e84dbc..aeeb267 100644
+--- a/src/mesa/drivers/dri/Makefile.template
++++ b/src/mesa/drivers/dri/Makefile.template
+@@ -50,7 +50,6 @@ SHARED_INCLUDES = \
+ 	-I$(TOP)/src/mesa/main \
+ 	-I$(TOP)/src/mesa/glapi \
+ 	-I$(TOP)/src/mesa/math \
+-	-I$(TOP)/src/mesa/transform \
+ 	-I$(TOP)/src/mesa/shader \
+ 	-I$(TOP)/src/mesa/swrast \
+ 	-I$(TOP)/src/mesa/swrast_setup \
+diff --git a/src/mesa/drivers/dri/gamma/gamma_render.c b/src/mesa/drivers/dri/gamma/gamma_render.c
+index 4b462f2..a8fba49 100644
+--- a/src/mesa/drivers/dri/gamma/gamma_render.c
++++ b/src/mesa/drivers/dri/gamma/gamma_render.c
+@@ -193,7 +193,7 @@ static GLboolean gamma_run_render( GLcontext *ctx,
+ 
+    for (i = 0 ; i < VB->PrimitiveCount ; i++)
+    {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/i810/i810render.c b/src/mesa/drivers/dri/i810/i810render.c
+index a31d542..d022596 100644
+--- a/src/mesa/drivers/dri/i810/i810render.c
++++ b/src/mesa/drivers/dri/i810/i810render.c
+@@ -144,7 +144,7 @@ static GLboolean i810_run_render( GLcontext *ctx,
+ 
+    for (i = 0 ; i < VB->PrimitiveCount ; i++)
+    {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/i915/intel_render.c b/src/mesa/drivers/dri/i915/intel_render.c
+index d9438ba..773779a 100644
+--- a/src/mesa/drivers/dri/i915/intel_render.c
++++ b/src/mesa/drivers/dri/i915/intel_render.c
+@@ -213,7 +213,7 @@ static GLboolean intel_run_render( GLcontext *ctx,
+    
+    for (i = 0 ; i < VB->PrimitiveCount ; i++)
+    {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/i915tex/i830_vtbl.c b/src/mesa/drivers/dri/i915tex/i830_vtbl.c
+index 5555b74..e76e2e7 100644
+--- a/src/mesa/drivers/dri/i915tex/i830_vtbl.c
++++ b/src/mesa/drivers/dri/i915tex/i830_vtbl.c
+@@ -378,9 +378,15 @@ do {							\
+ } while (0)
+ 
+ static GLuint
++get_dirty(struct i830_hw_state *state)
++{
++   return state->active & ~state->emitted;
++}
++
++static GLuint
+ get_state_size(struct i830_hw_state *state)
+ {
+-   GLuint dirty = state->active & ~state->emitted;
++   GLuint dirty = get_dirty(state);
+    GLuint sz = 0;
+    GLuint i;
+ 
+@@ -411,7 +417,7 @@ get_state_size(struct i830_hw_state *state)
+ /* Push the state into the sarea and/or texture memory.
+  */
+ static void
+-i830_emit_state(struct intel_context *intel)
++i830_do_emit_state(struct intel_context *intel)
+ {
+    struct i830_context *i830 = i830_context(&intel->ctx);
+    struct i830_hw_state *state = i830->current;
+@@ -428,10 +434,32 @@ i830_emit_state(struct intel_context *intel)
+     */
+    intel_batchbuffer_require_space(intel->batch, get_state_size(state), 0);
+ 
++   /* Workaround.  There are cases I haven't been able to track down
++    * where we aren't emitting a full state at the start of a new
++    * batchbuffer.  This code spots that we are on a new batchbuffer
++    * and forces a full state emit no matter what.  
++    *
++    * In the normal case state->emitted is already zero, this code is
++    * another set of checks to make sure it really is.
++    */
++   if (intel->batch->id != intel->last_state_batch_id ||
++       intel->batch->map == intel->batch->ptr) 
++   {
++      state->emitted = 0;
++      intel_batchbuffer_require_space(intel->batch, get_state_size(state), 0);
++   }
++
+    /* Do this here as we may have flushed the batchbuffer above,
+     * causing more state to be dirty!
+     */
+-   dirty = state->active & ~state->emitted;
++   dirty = get_dirty(state);
++   state->emitted |= dirty;
++   assert(get_dirty(state) == 0);
++
++   if (intel->batch->id != intel->last_state_batch_id) {
++      assert(dirty & I830_UPLOAD_CTX);
++      intel->last_state_batch_id = intel->batch->id;
++   }
+ 
+    if (dirty & I830_UPLOAD_INVARIENT) {
+       DBG("I830_UPLOAD_INVARIENT:\n");
+@@ -513,7 +541,30 @@ i830_emit_state(struct intel_context *intel)
+       }
+    }
+ 
+-   state->emitted |= dirty;
++   intel->batch->dirty_state &= ~dirty;
++   assert(get_dirty(state) == 0);
++}
++
++static void
++i830_emit_state(struct intel_context *intel)
++{
++   struct i830_context *i830 = i830_context(&intel->ctx);
++
++   i830_do_emit_state( intel );
++
++   /* Second chance - catch batchbuffer wrap in the middle of state
++    * emit.  This shouldn't happen but it has been observed in
++    * testing.
++    */
++   if (get_dirty( i830->current )) {
++      /* Force a full re-emit if this happens.
++       */
++      i830->current->emitted = 0;
++      i830_do_emit_state( intel );
++   }
++
++   assert(get_dirty(i830->current) == 0);
++   assert((intel->batch->dirty_state & (1<<1)) == 0);
+ }
+ 
+ static void
+@@ -650,8 +701,7 @@ i830_assert_not_dirty( struct intel_context *intel )
+ {
+    struct i830_context *i830 = i830_context(&intel->ctx);
+    struct i830_hw_state *state = i830->current;
+-   GLuint dirty = state->active & ~state->emitted;
+-   assert(!dirty);
++   assert(!get_dirty(state));
+ }
+ 
+ 
+diff --git a/src/mesa/drivers/dri/i915tex/i915_vtbl.c b/src/mesa/drivers/dri/i915tex/i915_vtbl.c
+index e911fc4..1b055f6 100644
+--- a/src/mesa/drivers/dri/i915tex/i915_vtbl.c
++++ b/src/mesa/drivers/dri/i915tex/i915_vtbl.c
+@@ -198,7 +198,7 @@ i915_emit_invarient_state(struct intel_context *intel)
+ 
+    /* Need to initialize this to zero.
+     */
+-   OUT_BATCH(_3DSTATE_LOAD_STATE_IMMEDIATE_1 | I1_LOAD_S(3) | (1));
++   OUT_BATCH(_3DSTATE_LOAD_STATE_IMMEDIATE_1 | I1_LOAD_S(3) | (0));
+    OUT_BATCH(0);
+ 
+    /* XXX: Use this */
+@@ -216,6 +216,7 @@ i915_emit_invarient_state(struct intel_context *intel)
+ 
+    /* Don't support twosided stencil yet */
+    OUT_BATCH(_3DSTATE_BACKFACE_STENCIL_OPS | BFO_ENABLE_STENCIL_TWO_SIDE | 0);
++   OUT_BATCH(0);
+ 
+    ADVANCE_BATCH();
+ }
+@@ -247,6 +248,9 @@ get_state_size(struct i915_hw_state *state)
+    GLuint i;
+    GLuint sz = 0;
+ 
++   if (dirty & I915_UPLOAD_INVARIENT)
++      sz += 30 * 4;
++
+    if (dirty & I915_UPLOAD_CTX)
+       sz += sizeof(state->Ctx);
+ 
+@@ -281,7 +285,7 @@ get_state_size(struct i915_hw_state *state)
+ /* Push the state into the sarea and/or texture memory.
+  */
+ static void
+-i915_emit_state(struct intel_context *intel)
++i915_do_emit_state(struct intel_context *intel)
+ {
+    struct i915_context *i915 = i915_context(&intel->ctx);
+    struct i915_hw_state *state = i915->current;
+@@ -298,10 +302,33 @@ i915_emit_state(struct intel_context *intel)
+     */
+    intel_batchbuffer_require_space(intel->batch, get_state_size(state), 0);
+ 
++
++   /* Workaround.  There are cases I haven't been able to track down
++    * where we aren't emitting a full state at the start of a new
++    * batchbuffer.  This code spots that we are on a new batchbuffer
++    * and forces a full state emit no matter what.  
++    *
++    * In the normal case state->emitted is already zero, this code is
++    * another set of checks to make sure it really is.
++    */
++   if (intel->batch->id != intel->last_state_batch_id ||
++       intel->batch->map == intel->batch->ptr) 
++   {
++      state->emitted = 0;
++      intel_batchbuffer_require_space(intel->batch, get_state_size(state), 0);
++   }
++
+    /* Do this here as we may have flushed the batchbuffer above,
+     * causing more state to be dirty!
+     */
+    dirty = get_dirty(state);
++   state->emitted |= dirty;
++   assert(get_dirty(state) == 0);
++
++   if (intel->batch->id != intel->last_state_batch_id) {
++      assert(dirty & I915_UPLOAD_CTX);
++      intel->last_state_batch_id = intel->batch->id;
++   }
+ 
+    if (INTEL_DEBUG & DEBUG_STATE)
+       fprintf(stderr, "%s dirty: %x\n", __FUNCTION__, dirty);
+@@ -424,7 +451,29 @@ i915_emit_state(struct intel_context *intel)
+          i915_disassemble_program(state->Program, state->ProgramSize);
+    }
+ 
+-   state->emitted |= dirty;
++   intel->batch->dirty_state &= ~dirty;
++}
++
++static void
++i915_emit_state(struct intel_context *intel)
++{
++   struct i915_context *i915 = i915_context(&intel->ctx);
++
++   i915_do_emit_state( intel );
++
++   /* Second chance - catch batchbuffer wrap in the middle of state
++    * emit.  This shouldn't happen but it has been observed in
++    * testing.
++    */
++   if (get_dirty( i915->current )) {
++      /* Force a full re-emit if this happens.
++       */
++      i915->current->emitted = 0;
++      i915_do_emit_state( intel );
++   }
++
++   assert(get_dirty(i915->current) == 0);
++   assert((intel->batch->dirty_state & (1<<1)) == 0);
+ }
+ 
+ static void
+diff --git a/src/mesa/drivers/dri/i915tex/intel_batchbuffer.c b/src/mesa/drivers/dri/i915tex/intel_batchbuffer.c
+index c92b83b..d7079a2 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_batchbuffer.c
++++ b/src/mesa/drivers/dri/i915tex/intel_batchbuffer.c
+@@ -118,6 +118,8 @@ intel_batchbuffer_reset(struct intel_batchbuffer *batch)
+ 
+    batch->map = driBOMap(batch->buffer, DRM_BO_FLAG_WRITE, 0);
+    batch->ptr = batch->map;
++   batch->dirty_state = ~0;
++   batch->id = batch->intel->intelScreen->batch_id++;
+ }
+ 
+ /*======================================================================
+diff --git a/src/mesa/drivers/dri/i915tex/intel_batchbuffer.h b/src/mesa/drivers/dri/i915tex/intel_batchbuffer.h
+index 59261f7..76e5b30 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_batchbuffer.h
++++ b/src/mesa/drivers/dri/i915tex/intel_batchbuffer.h
+@@ -38,6 +38,9 @@ struct intel_batchbuffer
+    struct buffer_reloc reloc[MAX_RELOCS];
+    GLuint nr_relocs;
+    GLuint size;
++
++   GLuint dirty_state;
++   GLuint id;
+ };
+ 
+ struct intel_batchbuffer *intel_batchbuffer_alloc(struct intel_context
+diff --git a/src/mesa/drivers/dri/i915tex/intel_blit.c b/src/mesa/drivers/dri/i915tex/intel_blit.c
+index a060151..eef94c7 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_blit.c
++++ b/src/mesa/drivers/dri/i915tex/intel_blit.c
+@@ -112,8 +112,8 @@ intelCopyBuffer(const __DRIdrawablePrivate * dPriv,
+       for (i = 0; i < nbox; i++, pbox++) {
+ 	 drm_clip_rect_t box;
+ 
+-	 if (pbox->x1 > pbox->x2 ||
+-	     pbox->y1 > pbox->y2 ||
++	 if (pbox->x1 >= pbox->x2 ||
++	     pbox->y1 >= pbox->y2 ||
+ 	     pbox->x2 > intelScreen->width || pbox->y2 > intelScreen->height)
+ 	    continue;
+ 
+@@ -129,19 +129,22 @@ intelCopyBuffer(const __DRIdrawablePrivate * dPriv,
+ 	    if (rect->y2 < box.y2)
+ 	       box.y2 = rect->y2;
+ 
+-	    if (box.x1 > box.x2 || box.y1 > box.y2)
++	    if (box.x1 >= box.x2 || box.y1 >= box.y2)
+ 	       continue;
+ 	 }
+ 
++	 assert(box.x1 < box.x2);
++	 assert(box.y1 < box.y2);
++
+ 	 BEGIN_BATCH(8, INTEL_BATCH_NO_CLIPRECTS);
+ 	 OUT_BATCH(CMD);
+ 	 OUT_BATCH(BR13);
+-	 OUT_BATCH((pbox->y1 << 16) | pbox->x1);
+-	 OUT_BATCH((pbox->y2 << 16) | pbox->x2);
++	 OUT_BATCH((box.y1 << 16) | box.x1);
++	 OUT_BATCH((box.y2 << 16) | box.x2);
+ 
+ 	 OUT_RELOC(frontRegion->buffer, DRM_BO_FLAG_MEM_TT | DRM_BO_FLAG_WRITE,
+ 		   DRM_BO_MASK_MEM | DRM_BO_FLAG_WRITE, 0);
+-	 OUT_BATCH((pbox->y1 << 16) | pbox->x1);
++	 OUT_BATCH((box.y1 << 16) | box.x1);
+ 	 OUT_BATCH(BR13 & 0xffff);
+ 	 OUT_RELOC(backRegion->buffer, DRM_BO_FLAG_MEM_TT | DRM_BO_FLAG_READ,
+ 		   DRM_BO_MASK_MEM | DRM_BO_FLAG_READ, 0);
+@@ -152,7 +155,8 @@ intelCopyBuffer(const __DRIdrawablePrivate * dPriv,
+       if (intel->first_swap_fence)
+ 	 driFenceUnReference(intel->first_swap_fence);
+       intel->first_swap_fence = intel_batchbuffer_flush(intel->batch);
+-      driFenceReference(intel->first_swap_fence);
++      if (intel->first_swap_fence)
++	 driFenceReference(intel->first_swap_fence);
+    }
+ 
+    UNLOCK_HARDWARE(intel);
+@@ -193,6 +197,8 @@ intelEmitFillBlit(struct intel_context *intel,
+    DBG("%s dst:buf(%p)/%d+%d %d,%d sz:%dx%d\n",
+        __FUNCTION__, dst_buffer, dst_pitch, dst_offset, x, y, w, h);
+ 
++   assert(w > 0);
++   assert(h > 0);
+ 
+    BEGIN_BATCH(6, INTEL_BATCH_NO_CLIPRECTS);
+    OUT_BATCH(CMD);
+@@ -280,10 +286,11 @@ intelEmitCopyBlit(struct intel_context *intel,
+       return;
+    }
+ 
+-   if (dst_y2 < dst_y || dst_x2 < dst_x) {
++   if (dst_y2 <= dst_y || dst_x2 <= dst_x) {
+       return;
+    }
+ 
++
+    /* Initial y values don't seem to work with negative pitches.  If
+     * we adjust the offsets manually (below), it seems to work fine.
+     *
+@@ -292,6 +299,9 @@ intelEmitCopyBlit(struct intel_context *intel,
+     * the wrong result.
+     */
+    if (dst_pitch > 0 && src_pitch > 0) {
++      assert(dst_x < dst_x2);
++      assert(dst_y < dst_y2);
++
+       BEGIN_BATCH(8, INTEL_BATCH_NO_CLIPRECTS);
+       OUT_BATCH(CMD);
+       OUT_BATCH(BR13);
+@@ -306,6 +316,9 @@ intelEmitCopyBlit(struct intel_context *intel,
+       ADVANCE_BATCH();
+    }
+    else {
++      assert(dst_x < dst_x2);
++      assert(h > 0);
++
+       BEGIN_BATCH(8, INTEL_BATCH_NO_CLIPRECTS);
+       OUT_BATCH(CMD);
+       OUT_BATCH(BR13);
+@@ -480,6 +493,9 @@ intelClearWithBlit(GLcontext * ctx, GLbitfield mask)
+                 */
+ 	       intel_wait_flips(intel, INTEL_BATCH_NO_CLIPRECTS);
+ 
++               assert(b.x1 < b.x2);
++               assert(b.y1 < b.y2);
++
+                BEGIN_BATCH(6, INTEL_BATCH_NO_CLIPRECTS);
+                OUT_BATCH(CMD);
+                OUT_BATCH(BR13);
+diff --git a/src/mesa/drivers/dri/i915tex/intel_buffers.c b/src/mesa/drivers/dri/i915tex/intel_buffers.c
+index 78fb720..6778fdf 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_buffers.c
++++ b/src/mesa/drivers/dri/i915tex/intel_buffers.c
+@@ -714,7 +714,8 @@ intel_wait_flips(struct intel_context *intel, GLuint batch_flags)
+ 			     BUFFER_BIT_FRONT_LEFT ? BUFFER_FRONT_LEFT :
+ 			     BUFFER_BACK_LEFT);
+ 
+-   if (intel_fb->Base.Name == 0 && intel_rb->pf_pending == intel_fb->pf_seq) {
++   if (intel_fb->Base.Name == 0 && intel_rb &&
++       intel_rb->pf_pending == intel_fb->pf_seq) {
+       GLint pf_pipes = intel_fb->pf_pipes;
+       BATCH_LOCALS;
+ 
+@@ -1019,16 +1020,11 @@ intel_draw_buffer(GLcontext * ctx, struct gl_framebuffer *fb)
+    /*
+     * How many color buffers are we drawing into?
+     */
+-   if (fb->_NumColorDrawBuffers[0] != 1
+-#if 0
+-       /* XXX FBO temporary - always use software rendering */
+-       || 1
+-#endif
+-      ) {
++   if (fb->_NumColorDrawBuffers[0] != 1) {
+       /* writing to 0 or 2 or 4 color buffers */
+       /*_mesa_debug(ctx, "Software rendering\n");*/
+       FALLBACK(intel, INTEL_FALLBACK_DRAW_BUFFER, GL_TRUE);
+-      front = 1;                /* might not have back color buffer */
++      colorRegion = NULL;
+    }
+    else {
+       /* draw to exactly one color buffer */
+@@ -1037,30 +1033,30 @@ intel_draw_buffer(GLcontext * ctx, struct gl_framebuffer *fb)
+       if (fb->_ColorDrawBufferMask[0] == BUFFER_BIT_FRONT_LEFT) {
+          front = 1;
+       }
+-   }
+ 
+-   /*
+-    * Get the intel_renderbuffer for the colorbuffer we're drawing into.
+-    * And set up cliprects.
+-    */
+-   if (fb->Name == 0) {
+-      /* drawing to window system buffer */
+-      if (front) {
+-         intelSetFrontClipRects(intel);
+-         colorRegion = intel_get_rb_region(fb, BUFFER_FRONT_LEFT);
++      /*
++       * Get the intel_renderbuffer for the colorbuffer we're drawing into.
++       * And set up cliprects.
++       */
++      if (fb->Name == 0) {
++	 /* drawing to window system buffer */
++	 if (front) {
++	    intelSetFrontClipRects(intel);
++	    colorRegion = intel_get_rb_region(fb, BUFFER_FRONT_LEFT);
++	 }
++	 else {
++	    intelSetBackClipRects(intel);
++	    colorRegion = intel_get_rb_region(fb, BUFFER_BACK_LEFT);
++	 }
+       }
+       else {
+-         intelSetBackClipRects(intel);
+-         colorRegion = intel_get_rb_region(fb, BUFFER_BACK_LEFT);
++	 /* drawing to user-created FBO */
++	 struct intel_renderbuffer *irb;
++	 intelSetRenderbufferClipRects(intel);
++	 irb = intel_renderbuffer(fb->_ColorDrawBuffers[0][0]);
++	 colorRegion = (irb && irb->region) ? irb->region : NULL;
+       }
+    }
+-   else {
+-      /* drawing to user-created FBO */
+-      struct intel_renderbuffer *irb;
+-      intelSetRenderbufferClipRects(intel);
+-      irb = intel_renderbuffer(fb->_ColorDrawBuffers[0][0]);
+-      colorRegion = (irb && irb->region) ? irb->region : NULL;
+-   }
+ 
+    /* Update culling direction which changes depending on the
+     * orientation of the buffer:
+diff --git a/src/mesa/drivers/dri/i915tex/intel_context.c b/src/mesa/drivers/dri/i915tex/intel_context.c
+index 40ea756..722ef28 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_context.c
++++ b/src/mesa/drivers/dri/i915tex/intel_context.c
+@@ -315,7 +315,7 @@ intelFinish(GLcontext * ctx)
+    intelFlush(ctx);
+    if (intel->batch->last_fence) {
+       driFenceFinish(intel->batch->last_fence,
+-                     0, GL_FALSE);
++                     DRM_FENCE_TYPE_EXE | DRM_I915_FENCE_TYPE_RW, GL_FALSE);
+       driFenceUnReference(intel->batch->last_fence);
+       intel->batch->last_fence = NULL;
+    }
+diff --git a/src/mesa/drivers/dri/i915tex/intel_context.h b/src/mesa/drivers/dri/i915tex/intel_context.h
+index 5fc8eb3..6f893bd 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_context.h
++++ b/src/mesa/drivers/dri/i915tex/intel_context.h
+@@ -189,6 +189,7 @@ struct intel_context
+    struct _DriFenceObject *first_swap_fence;
+ 
+    struct intel_batchbuffer *batch;
++   GLuint last_state_batch_id;
+ 
+    struct
+    {
+diff --git a/src/mesa/drivers/dri/i915tex/intel_render.c b/src/mesa/drivers/dri/i915tex/intel_render.c
+index f9fa550..3162462 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_render.c
++++ b/src/mesa/drivers/dri/i915tex/intel_render.c
+@@ -214,7 +214,7 @@ intel_run_render(GLcontext * ctx, struct tnl_pipeline_stage *stage)
+    tnl->Driver.Render.Start(ctx);
+ 
+    for (i = 0; i < VB->PrimitiveCount; i++) {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/i915tex/intel_screen.h b/src/mesa/drivers/dri/i915tex/intel_screen.h
+index bac43aa..760a1eb 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_screen.h
++++ b/src/mesa/drivers/dri/i915tex/intel_screen.h
+@@ -95,6 +95,7 @@ typedef struct
+    struct _DriBufferPool *regionPool;
+    struct _DriBufferPool *staticPool;
+    unsigned int maxBatchSize;
++   unsigned batch_id;
+    GLboolean havePools;
+ } intelScreenPrivate;
+ 
+diff --git a/src/mesa/drivers/dri/i915tex/intel_tris.c b/src/mesa/drivers/dri/i915tex/intel_tris.c
+index 5fe3d45..06dd505 100644
+--- a/src/mesa/drivers/dri/i915tex/intel_tris.c
++++ b/src/mesa/drivers/dri/i915tex/intel_tris.c
+@@ -111,6 +111,9 @@ intelStartInlinePrimitive(struct intel_context *intel,
+    BEGIN_BATCH(2, batch_flags);
+    OUT_BATCH(0);
+ 
++   assert(intel->batch->id == intel->last_state_batch_id);
++   assert((intel->batch->dirty_state & (1<<1)) == 0);
++
+    intel->prim.start_ptr = intel->batch->ptr;
+    intel->prim.primitive = prim;
+    intel->prim.flush = intel_flush_inline_primitive;
+diff --git a/src/mesa/drivers/dri/i965/brw_sf.c b/src/mesa/drivers/dri/i965/brw_sf.c
+index d517539..df18a48 100644
+--- a/src/mesa/drivers/dri/i965/brw_sf.c
++++ b/src/mesa/drivers/dri/i965/brw_sf.c
+@@ -82,15 +82,15 @@ static void compile_sf_prog( struct brw_context *brw,
+    switch (key->primitive) {
+    case SF_TRIANGLES:
+       c.nr_verts = 3;
+-      brw_emit_tri_setup( &c );
++      brw_emit_tri_setup( &c, GL_TRUE );
+       break;
+    case SF_LINES:
+       c.nr_verts = 2;
+-      brw_emit_line_setup( &c );
++      brw_emit_line_setup( &c, GL_TRUE );
+       break;
+    case SF_POINTS:
+       c.nr_verts = 1;
+-      brw_emit_point_setup( &c );
++      brw_emit_point_setup( &c, GL_TRUE );
+       break;
+    case SF_UNFILLED_TRIS:
+       c.nr_verts = 3;
+diff --git a/src/mesa/drivers/dri/i965/brw_sf.h b/src/mesa/drivers/dri/i965/brw_sf.h
+index fb72b84..b321cda 100644
+--- a/src/mesa/drivers/dri/i965/brw_sf.h
++++ b/src/mesa/drivers/dri/i965/brw_sf.h
+@@ -97,9 +97,9 @@ struct brw_sf_compile {
+ };
+ 
+  
+-void brw_emit_tri_setup( struct brw_sf_compile *c );
+-void brw_emit_line_setup( struct brw_sf_compile *c );
+-void brw_emit_point_setup( struct brw_sf_compile *c );
++void brw_emit_tri_setup( struct brw_sf_compile *c, GLboolean allocate );
++void brw_emit_line_setup( struct brw_sf_compile *c, GLboolean allocate );
++void brw_emit_point_setup( struct brw_sf_compile *c, GLboolean allocate );
+ void brw_emit_anyprim_setup( struct brw_sf_compile *c );
+ 
+ #endif
+diff --git a/src/mesa/drivers/dri/i965/brw_sf_emit.c b/src/mesa/drivers/dri/i965/brw_sf_emit.c
+index 2ea9816..94be815 100644
+--- a/src/mesa/drivers/dri/i965/brw_sf_emit.c
++++ b/src/mesa/drivers/dri/i965/brw_sf_emit.c
+@@ -343,13 +343,16 @@ static GLboolean calculate_masks( struct brw_sf_compile *c,
+ 
+ 
+ 
+-void brw_emit_tri_setup( struct brw_sf_compile *c )
++void brw_emit_tri_setup( struct brw_sf_compile *c, GLboolean allocate)
+ {
+    struct brw_compile *p = &c->func;
+    GLuint i;
+ 
+    c->nr_verts = 3;
+-   alloc_regs(c);
++
++   if (allocate)
++      alloc_regs(c);
++
+    invert_det(c);
+    copy_z_inv_w(c);
+ 
+@@ -428,14 +431,17 @@ void brw_emit_tri_setup( struct brw_sf_compile *c )
+ 
+ 
+ 
+-void brw_emit_line_setup( struct brw_sf_compile *c )
++void brw_emit_line_setup( struct brw_sf_compile *c, GLboolean allocate)
+ {
+    struct brw_compile *p = &c->func;
+    GLuint i;
+ 
+ 
+    c->nr_verts = 2;
+-   alloc_regs(c);
++
++   if (allocate)
++      alloc_regs(c);
++
+    invert_det(c);
+    copy_z_inv_w(c);
+ 
+@@ -497,17 +503,19 @@ void brw_emit_line_setup( struct brw_sf_compile *c )
+    } 
+ }
+ 
+-
+ /* Points setup - several simplifications as all attributes are
+  * constant across the face of the point (point sprites excluded!)
+  */
+-void brw_emit_point_setup( struct brw_sf_compile *c )
++void brw_emit_point_setup( struct brw_sf_compile *c, GLboolean allocate)
+ {
+    struct brw_compile *p = &c->func;
+    GLuint i;
+ 
+    c->nr_verts = 1;
+-   alloc_regs(c);
++   
++   if (allocate)
++      alloc_regs(c);
++
+    copy_z_inv_w(c);
+ 
+    brw_MOV(p, c->m1Cx, brw_imm_ud(0)); /* zero - move out of loop */
+@@ -564,7 +572,10 @@ void brw_emit_anyprim_setup( struct brw_sf_compile *c )
+    struct brw_reg primmask;
+    struct brw_instruction *jmp;
+    struct brw_reg v1_null_ud = vec1(retype(brw_null_reg(), BRW_REGISTER_TYPE_UD));
++   
++   GLuint saveflag;
+ 
++   c->nr_verts = 3;
+    alloc_regs(c);
+ 
+    primmask = retype(get_element(c->tmp, 0), BRW_REGISTER_TYPE_UD);
+@@ -582,10 +593,15 @@ void brw_emit_anyprim_setup( struct brw_sf_compile *c )
+ 					       (1<<_3DPRIM_TRIFAN_NOSTIPPLE)));
+    jmp = brw_JMPI(p, ip, ip, brw_imm_w(0));
+    {
+-      brw_push_insn_state(p);
+-      brw_emit_tri_setup( c );
++      saveflag = p->flag_value;
++      brw_push_insn_state(p); 
++      brw_emit_tri_setup( c, GL_FALSE );
+       brw_pop_insn_state(p);
+-      /* note - thread killed in subroutine */
++      p->flag_value = saveflag;
++      /* note - thread killed in subroutine, so must
++       * restore the flag which is changed when building
++       * the subroutine. fix #13240
++       */
+    }
+    brw_land_fwd_jump(p, jmp);
+ 
+@@ -598,14 +614,16 @@ void brw_emit_anyprim_setup( struct brw_sf_compile *c )
+ 					       (1<<_3DPRIM_LINESTRIP_CONT_BF)));
+    jmp = brw_JMPI(p, ip, ip, brw_imm_w(0));
+    {
++      saveflag = p->flag_value;
+       brw_push_insn_state(p); 
+-      brw_emit_line_setup( c );
++      brw_emit_line_setup( c, GL_FALSE );
+       brw_pop_insn_state(p);
++      p->flag_value = saveflag;
+       /* note - thread killed in subroutine */
+    }
+    brw_land_fwd_jump(p, jmp); 
+ 
+-   brw_emit_point_setup( c );
++   brw_emit_point_setup( c, GL_FALSE );
+ }
+ 
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_wm_emit.c b/src/mesa/drivers/dri/i965/brw_wm_emit.c
+index fd60515..80bd576 100644
+--- a/src/mesa/drivers/dri/i965/brw_wm_emit.c
++++ b/src/mesa/drivers/dri/i965/brw_wm_emit.c
+@@ -777,6 +777,7 @@ static void emit_kil( struct brw_wm_compile *c,
+       brw_push_insn_state(p);
+       brw_CMP(p, brw_null_reg(), BRW_CONDITIONAL_GE, arg0[i], brw_imm_f(0));   
+       brw_set_predicate_control_flag_value(p, 0xff);
++      brw_set_compression_control(p, BRW_COMPRESSION_NONE);
+       brw_AND(p, r0uw, brw_flag_reg(), r0uw);
+       brw_pop_insn_state(p);
+    }
+diff --git a/src/mesa/drivers/dri/mga/mgarender.c b/src/mesa/drivers/dri/mga/mgarender.c
+index 3080cea..c151f79 100644
+--- a/src/mesa/drivers/dri/mga/mgarender.c
++++ b/src/mesa/drivers/dri/mga/mgarender.c
+@@ -144,7 +144,7 @@ static GLboolean mga_run_render( GLcontext *ctx,
+ 
+    for (i = 0 ; i < VB->PrimitiveCount ; i++)
+    {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/r200/r200_tcl.c b/src/mesa/drivers/dri/r200/r200_tcl.c
+index e0c32b2..1ff0cf9 100644
+--- a/src/mesa/drivers/dri/r200/r200_tcl.c
++++ b/src/mesa/drivers/dri/r200/r200_tcl.c
+@@ -489,7 +489,7 @@ static GLboolean r200_run_tcl_render( GLcontext *ctx,
+ 
+    for (i = 0 ; i < VB->PrimitiveCount ; i++)
+    {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/r200/r200_texstate.c b/src/mesa/drivers/dri/r200/r200_texstate.c
+index af5092b..d12c3bc 100644
+--- a/src/mesa/drivers/dri/r200/r200_texstate.c
++++ b/src/mesa/drivers/dri/r200/r200_texstate.c
+@@ -72,7 +72,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ #define _INVALID(f) \
+     [ MESA_FORMAT_ ## f ] = { 0xffffffff, 0 }
+ #define VALID_FORMAT(f) ( ((f) <= MESA_FORMAT_RGBA_DXT5) \
+-			     && (tx_table_le[f].format != 0xffffffff) )
++			     && (tx_table_be[f].format != 0xffffffff) )
+ 
+ struct tx_table {
+    GLuint format, filter;
+@@ -165,12 +165,15 @@ static void r200SetTexImages( r200ContextPtr rmesa,
+     */
+    if ( !t->image_override ) {
+       if ( VALID_FORMAT( baseImage->TexFormat->MesaFormat ) ) {
++	 const struct tx_table *table = _mesa_little_endian() ? tx_table_le :
++								tx_table_be;
++
+          t->pp_txformat &= ~(R200_TXFORMAT_FORMAT_MASK |
+                              R200_TXFORMAT_ALPHA_IN_MAP);
+          t->pp_txfilter &= ~R200_YUV_TO_RGB;
+ 
+-	 t->pp_txformat |= tx_table_le[ baseImage->TexFormat->MesaFormat ].format;
+-	 t->pp_txfilter |= tx_table_le[ baseImage->TexFormat->MesaFormat ].filter;
++	 t->pp_txformat |= table[ baseImage->TexFormat->MesaFormat ].format;
++	 t->pp_txfilter |= table[ baseImage->TexFormat->MesaFormat ].filter;
+       }
+       else {
+          _mesa_problem(NULL, "unexpected texture format in %s", __FUNCTION__);
+diff --git a/src/mesa/drivers/dri/radeon/radeon_screen.c b/src/mesa/drivers/dri/radeon/radeon_screen.c
+index 682cf3a..e5d48d4 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_screen.c
++++ b/src/mesa/drivers/dri/radeon/radeon_screen.c
+@@ -702,8 +702,11 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+    screen->depthPitch	= dri_priv->depthPitch;
+ 
+    /* Check if ddx has set up a surface reg to cover depth buffer */
+-   screen->depthHasSurface = ((sPriv->ddxMajor > 4) &&
+-      (screen->chip_flags & RADEON_CHIPSET_TCL));
++   screen->depthHasSurface = (sPriv->ddxMajor > 4) ||
++      /* these chips don't use tiled z without hyperz. So always pretend
++         we have set up a surface which will cause linear reads/writes */
++      ((screen->chip_family & RADEON_CLASS_R100) &&
++      !(screen->chip_flags & RADEON_CHIPSET_TCL));
+ 
+    if ( dri_priv->textureSize == 0 ) {
+       screen->texOffset[RADEON_LOCAL_TEX_HEAP] = screen->gart_texture_offset;
+diff --git a/src/mesa/drivers/dri/radeon/radeon_tcl.c b/src/mesa/drivers/dri/radeon/radeon_tcl.c
+index 5ad044c..0f4baf2 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_tcl.c
++++ b/src/mesa/drivers/dri/radeon/radeon_tcl.c
+@@ -418,7 +418,7 @@ static GLboolean radeon_run_tcl_render( GLcontext *ctx,
+ 
+    for (i = 0 ; i < VB->PrimitiveCount ; i++)
+    {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/s3v/s3v_render.c b/src/mesa/drivers/dri/s3v/s3v_render.c
+index 6aaa949..6b86e0e 100644
+--- a/src/mesa/drivers/dri/s3v/s3v_render.c
++++ b/src/mesa/drivers/dri/s3v/s3v_render.c
+@@ -170,7 +170,7 @@ static GLboolean s3v_run_render( GLcontext *ctx,
+ 
+ 	for (i = 0 ; i < VB->PrimitiveCount ; i++ )
+ 	{
+-                GLuint prim = VB->Primitive[i].mode;
++		GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+ 		GLuint start = VB->Primitive[i].start;
+ 		GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/savage/savagerender.c b/src/mesa/drivers/dri/savage/savagerender.c
+index 514434c..f2f1998 100644
+--- a/src/mesa/drivers/dri/savage/savagerender.c
++++ b/src/mesa/drivers/dri/savage/savagerender.c
+@@ -198,7 +198,7 @@ static GLboolean savage_run_render( GLcontext *ctx,
+ 
+    for (i = 0 ; i < VB->PrimitiveCount ; i++)
+    {
+-      GLuint prim = VB->Primitive[i].mode;
++      GLuint prim = _tnl_translate_prim(&VB->Primitive[i]);
+       GLuint start = VB->Primitive[i].start;
+       GLuint length = VB->Primitive[i].count;
+ 
+diff --git a/src/mesa/drivers/dri/unichrome/via_render.c b/src/mesa/drivers/dri/unichrome/via_render.c
+index 387473e..d7e373d 100644
+--- a/src/mesa/drivers/dri/unichrome/via_render.c
++++ b/src/mesa/drivers/dri/unichrome/via_render.c
+@@ -106,7 +106,7 @@ static GLboolean via_run_fastrender(GLcontext *ctx,
+     tnl->clipspace.new_inputs |= VERT_BIT_POS;
+ 
+     for (i = 0; i < VB->PrimitiveCount; ++i) {
+-        GLuint mode = VB->Primitive[i].mode;
++        GLuint mode = _tnl_translate_prim(&VB->Primitive[i]);
+         GLuint start = VB->Primitive[i].start;
+         GLuint length = VB->Primitive[i].count;
+         if (length)
+diff --git a/src/mesa/drivers/windows/gdi/wgl.c b/src/mesa/drivers/windows/gdi/wgl.c
+index dad3dc1..04e3497 100644
+--- a/src/mesa/drivers/windows/gdi/wgl.c
++++ b/src/mesa/drivers/windows/gdi/wgl.c
+@@ -55,7 +55,7 @@
+ #include <windows.h>
+ 
+ #endif
+-
++#include "config.h"
+ #include "glapi.h"
+ #include "GL/wmesa.h"   /* protos for wmesa* functions */
+ 
+@@ -70,10 +70,12 @@ struct __pixelformat__
+     GLboolean doubleBuffered;
+ };
+ 
++
++
+ /* These are the PFD's supported by this driver. */
+ struct __pixelformat__	pfd[] =
+ {
+-#if 0
++#if 0 
+     /* Double Buffer, alpha */
+     {	
+ 	{	
+@@ -87,7 +89,7 @@ struct __pixelformat__	pfd[] =
+ 	    8, 16,	
+ 	    8, 24,
+ 	    0, 0, 0, 0, 0,	
+-	    16,	8,	
++	    DEFAULT_SOFTWARE_DEPTH_BITS,	8,	
+ 	    0, 0, 0,	
+ 	    0, 0, 0 
+ 	},
+@@ -106,13 +108,13 @@ struct __pixelformat__	pfd[] =
+ 	    8, 16,	
+ 	    8, 24,
+ 	    0, 0, 0, 0,	0,	
+-	    16,	8,
++	    DEFAULT_SOFTWARE_DEPTH_BITS,	8,	
+ 	    0, 0, 0,	
+ 	    0, 0, 0
+ 	},
+         GL_FALSE
+     },
+-#endif
++#endif 
+     /* Double Buffer, no alpha */
+     {	
+ 	{	
+@@ -126,7 +128,7 @@ struct __pixelformat__	pfd[] =
+ 	    8, 16,
+ 	    0, 0,
+ 	    0, 0, 0, 0,	0,
+-	    16,	8,
++	    DEFAULT_SOFTWARE_DEPTH_BITS,	8,	
+ 	    0, 0, 0, 
+ 	    0, 0, 0 
+ 	},
+@@ -145,7 +147,7 @@ struct __pixelformat__	pfd[] =
+ 	    8, 16,
+ 	    0, 0,
+ 	    0, 0, 0, 0,	0,
+-	    16,	8,
++	    DEFAULT_SOFTWARE_DEPTH_BITS,	8,	
+ 	    0, 0, 0,
+ 	    0, 0, 0 
+ 	},
+diff --git a/src/mesa/drivers/windows/gdi/wmesa.c b/src/mesa/drivers/windows/gdi/wmesa.c
+index c1d26a3..86c2663 100644
+--- a/src/mesa/drivers/windows/gdi/wmesa.c
++++ b/src/mesa/drivers/windows/gdi/wmesa.c
+@@ -1533,5 +1533,6 @@ void gl_dispatch_stub_749(void){}
+ void gl_dispatch_stub_769(void){}
+ void gl_dispatch_stub_770(void){}
+ void gl_dispatch_stub_771(void){}
++void gl_dispatch_stub_772(void){}
+ 
+ #endif
+diff --git a/src/mesa/main/config.h b/src/mesa/main/config.h
+index 24c2567..0d9c981 100644
+--- a/src/mesa/main/config.h
++++ b/src/mesa/main/config.h
+@@ -209,7 +209,7 @@
+ /** For GL_ARB_vertex_shader */
+ /*@{*/
+ #define MAX_VERTEX_ATTRIBS 16
+-#define MAX_VERTEX_TEXTURE_IMAGE_UNITS 0
++#define MAX_VERTEX_TEXTURE_IMAGE_UNITS MAX_TEXTURE_UNITS
+ #define MAX_COMBINED_TEXTURE_IMAGE_UNITS (MAX_TEXTURE_IMAGE_UNITS + MAX_VERTEX_TEXTURE_IMAGE_UNITS)
+ /*@}*/
+ 
+diff --git a/src/mesa/main/context.c b/src/mesa/main/context.c
+index 754b1a7..b599638 100644
+--- a/src/mesa/main/context.c
++++ b/src/mesa/main/context.c
+@@ -977,7 +977,6 @@ init_attrib_groups(GLcontext *ctx)
+    /* Miscellaneous */
+    ctx->NewState = _NEW_ALL;
+    ctx->ErrorValue = (GLenum) GL_NO_ERROR;
+-   ctx->_Facing = 0;
+ 
+    return GL_TRUE;
+ }
+diff --git a/src/mesa/main/context.h b/src/mesa/main/context.h
+index b6a9d13..7a9d97c 100644
+--- a/src/mesa/main/context.h
++++ b/src/mesa/main/context.h
+@@ -272,10 +272,10 @@ do {									\
+    (((CTX)->Light.Enabled &&						\
+      (CTX)->Light.Model.ColorControl == GL_SEPARATE_SPECULAR_COLOR)	\
+     || (CTX)->Fog.ColorSumEnabled					\
+-    || ((CTX)->VertexProgram._Enabled &&				\
+-        ((CTX)->VertexProgram.Current->Base.InputsRead & VERT_BIT_COLOR1)) \
+-    || ((CTX)->FragmentProgram._Enabled &&				\
+-        ((CTX)->FragmentProgram.Current->Base.InputsRead & FRAG_BIT_COL1)) \
++    || ((CTX)->VertexProgram._Current &&				\
++        ((CTX)->VertexProgram._Current->Base.InputsRead & VERT_BIT_COLOR1)) \
++    || ((CTX)->FragmentProgram._Current &&				\
++        ((CTX)->FragmentProgram._Current->Base.InputsRead & FRAG_BIT_COL1)) \
+    )
+ 
+ 
+diff --git a/src/mesa/main/dd.h b/src/mesa/main/dd.h
+index 88f3394..bb47cd4 100644
+--- a/src/mesa/main/dd.h
++++ b/src/mesa/main/dd.h
+@@ -493,6 +493,11 @@ struct dd_function_table {
+     */
+    void (*FreeTexImageData)( GLcontext *ctx, struct gl_texture_image *tImage );
+ 
++   /** Map texture image data into user space */
++   void (*MapTexture)( GLcontext *ctx, struct gl_texture_object *tObj );
++   /** Unmap texture images from user space */
++   void (*UnmapTexture)( GLcontext *ctx, struct gl_texture_object *tObj );
++
+    /**
+     * Note: no context argument.  This function doesn't initially look
+     * like it belongs here, except that the driver is the only entity
+diff --git a/src/mesa/main/enable.c b/src/mesa/main/enable.c
+index 1c6167b..0c2bf8c 100644
+--- a/src/mesa/main/enable.c
++++ b/src/mesa/main/enable.c
+@@ -5,9 +5,9 @@
+ 
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.1
++ * Version:  7.0.3
+  *
+- * Copyright (C) 1999-2006  Brian Paul   All Rights Reserved.
++ * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the "Software"),
+@@ -364,12 +364,12 @@ _mesa_set_enable(GLcontext *ctx, GLenum cap, GLboolean state)
+       case GL_LIGHTING:
+          if (ctx->Light.Enabled == state)
+             return;
++         FLUSH_VERTICES(ctx, _NEW_LIGHT);
++         ctx->Light.Enabled = state;
+          if (ctx->Light.Enabled && ctx->Light.Model.TwoSide)
+             ctx->_TriangleCaps |= DD_TRI_LIGHT_TWOSIDE;
+          else
+             ctx->_TriangleCaps &= ~DD_TRI_LIGHT_TWOSIDE;
+-         FLUSH_VERTICES(ctx, _NEW_LIGHT);
+-         ctx->Light.Enabled = state;
+          break;
+       case GL_LINE_SMOOTH:
+          if (ctx->Line.SmoothFlag == state)
+diff --git a/src/mesa/main/mtypes.h b/src/mesa/main/mtypes.h
+index d00f2ef..96c3515 100644
+--- a/src/mesa/main/mtypes.h
++++ b/src/mesa/main/mtypes.h
+@@ -7,7 +7,7 @@
+ 
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -1063,7 +1063,7 @@ struct gl_point_attrib
+ {
+    GLboolean SmoothFlag;	/**< True if GL_POINT_SMOOTH is enabled */
+    GLfloat Size;		/**< User-specified point size */
+-   GLfloat _Size;		/**< Size clamped to Const.Min/MaxPointSize */
++   GLfloat _Size;		/**< Size clamped to user limits */
+    GLfloat Params[3];		/**< GL_EXT_point_parameters */
+    GLfloat MinSize, MaxSize;	/**< GL_EXT_point_parameters */
+    GLfloat Threshold;		/**< GL_EXT_point_parameters */
+@@ -3032,12 +3032,6 @@ struct __GLcontextRec
+ 
+    struct gl_list_extensions ListExt; /**< driver dlist extensions */
+ 
+-
+-   GLuint _Facing; /**< This is a hack for 2-sided stencil test.
+-		    *
+-		    * We don't have a better way to communicate this value from
+-		    * swrast_setup to swrast. */
+-
+    /** \name For debugging/development only */
+    /*@{*/
+    GLboolean FirstTimeCurrent;
+diff --git a/src/mesa/main/points.c b/src/mesa/main/points.c
+index 8825bb1..5fa905f 100644
+--- a/src/mesa/main/points.c
++++ b/src/mesa/main/points.c
+@@ -5,7 +5,7 @@
+ 
+ /*
+  * Mesa 3-D graphics library
+- * Version:  7.0.1
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -57,6 +57,7 @@ _mesa_PointSize( GLfloat size )
+ 
+    FLUSH_VERTICES(ctx, _NEW_POINT);
+    ctx->Point.Size = size;
++   /* _Size is only used for non-attenuated path */
+    ctx->Point._Size = CLAMP(ctx->Point.Size,
+ 			    ctx->Point.MinSize,
+ 			    ctx->Point.MaxSize);
+@@ -150,6 +151,10 @@ _mesa_PointParameterfvEXT( GLenum pname, const GLfloat *params)
+                return;
+             FLUSH_VERTICES(ctx, _NEW_POINT);
+             ctx->Point.MinSize = params[0];
++            /* re-clamp _Size */
++            ctx->Point._Size = CLAMP(ctx->Point.Size,
++                                     ctx->Point.MinSize,
++                                     ctx->Point.MaxSize);
+          }
+          else {
+             _mesa_error(ctx, GL_INVALID_ENUM,
+@@ -168,6 +173,10 @@ _mesa_PointParameterfvEXT( GLenum pname, const GLfloat *params)
+                return;
+             FLUSH_VERTICES(ctx, _NEW_POINT);
+             ctx->Point.MaxSize = params[0];
++            /* re-clamp _Size */
++            ctx->Point._Size = CLAMP(ctx->Point.Size,
++                                     ctx->Point.MinSize,
++                                     ctx->Point.MaxSize);
+          }
+          else {
+             _mesa_error(ctx, GL_INVALID_ENUM,
+diff --git a/src/mesa/main/version.h b/src/mesa/main/version.h
+index 2d3c68b..5e2747a 100644
+--- a/src/mesa/main/version.h
++++ b/src/mesa/main/version.h
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  7.0.2
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -30,8 +30,8 @@
+ /* Mesa version */
+ #define MESA_MAJOR 7
+ #define MESA_MINOR 0
+-#define MESA_PATCH 2
+-#define MESA_VERSION_STRING "7.0.2"
++#define MESA_PATCH 3
++#define MESA_VERSION_STRING "7.0.3"
+ 
+ /* To make version comparison easy */
+ #define MESA_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))
+diff --git a/src/mesa/shader/arbprogparse.c b/src/mesa/shader/arbprogparse.c
+index 6a87a17..e787524 100644
+--- a/src/mesa/shader/arbprogparse.c
++++ b/src/mesa/shader/arbprogparse.c
+@@ -1759,7 +1759,7 @@ parse_param_elements (GLcontext * ctx, const GLubyte ** inst,
+ {
+    GLint idx;
+    GLuint err = 0;
+-   gl_state_index state_tokens[STATE_LENGTH];
++   gl_state_index state_tokens[STATE_LENGTH] = {0, 0, 0, 0, 0};
+    GLfloat const_values[4];
+ 
+    switch (*(*inst)++) {
+diff --git a/src/mesa/shader/prog_execute.c b/src/mesa/shader/prog_execute.c
+index 9faf9d8..f4a12af 100644
+--- a/src/mesa/shader/prog_execute.c
++++ b/src/mesa/shader/prog_execute.c
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -46,9 +46,6 @@
+ #include "slang_library_noise.h"
+ 
+ 
+-/* See comments below for info about this */
+-#define LAMBDA_ZERO 1
+-
+ /* debug predicate */
+ #define DEBUG_PROG 0
+ 
+@@ -303,6 +300,36 @@ fetch_vector1(const struct prog_src_register *source,
+ 
+ 
+ /**
++ * Fetch texel from texture.  Use partial derivatives when possible.
++ */
++static INLINE void
++fetch_texel(GLcontext *ctx,
++            const struct gl_program_machine *machine,
++            const struct prog_instruction *inst,
++            const GLfloat texcoord[4], GLfloat lodBias,
++            GLfloat color[4])
++{
++   /* Note: we only have the right derivatives for fragment input attribs.
++    */
++   if (machine->NumDeriv > 0 &&
++       inst->SrcReg[0].File == PROGRAM_INPUT &&
++       inst->SrcReg[0].Index == FRAG_ATTRIB_TEX0 + inst->TexSrcUnit) {
++      /* simple texture fetch for which we should have derivatives */
++      GLuint attr = inst->SrcReg[0].Index;
++      machine->FetchTexelDeriv(ctx, texcoord,
++                               machine->DerivX[attr],
++                               machine->DerivY[attr],
++                               lodBias,
++                               inst->TexSrcUnit, color);
++   }
++   else {
++      machine->FetchTexelLod(ctx, texcoord, lodBias,
++                             inst->TexSrcUnit, color);
++   }
++}
++
++
++/**
+  * Test value against zero and return GT, LT, EQ or UN if NaN.
+  */
+ static INLINE GLuint
+@@ -1306,33 +1333,18 @@ _mesa_execute_program(GLcontext * ctx,
+          }
+          break;
+       case OPCODE_TEX:         /* Both ARB and NV frag prog */
+-         /* Texel lookup */
++         /* Simple texel lookup */
+          {
+-            /* Note: only use the precomputed lambda value when we're
+-             * sampling texture unit [K] with texcoord[K].
+-             * Otherwise, the lambda value may have no relation to the
+-             * instruction's texcoord or texture image.  Using the wrong
+-             * lambda is usually bad news.
+-             * The rest of the time, just use zero (until we get a more
+-             * sophisticated way of computing lambda).
+-             */
+-            GLfloat coord[4], color[4], lambda;
+-#if 0
+-            if (inst->SrcReg[0].File == PROGRAM_INPUT &&
+-                inst->SrcReg[0].Index == FRAG_ATTRIB_TEX0 + inst->TexSrcUnit)
+-               lambda = span->array->lambda[inst->TexSrcUnit][column];
+-            else
+-#endif
+-               lambda = 0.0;
+-            fetch_vector4(&inst->SrcReg[0], machine, coord);
+-            machine->FetchTexelLod(ctx, coord, lambda, inst->TexSrcUnit,
+-                                   color);
++            GLfloat texcoord[4], color[4];
++            fetch_vector4(&inst->SrcReg[0], machine, texcoord);
++
++            fetch_texel(ctx, machine, inst, texcoord, 0.0, color);
++
+             if (DEBUG_PROG) {
+-               printf("TEX (%g, %g, %g, %g) = texture[%d][%g, %g, %g, %g], "
+-                      "lod %f\n",
++               printf("TEX (%g, %g, %g, %g) = texture[%d][%g, %g, %g, %g]\n",
+                       color[0], color[1], color[2], color[3],
+                       inst->TexSrcUnit,
+-                      coord[0], coord[1], coord[2], coord[3], lambda);
++                      texcoord[0], texcoord[1], texcoord[2], texcoord[3]);
+             }
+             store_vector4(inst, machine, color);
+          }
+@@ -1342,21 +1354,18 @@ _mesa_execute_program(GLcontext * ctx,
+          {
+             const struct gl_texture_unit *texUnit
+                = &ctx->Texture.Unit[inst->TexSrcUnit];
+-            GLfloat coord[4], color[4], lambda, bias;
+-#if 0
+-            if (inst->SrcReg[0].File == PROGRAM_INPUT &&
+-                inst->SrcReg[0].Index == FRAG_ATTRIB_TEX0 + inst->TexSrcUnit)
+-               lambda = span->array->lambda[inst->TexSrcUnit][column];
+-            else
+-#endif
+-               lambda = 0.0;
+-            fetch_vector4(&inst->SrcReg[0], machine, coord);
+-            /* coord[3] is the bias to add to lambda */
+-            bias = texUnit->LodBias + coord[3];
+-            if (texUnit->_Current)
+-               bias += texUnit->_Current->LodBias;
+-            machine->FetchTexelLod(ctx, coord, lambda + bias,
+-                                   inst->TexSrcUnit, color);
++            GLfloat texcoord[4], color[4], lodBias;
++
++            fetch_vector4(&inst->SrcReg[0], machine, texcoord);
++
++            /* texcoord[3] is the bias to add to lambda */
++            lodBias = texUnit->LodBias + texcoord[3];
++            if (texUnit->_Current) {
++               lodBias += texUnit->_Current->LodBias;
++            }
++
++            fetch_texel(ctx, machine, inst, texcoord, lodBias, color);
++
+             store_vector4(inst, machine, color);
+          }
+          break;
+@@ -1368,6 +1377,7 @@ _mesa_execute_program(GLcontext * ctx,
+             fetch_vector4(&inst->SrcReg[1], machine, dtdx);
+             fetch_vector4(&inst->SrcReg[2], machine, dtdy);
+             machine->FetchTexelDeriv(ctx, texcoord, dtdx, dtdy,
++                                     0.0, /* lodBias */
+                                      inst->TexSrcUnit, color);
+             store_vector4(inst, machine, color);
+          }
+@@ -1375,14 +1385,8 @@ _mesa_execute_program(GLcontext * ctx,
+       case OPCODE_TXP:         /* GL_ARB_fragment_program only */
+          /* Texture lookup w/ projective divide */
+          {
+-            GLfloat texcoord[4], color[4], lambda;
+-#if 0
+-            if (inst->SrcReg[0].File == PROGRAM_INPUT &&
+-                inst->SrcReg[0].Index == FRAG_ATTRIB_TEX0 + inst->TexSrcUnit)
+-               lambda = span->array->lambda[inst->TexSrcUnit][column];
+-            else
+-#endif
+-               lambda = 0.0;
++            GLfloat texcoord[4], color[4];
++
+             fetch_vector4(&inst->SrcReg[0], machine, texcoord);
+             /* Not so sure about this test - if texcoord[3] is
+              * zero, we'd probably be fine except for an ASSERT in
+@@ -1393,22 +1397,19 @@ _mesa_execute_program(GLcontext * ctx,
+                texcoord[1] /= texcoord[3];
+                texcoord[2] /= texcoord[3];
+             }
+-            machine->FetchTexelLod(ctx, texcoord, lambda,
+-                                   inst->TexSrcUnit, color);
++
++            fetch_texel(ctx, machine, inst, texcoord, 0.0, color);
++
+             store_vector4(inst, machine, color);
+          }
+          break;
+       case OPCODE_TXP_NV:      /* GL_NV_fragment_program only */
+-         /* Texture lookup w/ projective divide */
++         /* Texture lookup w/ projective divide, as above, but do not
++          * do the divide by w if sampling from a cube map.
++          */
+          {
+-            GLfloat texcoord[4], color[4], lambda;
+-#if 0
+-            if (inst->SrcReg[0].File == PROGRAM_INPUT &&
+-                inst->SrcReg[0].Index == FRAG_ATTRIB_TEX0 + inst->TexSrcUnit)
+-               lambda = span->array->lambda[inst->TexSrcUnit][column];
+-            else
+-#endif
+-               lambda = 0.0;
++            GLfloat texcoord[4], color[4];
++
+             fetch_vector4(&inst->SrcReg[0], machine, texcoord);
+             if (inst->TexSrcTarget != TEXTURE_CUBE_INDEX &&
+                 texcoord[3] != 0.0) {
+@@ -1416,8 +1417,9 @@ _mesa_execute_program(GLcontext * ctx,
+                texcoord[1] /= texcoord[3];
+                texcoord[2] /= texcoord[3];
+             }
+-            machine->FetchTexelLod(ctx, texcoord, lambda,
+-                                   inst->TexSrcUnit, color);
++
++            fetch_texel(ctx, machine, inst, texcoord, 0.0, color);
++
+             store_vector4(inst, machine, color);
+          }
+          break;
+diff --git a/src/mesa/shader/prog_execute.h b/src/mesa/shader/prog_execute.h
+index be29ece..3ea0ba1 100644
+--- a/src/mesa/shader/prog_execute.h
++++ b/src/mesa/shader/prog_execute.h
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -32,6 +32,7 @@ typedef void (*FetchTexelLodFunc)(GLcontext *ctx, const GLfloat texcoord[4],
+ typedef void (*FetchTexelDerivFunc)(GLcontext *ctx, const GLfloat texcoord[4],
+                                     const GLfloat texdx[4],
+                                     const GLfloat texdy[4],
++                                    GLfloat lodBias,
+                                     GLuint unit, GLfloat color[4]);
+ 
+ 
+diff --git a/src/mesa/shader/prog_parameter.c b/src/mesa/shader/prog_parameter.c
+index 9e3d3fe..46d3087 100644
+--- a/src/mesa/shader/prog_parameter.c
++++ b/src/mesa/shader/prog_parameter.c
+@@ -384,7 +384,7 @@ sizeof_state_reference(const GLint *stateTokens)
+  *    PARAM ambient = state.material.front.ambient;
+  *
+  * \param paramList  the parameter list
+- * \param state  an array of 6 (STATE_LENGTH) state tokens
++ * \param stateTokens  an array of 5 (STATE_LENGTH) state tokens
+  * \return index of the new parameter.
+  */
+ GLint
+diff --git a/src/mesa/shader/prog_statevars.c b/src/mesa/shader/prog_statevars.c
+index d37d7fb..aa1e6e1 100644
+--- a/src/mesa/shader/prog_statevars.c
++++ b/src/mesa/shader/prog_statevars.c
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  7.0
++ * Version:  7.1
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -824,3 +824,94 @@ _mesa_load_state_parameters(GLcontext *ctx,
+    }
+ }
+ 
++
++/**
++ * Copy the 16 elements of a matrix into four consecutive program
++ * registers starting at 'pos'.
++ */
++static void
++load_matrix(GLfloat registers[][4], GLuint pos, const GLfloat mat[16])
++{
++   GLuint i;
++   for (i = 0; i < 4; i++) {
++      registers[pos + i][0] = mat[0 + i];
++      registers[pos + i][1] = mat[4 + i];
++      registers[pos + i][2] = mat[8 + i];
++      registers[pos + i][3] = mat[12 + i];
++   }
++}
++
++
++/**
++ * As above, but transpose the matrix.
++ */
++static void
++load_transpose_matrix(GLfloat registers[][4], GLuint pos,
++                      const GLfloat mat[16])
++{
++   MEMCPY(registers[pos], mat, 16 * sizeof(GLfloat));
++}
++
++
++/**
++ * Load current vertex program's parameter registers with tracked
++ * matrices (if NV program).  This only needs to be done per
++ * glBegin/glEnd, not per-vertex.
++ */
++void
++_mesa_load_tracked_matrices(GLcontext *ctx)
++{
++   GLuint i;
++
++   for (i = 0; i < MAX_NV_VERTEX_PROGRAM_PARAMS / 4; i++) {
++      /* point 'mat' at source matrix */
++      GLmatrix *mat;
++      if (ctx->VertexProgram.TrackMatrix[i] == GL_MODELVIEW) {
++         mat = ctx->ModelviewMatrixStack.Top;
++      }
++      else if (ctx->VertexProgram.TrackMatrix[i] == GL_PROJECTION) {
++         mat = ctx->ProjectionMatrixStack.Top;
++      }
++      else if (ctx->VertexProgram.TrackMatrix[i] == GL_TEXTURE) {
++         mat = ctx->TextureMatrixStack[ctx->Texture.CurrentUnit].Top;
++      }
++      else if (ctx->VertexProgram.TrackMatrix[i] == GL_COLOR) {
++         mat = ctx->ColorMatrixStack.Top;
++      }
++      else if (ctx->VertexProgram.TrackMatrix[i]==GL_MODELVIEW_PROJECTION_NV) {
++         /* XXX verify the combined matrix is up to date */
++         mat = &ctx->_ModelProjectMatrix;
++      }
++      else if (ctx->VertexProgram.TrackMatrix[i] >= GL_MATRIX0_NV &&
++               ctx->VertexProgram.TrackMatrix[i] <= GL_MATRIX7_NV) {
++         GLuint n = ctx->VertexProgram.TrackMatrix[i] - GL_MATRIX0_NV;
++         ASSERT(n < MAX_PROGRAM_MATRICES);
++         mat = ctx->ProgramMatrixStack[n].Top;
++      }
++      else {
++         /* no matrix is tracked, but we leave the register values as-is */
++         assert(ctx->VertexProgram.TrackMatrix[i] == GL_NONE);
++         continue;
++      }
++
++      /* load the matrix values into sequential registers */
++      if (ctx->VertexProgram.TrackMatrixTransform[i] == GL_IDENTITY_NV) {
++         load_matrix(ctx->VertexProgram.Parameters, i*4, mat->m);
++      }
++      else if (ctx->VertexProgram.TrackMatrixTransform[i] == GL_INVERSE_NV) {
++         _math_matrix_analyse(mat); /* update the inverse */
++         ASSERT(!_math_matrix_is_dirty(mat));
++         load_matrix(ctx->VertexProgram.Parameters, i*4, mat->inv);
++      }
++      else if (ctx->VertexProgram.TrackMatrixTransform[i] == GL_TRANSPOSE_NV) {
++         load_transpose_matrix(ctx->VertexProgram.Parameters, i*4, mat->m);
++      }
++      else {
++         assert(ctx->VertexProgram.TrackMatrixTransform[i]
++                == GL_INVERSE_TRANSPOSE_NV);
++         _math_matrix_analyse(mat); /* update the inverse */
++         ASSERT(!_math_matrix_is_dirty(mat));
++         load_transpose_matrix(ctx->VertexProgram.Parameters, i*4, mat->inv);
++      }
++   }
++}
+diff --git a/src/mesa/shader/prog_statevars.h b/src/mesa/shader/prog_statevars.h
+index 3281a4a..22bb8e0 100644
+--- a/src/mesa/shader/prog_statevars.h
++++ b/src/mesa/shader/prog_statevars.h
+@@ -1,8 +1,8 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.2
++ * Version:  7.1
+  *
+- * Copyright (C) 1999-2006  Brian Paul   All Rights Reserved.
++ * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the "Software"),
+@@ -126,4 +126,8 @@ extern const char *
+ _mesa_program_state_string(const gl_state_index state[STATE_LENGTH]);
+ 
+ 
++extern void
++_mesa_load_tracked_matrices(GLcontext *ctx);
++
++
+ #endif /* PROG_STATEVARS_H */
+diff --git a/src/mesa/shader/shader_api.c b/src/mesa/shader/shader_api.c
+index 06d24b4..aba35dc 100644
+--- a/src/mesa/shader/shader_api.c
++++ b/src/mesa/shader/shader_api.c
+@@ -370,6 +370,54 @@ copy_string(GLchar *dst, GLsizei maxLength, GLsizei *length, const GLchar *src)
+ 
+ 
+ /**
++ * Return size (in floats) of the given GLSL type.
++ * See also _slang_sizeof_type_specifier().
++ */
++static GLint
++sizeof_glsl_type(GLenum type)
++{
++   switch (type) {
++   case GL_BOOL:
++   case GL_FLOAT:
++   case GL_INT:
++      return 1;
++   case GL_BOOL_VEC2:
++   case GL_FLOAT_VEC2:
++   case GL_INT_VEC2:
++      return 2;
++   case GL_BOOL_VEC3:
++   case GL_FLOAT_VEC3:
++   case GL_INT_VEC3:
++      return 3;
++   case GL_BOOL_VEC4:
++   case GL_FLOAT_VEC4:
++   case GL_INT_VEC4:
++      return 4;
++   case GL_FLOAT_MAT2:
++      return 8;  /* 2 rows of 4, actually */
++   case GL_FLOAT_MAT3:
++      return 12;  /* 3 rows of 4, actually */
++   case GL_FLOAT_MAT4:
++      return 16;
++   case GL_FLOAT_MAT2x3:
++      return 6;
++   case GL_FLOAT_MAT2x4:
++      return 8;
++   case GL_FLOAT_MAT3x2:
++      return 12;  /* 3 rows of 4, actually */
++   case GL_FLOAT_MAT3x4:
++      return 12;
++   case GL_FLOAT_MAT4x2:
++      return 16;  /* 4 rows of 4, actually */
++   case GL_FLOAT_MAT4x3:
++      return 12;
++   default:
++      return 0; /* error */
++   }
++}
++
++
++/**
+  * Called via ctx->Driver.AttachShader()
+  */
+ void
+@@ -666,13 +714,17 @@ _mesa_get_active_uniform(GLcontext *ctx, GLuint program, GLuint index,
+       if (shProg->Uniforms->Parameters[j].Type == PROGRAM_UNIFORM ||
+           shProg->Uniforms->Parameters[j].Type == PROGRAM_SAMPLER) {
+          if (ind == index) {
++            GLuint uSize = shProg->Uniforms->Parameters[j].Size;
++            GLenum uType = shProg->Uniforms->Parameters[j].DataType;
+             /* found it */
+             copy_string(nameOut, maxLength, length,
+                         shProg->Uniforms->Parameters[j].Name);
+-            if (size)
+-               *size = shProg->Uniforms->Parameters[j].Size;
++            if (size) {
++               /* convert from floats to 'type' (eg: sizeof(mat4x4)=1) */
++               *size = uSize / sizeof_glsl_type(uType);
++            }
+             if (type)
+-               *type = shProg->Uniforms->Parameters[j].DataType;
++               *type = uType;
+             return;
+          }
+          ind++;
+diff --git a/src/mesa/shader/slang/slang_builtin.c b/src/mesa/shader/slang/slang_builtin.c
+index 6ee0fd3..7351f26 100644
+--- a/src/mesa/shader/slang/slang_builtin.c
++++ b/src/mesa/shader/slang/slang_builtin.c
+@@ -250,7 +250,7 @@ lookup_statevar(const char *var, GLint index1, GLint index2, const char *field,
+       }
+    }
+    else if (strcmp(var, "gl_FrontLightModelProduct") == 0) {
+-      if (strcmp(field, "ambient") == 0) {
++      if (strcmp(field, "sceneColor") == 0) {
+          tokens[0] = STATE_LIGHTMODEL_SCENECOLOR;
+          tokens[1] = 0;
+       }
+@@ -259,7 +259,7 @@ lookup_statevar(const char *var, GLint index1, GLint index2, const char *field,
+       }
+    }
+    else if (strcmp(var, "gl_BackLightModelProduct") == 0) {
+-      if (strcmp(field, "ambient") == 0) {
++      if (strcmp(field, "sceneColor") == 0) {
+          tokens[0] = STATE_LIGHTMODEL_SCENECOLOR;
+          tokens[1] = 1;
+       }
+@@ -397,6 +397,8 @@ lookup_statevar(const char *var, GLint index1, GLint index2, const char *field,
+  *   var.field
+  *   var[i].field
+  *   var[i][j]
++ *
++ * \return -1 upon error, else position in paramList of the state var/data
+  */
+ GLint
+ _slang_alloc_statevar(slang_ir_node *n,
+@@ -414,9 +416,13 @@ _slang_alloc_statevar(slang_ir_node *n,
+ 
+    if (n->Opcode == IR_ELEMENT) {
+       /* XXX can only handle constant indexes for now */
+-      assert(n->Children[1]->Opcode == IR_FLOAT);
+-      index1 = (GLint) n->Children[1]->Value[0];
+-      n = n->Children[0];
++      if (n->Children[1]->Opcode == IR_FLOAT) {
++         index1 = (GLint) n->Children[1]->Value[0];
++         n = n->Children[0];
++      }
++      else {
++         return -1;
++      }
+    }
+ 
+    if (n->Opcode == IR_ELEMENT) {
+diff --git a/src/mesa/shader/slang/slang_codegen.c b/src/mesa/shader/slang/slang_codegen.c
+index 675dd83..ef9c0ab 100644
+--- a/src/mesa/shader/slang/slang_codegen.c
++++ b/src/mesa/shader/slang/slang_codegen.c
+@@ -2344,7 +2344,8 @@ _slang_gen_field(slang_assemble_ctx * A, slang_operation *oper)
+       return n;
+    }
+    else if (   ti.spec.type == SLANG_SPEC_FLOAT
+-            || ti.spec.type == SLANG_SPEC_INT) {
++            || ti.spec.type == SLANG_SPEC_INT
++            || ti.spec.type == SLANG_SPEC_BOOL) {
+       const GLuint rows = 1;
+       slang_swizzle swz;
+       slang_ir_node *n;
+diff --git a/src/mesa/shader/slang/slang_emit.c b/src/mesa/shader/slang/slang_emit.c
+index fe13f28..9947544 100644
+--- a/src/mesa/shader/slang/slang_emit.c
++++ b/src/mesa/shader/slang/slang_emit.c
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 2005-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -859,12 +859,18 @@ emit_return(slang_emit_info *emitInfo, slang_ir_node *n)
+ static struct prog_instruction *
+ emit_kill(slang_emit_info *emitInfo)
+ {
++   struct gl_fragment_program *fp;
+    struct prog_instruction *inst;
+    /* NV-KILL - discard fragment depending on condition code.
+     * Note that ARB-KILL depends on sign of vector operand.
+     */
+    inst = new_instruction(emitInfo, OPCODE_KIL_NV);
+    inst->DstReg.CondMask = COND_TR;  /* always branch */
++
++   assert(emitInfo->prog->Target == GL_FRAGMENT_PROGRAM_ARB);
++   fp = (struct gl_fragment_program *) emitInfo->prog;
++   fp->UsesKill = GL_TRUE;
++
+    return inst;
+ }
+ 
+@@ -1486,6 +1492,10 @@ emit_struct_field(slang_emit_info *emitInfo, slang_ir_node *n)
+ {
+    if (n->Store->File == PROGRAM_STATE_VAR) {
+       n->Store->Index = _slang_alloc_statevar(n, emitInfo->prog->Parameters);
++      if (n->Store->Index < 0) {
++         slang_info_log_error(emitInfo->log, "Error parsing state variable");
++         return NULL;
++      }
+    }
+    else {
+       GLint offset = n->FieldOffset / 4;
+diff --git a/src/mesa/swrast/s_aalinetemp.h b/src/mesa/swrast/s_aalinetemp.h
+index 80cec0b..074ffe8 100644
+--- a/src/mesa/swrast/s_aalinetemp.h
++++ b/src/mesa/swrast/s_aalinetemp.h
+@@ -141,6 +141,7 @@ NAME(line)(GLcontext *ctx, const SWvertex *v0, const SWvertex *v1)
+       return;
+ 
+    INIT_SPAN(line.span, GL_LINE, 0, 0, SPAN_XY | SPAN_COVERAGE);
++   line.span.facing = swrast->PointLineFacing;
+ 
+    line.xAdj = line.dx / line.len * line.halfWidth;
+    line.yAdj = line.dy / line.len * line.halfWidth;
+diff --git a/src/mesa/swrast/s_aatritemp.h b/src/mesa/swrast/s_aatritemp.h
+index 4162ed6..b26f21f 100644
+--- a/src/mesa/swrast/s_aatritemp.h
++++ b/src/mesa/swrast/s_aatritemp.h
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -78,7 +78,7 @@
+    GLfloat texWidth[FRAG_ATTRIB_MAX];
+    GLfloat texHeight[FRAG_ATTRIB_MAX];
+ #endif
+-   GLfloat bf = SWRAST_CONTEXT(ctx)->_BackfaceSign;
++   GLfloat bf = SWRAST_CONTEXT(ctx)->_BackfaceCullSign;
+    
+    (void) swrast;
+ 
+@@ -116,6 +116,7 @@
+    majDx = vMax->win[0] - vMin->win[0];
+    majDy = vMax->win[1] - vMin->win[1];
+ 
++   /* front/back-face determination and cullling */
+    {
+       const GLfloat botDx = vMid->win[0] - vMin->win[0];
+       const GLfloat botDy = vMid->win[1] - vMin->win[1];
+@@ -124,6 +125,8 @@
+       if (area * bf < 0 || area == 0 || IS_INF_OR_NAN(area))
+ 	 return;
+       ltor = (GLboolean) (area < 0.0F);
++
++      span.facing = area * swrast->_BackfaceSign > 0.0F;
+    }
+ 
+    /* Plane equation setup:
+@@ -336,7 +339,7 @@
+          }
+ 
+          /* skip fragments with zero coverage */
+-         while (startX >= 0) {
++         while (startX > 0) {
+             coverage = compute_coveragef(pMin, pMax, pMid, startX, iy);
+             if (coverage > 0.0F)
+                break;
+@@ -350,6 +353,7 @@
+             /* (cx,cy) = center of fragment */
+             const GLfloat cx = ix + 0.5F, cy = iy + 0.5F;
+             SWspanarrays *array = span.array;
++            ASSERT(ix >= 0);
+ #ifdef DO_INDEX
+             array->coverage[ix] = (GLfloat) compute_coveragei(pMin, pMax, pMid, ix, iy);
+ #else
+diff --git a/src/mesa/swrast/s_context.c b/src/mesa/swrast/s_context.c
+index 2f25edb..9b9b73f 100644
+--- a/src/mesa/swrast/s_context.c
++++ b/src/mesa/swrast/s_context.c
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -117,8 +117,8 @@ _swrast_update_rasterflags( GLcontext *ctx )
+ 
+ 
+ /**
+- * Examine polycon culls tate to compute the _BackfaceSign field.
+- * _BackfaceSign will be 0 if no culling, -1 if culling back-faces,
++ * Examine polycon culls tate to compute the _BackfaceCullSign field.
++ * _BackfaceCullSign will be 0 if no culling, -1 if culling back-faces,
+  * and 1 if culling front-faces.  The Polygon FrontFace state also
+  * factors in.
+  */
+@@ -128,31 +128,32 @@ _swrast_update_polygon( GLcontext *ctx )
+    GLfloat backface_sign;
+ 
+    if (ctx->Polygon.CullFlag) {
+-      backface_sign = 1.0;
+       switch (ctx->Polygon.CullFaceMode) {
+       case GL_BACK:
+-	 if (ctx->Polygon.FrontFace == GL_CCW)
+-	    backface_sign = -1.0;
++         backface_sign = -1.0;
+ 	 break;
+       case GL_FRONT:
+-	 if (ctx->Polygon.FrontFace != GL_CCW)
+-	    backface_sign = -1.0;
++         backface_sign = 1.0;
+ 	 break;
+       case GL_FRONT_AND_BACK:
+          /* fallthrough */
+       default:
+ 	 backface_sign = 0.0;
+-	 break;
+       }
+    }
+    else {
+       backface_sign = 0.0;
+    }
+ 
+-   SWRAST_CONTEXT(ctx)->_BackfaceSign = backface_sign;
++   SWRAST_CONTEXT(ctx)->_BackfaceCullSign = backface_sign;
++
++   /* This is for front/back-face determination, but not for culling */
++   SWRAST_CONTEXT(ctx)->_BackfaceSign
++      = (ctx->Polygon.FrontFace == GL_CW) ? -1.0 : 1.0;
+ }
+ 
+ 
++
+ /**
+  * Update the _PreferPixelFog field to indicate if we need to compute
+  * fog blend factors (from the fog coords) per-fragment.
+@@ -721,6 +722,12 @@ _swrast_ResetLineStipple( GLcontext *ctx )
+ }
+ 
+ void
++_swrast_SetFacing(GLcontext *ctx, GLuint facing)
++{
++   SWRAST_CONTEXT(ctx)->PointLineFacing = facing;
++}
++
++void
+ _swrast_allow_vertex_fog( GLcontext *ctx, GLboolean value )
+ {
+    if (SWRAST_DEBUG) {
+diff --git a/src/mesa/swrast/s_context.h b/src/mesa/swrast/s_context.h
+index c8333b8..58841ad 100644
+--- a/src/mesa/swrast/s_context.h
++++ b/src/mesa/swrast/s_context.h
+@@ -128,7 +128,8 @@ typedef struct
+     * _swrast_validate_derived():
+     */
+    GLbitfield _RasterMask;
+-   GLfloat _BackfaceSign;
++   GLfloat _BackfaceSign;      /** +1 or -1 */
++   GLfloat _BackfaceCullSign;  /** +1, 0, or -1 */
+    GLboolean _PreferPixelFog;    /* Compute fog blend factor per fragment? */
+    GLboolean _AnyTextureCombine;
+    GLboolean _FogEnabled;
+@@ -151,6 +152,7 @@ typedef struct
+    /* Working values:
+     */
+    GLuint StippleCounter;    /**< Line stipple counter */
++   GLuint PointLineFacing;
+    GLbitfield NewState;
+    GLuint StateChanges;
+    GLenum Primitive;    /* current primitive being drawn (ala glBegin) */
+diff --git a/src/mesa/swrast/s_fragprog.c b/src/mesa/swrast/s_fragprog.c
+index e47dbbd..89114eb 100644
+--- a/src/mesa/swrast/s_fragprog.c
++++ b/src/mesa/swrast/s_fragprog.c
+@@ -1,8 +1,8 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.2
++ * Version:  7.0.3
+  *
+- * Copyright (C) 1999-2006  Brian Paul   All Rights Reserved.
++ * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the "Software"),
+@@ -40,10 +40,12 @@ fetch_texel( GLcontext *ctx, const GLfloat texcoord[4], GLfloat lambda,
+ {
+    GLchan rgba[4];
+    SWcontext *swrast = SWRAST_CONTEXT(ctx);
++   const struct gl_texture_object *texObj = ctx->Texture.Unit[unit]._Current;
++
++   lambda = CLAMP(lambda, texObj->MinLod, texObj->MaxLod);
+ 
+    /* XXX use a float-valued TextureSample routine here!!! */
+-   swrast->TextureSample[unit](ctx, ctx->Texture.Unit[unit]._Current,
+-                               1, (const GLfloat (*)[4]) texcoord,
++   swrast->TextureSample[unit](ctx, texObj, 1, (const GLfloat (*)[4]) texcoord,
+                                &lambda, &rgba);
+    color[0] = CHAN_TO_FLOAT(rgba[0]);
+    color[1] = CHAN_TO_FLOAT(rgba[1]);
+@@ -59,7 +61,7 @@ fetch_texel( GLcontext *ctx, const GLfloat texcoord[4], GLfloat lambda,
+ static void
+ fetch_texel_deriv( GLcontext *ctx, const GLfloat texcoord[4],
+                    const GLfloat texdx[4], const GLfloat texdy[4],
+-                   GLuint unit, GLfloat color[4] )
++                   GLfloat lodBias, GLuint unit, GLfloat color[4] )
+ {
+    SWcontext *swrast = SWRAST_CONTEXT(ctx);
+    const struct gl_texture_object *texObj = ctx->Texture.Unit[unit]._Current;
+@@ -68,15 +70,17 @@ fetch_texel_deriv( GLcontext *ctx, const GLfloat texcoord[4],
+    const GLfloat texH = (GLfloat) texImg->HeightScale;
+    GLchan rgba[4];
+ 
+-   GLfloat lambda = _swrast_compute_lambda(texdx[0], texdy[0], /* ds/dx, ds/dy */
+-                                         texdx[1], texdy[1], /* dt/dx, dt/dy */
+-                                         texdx[3], texdy[2], /* dq/dx, dq/dy */
+-                                         texW, texH,
+-                                         texcoord[0], texcoord[1], texcoord[3],
+-                                         1.0F / texcoord[3]);
++   GLfloat lambda
++      = _swrast_compute_lambda(texdx[0], texdy[0], /* ds/dx, ds/dy */
++                               texdx[1], texdy[1], /* dt/dx, dt/dy */
++                               texdx[3], texdy[2], /* dq/dx, dq/dy */
++                               texW, texH,
++                               texcoord[0], texcoord[1], texcoord[3],
++                               1.0F / texcoord[3]) + lodBias;
++
++   lambda = CLAMP(lambda, texObj->MinLod, texObj->MaxLod);
+ 
+-   swrast->TextureSample[unit](ctx, ctx->Texture.Unit[unit]._Current,
+-                               1, (const GLfloat (*)[4]) texcoord,
++   swrast->TextureSample[unit](ctx, texObj, 1, (const GLfloat (*)[4]) texcoord,
+                                &lambda, &rgba);
+    color[0] = CHAN_TO_FLOAT(rgba[0]);
+    color[1] = CHAN_TO_FLOAT(rgba[1]);
+@@ -114,7 +118,7 @@ init_machine(GLcontext *ctx, struct gl_program_machine *machine,
+ 
+    if (ctx->Shader.CurrentProgram) {
+       /* Store front/back facing value in register FOGC.Y */
+-      machine->Attribs[FRAG_ATTRIB_FOGC][col][1] = (GLfloat) ctx->_Facing;
++      machine->Attribs[FRAG_ATTRIB_FOGC][col][1] = 1.0 - span->facing;
+    }
+ 
+    machine->CurElement = col;
+diff --git a/src/mesa/swrast/s_linetemp.h b/src/mesa/swrast/s_linetemp.h
+index b6e8f28..9e240a7 100644
+--- a/src/mesa/swrast/s_linetemp.h
++++ b/src/mesa/swrast/s_linetemp.h
+@@ -317,6 +317,9 @@ NAME( GLcontext *ctx, const SWvertex *vert0, const SWvertex *vert1 )
+    span.attrStepX[FRAG_ATTRIB_WPOS][3] = 0.0F;
+    span.attrStepY[FRAG_ATTRIB_WPOS][3] = 0.0F;
+ 
++   span.facing = swrast->PointLineFacing;
++
++
+    /*
+     * Draw
+     */
+diff --git a/src/mesa/swrast/s_pointtemp.h b/src/mesa/swrast/s_pointtemp.h
+index 9436464..7dcc1fc 100644
+--- a/src/mesa/swrast/s_pointtemp.h
++++ b/src/mesa/swrast/s_pointtemp.h
+@@ -105,6 +105,7 @@ NAME ( GLcontext *ctx, const SWvertex *vert )
+     */
+    span->interpMask = SPAN_FOG;
+    span->arrayMask = SPAN_XY | SPAN_Z;
++   span->facing = swrast->PointLineFacing;
+    span->attrStart[FRAG_ATTRIB_FOGC][0] = vert->attrib[FRAG_ATTRIB_FOGC][0];
+    span->attrStepX[FRAG_ATTRIB_FOGC][0] = 0.0;
+    span->attrStepY[FRAG_ATTRIB_FOGC][0] = 0.0;
+diff --git a/src/mesa/swrast/s_readpix.c b/src/mesa/swrast/s_readpix.c
+index fe9a70f..916ddc1 100644
+--- a/src/mesa/swrast/s_readpix.c
++++ b/src/mesa/swrast/s_readpix.c
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -129,7 +129,8 @@ read_depth_pixels( GLcontext *ctx,
+          rb->GetRow(ctx, rb, width, x, y, dest);
+          /* convert range from 24-bit to 32-bit */
+          for (k = 0; k < width; k++) {
+-            dest[k] = (dest[k] << 8) | (dest[k] >> 24);
++            /* Note: put MSByte of 24-bit value into LSByte */
++            dest[k] = (dest[k] << 8) | ((dest[k] >> 16) & 0xff);
+          }
+       }
+    }
+diff --git a/src/mesa/swrast/s_texfilter.c b/src/mesa/swrast/s_texfilter.c
+index 5413fc0..084d65f 100644
+--- a/src/mesa/swrast/s_texfilter.c
++++ b/src/mesa/swrast/s_texfilter.c
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.0.3
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -1043,7 +1043,7 @@ sample_2d_linear_repeat(GLcontext *ctx,
+    ASSERT(tObj->WrapS == GL_REPEAT);
+    ASSERT(tObj->WrapT == GL_REPEAT);
+    ASSERT(img->Border == 0);
+-   ASSERT(img->_BaseFormat != GL_COLOR_INDEX);
++   ASSERT(img->TexFormat->BaseFormat != GL_COLOR_INDEX);
+    ASSERT(img->_IsPowerOfTwo);
+ 
+    COMPUTE_LINEAR_REPEAT_TEXEL_LOCATION(texcoord[0], u, width,  i0, i1);
+@@ -1198,6 +1198,7 @@ sample_linear_2d( GLcontext *ctx,
+    (void) lambda;
+    if (tObj->WrapS == GL_REPEAT &&
+        tObj->WrapT == GL_REPEAT &&
++       image->Border == 0 &&
+        image->_IsPowerOfTwo) {
+       for (i=0;i<n;i++) {
+          sample_2d_linear_repeat(ctx, tObj, image, texcoords[i], rgba[i]);
+@@ -1237,7 +1238,7 @@ opt_sample_rgb_2d( GLcontext *ctx,
+    ASSERT(tObj->WrapS==GL_REPEAT);
+    ASSERT(tObj->WrapT==GL_REPEAT);
+    ASSERT(img->Border==0);
+-   ASSERT(img->_BaseFormat==GL_RGB);
++   ASSERT(img->TexFormat->MesaFormat==MESA_FORMAT_RGB);
+    ASSERT(img->_IsPowerOfTwo);
+ 
+    for (k=0; k<n; k++) {
+@@ -1278,7 +1279,7 @@ opt_sample_rgba_2d( GLcontext *ctx,
+    ASSERT(tObj->WrapS==GL_REPEAT);
+    ASSERT(tObj->WrapT==GL_REPEAT);
+    ASSERT(img->Border==0);
+-   ASSERT(img->_BaseFormat==GL_RGBA);
++   ASSERT(img->TexFormat->MesaFormat==MESA_FORMAT_RGBA);
+    ASSERT(img->_IsPowerOfTwo);
+ 
+    for (i = 0; i < n; i++) {
+@@ -1308,7 +1309,7 @@ sample_lambda_2d( GLcontext *ctx,
+    const GLboolean repeatNoBorderPOT = (tObj->WrapS == GL_REPEAT)
+       && (tObj->WrapT == GL_REPEAT)
+       && (tImg->Border == 0 && (tImg->Width == tImg->RowStride))
+-      && (tImg->_BaseFormat != GL_COLOR_INDEX)
++      && (tImg->TexFormat->BaseFormat != GL_COLOR_INDEX)
+       && tImg->_IsPowerOfTwo;
+ 
+    ASSERT(lambda != NULL);
+@@ -1323,16 +1324,10 @@ sample_lambda_2d( GLcontext *ctx,
+          if (repeatNoBorderPOT) {
+             switch (tImg->TexFormat->MesaFormat) {
+             case MESA_FORMAT_RGB:
+-            case MESA_FORMAT_RGB888:
+-            /*case MESA_FORMAT_BGR888:*/
+                opt_sample_rgb_2d(ctx, tObj, m, texcoords + minStart,
+                                  NULL, rgba + minStart);
+                break;
+             case MESA_FORMAT_RGBA:
+-            case MESA_FORMAT_RGBA8888:
+-            case MESA_FORMAT_ARGB8888:
+-            /*case MESA_FORMAT_ABGR8888:*/
+-            /*case MESA_FORMAT_BGRA8888:*/
+ 	       opt_sample_rgba_2d(ctx, tObj, m, texcoords + minStart,
+                                   NULL, rgba + minStart);
+                break;
+@@ -1386,16 +1381,10 @@ sample_lambda_2d( GLcontext *ctx,
+          if (repeatNoBorderPOT) {
+             switch (tImg->TexFormat->MesaFormat) {
+             case MESA_FORMAT_RGB:
+-            case MESA_FORMAT_RGB888:
+-            /*case MESA_FORMAT_BGR888:*/
+                opt_sample_rgb_2d(ctx, tObj, m, texcoords + magStart,
+                                  NULL, rgba + magStart);
+                break;
+             case MESA_FORMAT_RGBA:
+-            case MESA_FORMAT_RGBA8888:
+-            case MESA_FORMAT_ARGB8888:
+-            /*case MESA_FORMAT_ABGR8888:*/
+-            /*case MESA_FORMAT_BGRA8888:*/
+ 	       opt_sample_rgba_2d(ctx, tObj, m, texcoords + magStart,
+                                   NULL, rgba + magStart);
+                break;
+@@ -2102,7 +2091,7 @@ sample_nearest_rect(GLcontext *ctx,
+    ASSERT(tObj->WrapT == GL_CLAMP ||
+           tObj->WrapT == GL_CLAMP_TO_EDGE ||
+           tObj->WrapT == GL_CLAMP_TO_BORDER);
+-   ASSERT(img->_BaseFormat != GL_COLOR_INDEX);
++   ASSERT(img->TexFormat->BaseFormat != GL_COLOR_INDEX);
+ 
+    for (i = 0; i < n; i++) {
+       GLint row, col;
+@@ -2138,7 +2127,7 @@ sample_linear_rect(GLcontext *ctx,
+    ASSERT(tObj->WrapT == GL_CLAMP ||
+           tObj->WrapT == GL_CLAMP_TO_EDGE ||
+           tObj->WrapT == GL_CLAMP_TO_BORDER);
+-   ASSERT(img->_BaseFormat != GL_COLOR_INDEX);
++   ASSERT(img->TexFormat->BaseFormat != GL_COLOR_INDEX);
+ 
+    /* XXX lots of opportunity for optimization in this loop */
+    for (i = 0; i < n; i++) {
+@@ -2286,8 +2275,8 @@ sample_depth_texture( GLcontext *ctx,
+ 
+    (void) lambda;
+ 
+-   ASSERT(tObj->Image[0][tObj->BaseLevel]->_BaseFormat == GL_DEPTH_COMPONENT ||
+-          tObj->Image[0][tObj->BaseLevel]->_BaseFormat == GL_DEPTH_STENCIL_EXT);
++   ASSERT(img->TexFormat->BaseFormat == GL_DEPTH_COMPONENT ||
++          img->TexFormat->BaseFormat == GL_DEPTH_STENCIL_EXT);
+ 
+    ASSERT(tObj->Target == GL_TEXTURE_1D ||
+           tObj->Target == GL_TEXTURE_2D ||
+@@ -2604,7 +2593,7 @@ sample_depth_texture2(const GLcontext *ctx,
+     * GL_TEXTURE_COMPARE_SGIX == GL_TRUE but the current texture object
+     * isn't a depth texture.
+     */
+-   if (texImage->_BaseFormat != GL_DEPTH_COMPONENT) {
++   if (texImage->TexFormat->BaseFormat != GL_DEPTH_COMPONENT) {
+       _mesa_problem(ctx,"GL_TEXTURE_COMPARE_SGIX enabled with non-depth texture");
+       return;
+    }
+@@ -2707,7 +2696,7 @@ _swrast_choose_texture_sample_func( GLcontext *ctx,
+    }
+    else {
+       const GLboolean needLambda = (GLboolean) (t->MinFilter != t->MagFilter);
+-      const GLenum format = t->Image[0][t->BaseLevel]->_BaseFormat;
++      const GLenum format = t->Image[0][t->BaseLevel]->TexFormat->BaseFormat;
+ 
+       switch (t->Target) {
+       case GL_TEXTURE_1D:
+diff --git a/src/mesa/swrast/s_triangle.c b/src/mesa/swrast/s_triangle.c
+index fc9d29b..fc40084 100644
+--- a/src/mesa/swrast/s_triangle.c
++++ b/src/mesa/swrast/s_triangle.c
+@@ -58,7 +58,7 @@ _swrast_culltriangle( GLcontext *ctx,
+    GLfloat fy = v2->win[1] - v0->win[1];
+    GLfloat c = ex*fy-ey*fx;
+ 
+-   if (c * SWRAST_CONTEXT(ctx)->_BackfaceSign > 0)
++   if (c * SWRAST_CONTEXT(ctx)->_BackfaceCullSign > 0)
+       return 0;
+ 
+    return 1;
+diff --git a/src/mesa/swrast/s_tritemp.h b/src/mesa/swrast/s_tritemp.h
+index dcc3e95..891eaf6 100644
+--- a/src/mesa/swrast/s_tritemp.h
++++ b/src/mesa/swrast/s_tritemp.h
+@@ -292,18 +292,17 @@ static void NAME(GLcontext *ctx, const SWvertex *v0,
+ #else
+       const GLfloat area = eMaj.dx * eBot.dy - eBot.dx * eMaj.dy;
+ #endif
+-      /* Do backface culling */
+-      if (area * bf < 0.0)
++      if (IS_INF_OR_NAN(area) || area == 0.0F)
+          return;
+ 
+-      if (IS_INF_OR_NAN(area) || area == 0.0F)
++      if (area * bf * swrast->_BackfaceCullSign < 0.0)
+          return;
+ 
+       oneOverArea = 1.0F / area;
+-   }
+ 
+-
+-   span.facing = ctx->_Facing; /* for 2-sided stencil test */
++      /* 0 = front, 1 = back */
++      span.facing = oneOverArea * bf > 0.0F;
++   }
+ 
+    /* Edge setup.  For a triangle strip these could be reused... */
+    {
+diff --git a/src/mesa/swrast/swrast.h b/src/mesa/swrast/swrast.h
+index 12264a1..8640550 100644
+--- a/src/mesa/swrast/swrast.h
++++ b/src/mesa/swrast/swrast.h
+@@ -140,6 +140,13 @@ _swrast_Accum(GLcontext *ctx, GLenum op, GLfloat value);
+ extern void
+ _swrast_ResetLineStipple( GLcontext *ctx );
+ 
++/**
++ * Indicates front/back facing for subsequent points/lines when drawing
++ * unfilled polygons.  Needed for two-side stencil.
++ */
++extern void
++_swrast_SetFacing(GLcontext *ctx, GLuint facing);
++
+ /* These will always render the correct point/line/triangle for the
+  * current state.
+  *
+diff --git a/src/mesa/swrast_setup/ss_context.c b/src/mesa/swrast_setup/ss_context.c
+index 3f6d294..43f2696 100644
+--- a/src/mesa/swrast_setup/ss_context.c
++++ b/src/mesa/swrast_setup/ss_context.c
+@@ -186,6 +186,9 @@ _swsetup_RenderStart( GLcontext *ctx )
+ 
+    swsetup->NewState = 0;
+ 
++   /* This will change if drawing unfilled tris */
++   _swrast_SetFacing(ctx, 0);
++
+    _swrast_render_start(ctx);
+ 
+    /* Important */
+diff --git a/src/mesa/swrast_setup/ss_triangle.c b/src/mesa/swrast_setup/ss_triangle.c
+index 628e928..0585673 100644
+--- a/src/mesa/swrast_setup/ss_triangle.c
++++ b/src/mesa/swrast_setup/ss_triangle.c
+@@ -1,8 +1,8 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.1
++ * Version:  7.1
+  *
+- * Copyright (C) 1999-2004  Brian Paul   All Rights Reserved.
++ * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the "Software"),
+@@ -68,6 +68,8 @@ static void _swsetup_render_line_tri( GLcontext *ctx,
+          return;
+    }
+ 
++   _swrast_SetFacing(ctx, facing);
++
+    if (ctx->Light.ShadeModel == GL_FLAT) {
+       COPY_CHAN4(c[0], v0->color);
+       COPY_CHAN4(c[1], v1->color);
+@@ -127,6 +129,8 @@ static void _swsetup_render_point_tri( GLcontext *ctx,
+          return;
+    }
+ 
++   _swrast_SetFacing(ctx, facing);
++
+    if (ctx->Light.ShadeModel == GL_FLAT) {
+       /* save colors/indexes for v0, v1 vertices */
+       COPY_CHAN4(c[0], v0->color);
+@@ -290,10 +294,8 @@ void _swsetup_choose_trifuncs( GLcontext *ctx )
+        ctx->Polygon.OffsetFill)
+       ind |= SS_OFFSET_BIT;
+ 
+-   /* Note: gl_FrontFacing lives in fragment input FOGC.Y at this time */
+    if ((ctx->Light.Enabled && ctx->Light.Model.TwoSide) ||
+-       (ctx->VertexProgram._Enabled && ctx->VertexProgram.TwoSideEnabled) ||
+-       (ctx->FragmentProgram._Current && ctx->FragmentProgram._Current->Base.InputsRead & (1 << FRAG_ATTRIB_FOGC)))
++       (ctx->VertexProgram._Current && ctx->VertexProgram.TwoSideEnabled))
+       ind |= SS_TWOSIDE_BIT;
+ 
+    /* We piggyback the two-sided stencil front/back determination on the
+@@ -311,6 +313,4 @@ void _swsetup_choose_trifuncs( GLcontext *ctx )
+    tnl->Driver.Render.Quad = quad_tab[ind];
+    tnl->Driver.Render.Line = swsetup_line;
+    tnl->Driver.Render.Points = swsetup_points;
+-
+-   ctx->_Facing = 0;
+ }
+diff --git a/src/mesa/swrast_setup/ss_tritmp.h b/src/mesa/swrast_setup/ss_tritmp.h
+index 59c534e..0e0cbce 100644
+--- a/src/mesa/swrast_setup/ss_tritmp.h
++++ b/src/mesa/swrast_setup/ss_tritmp.h
+@@ -43,7 +43,6 @@ static void TAG(triangle)(GLcontext *ctx, GLuint e0, GLuint e1, GLuint e2 )
+    v[1] = &verts[e1];
+    v[2] = &verts[e2];
+ 
+-
+    if (IND & (SS_TWOSIDE_BIT | SS_OFFSET_BIT | SS_UNFILLED_BIT))
+    {
+       GLfloat ex = v[0]->win[0] - v[2]->win[0];
+@@ -55,7 +54,6 @@ static void TAG(triangle)(GLcontext *ctx, GLuint e0, GLuint e1, GLuint e2 )
+       if (IND & (SS_TWOSIDE_BIT | SS_UNFILLED_BIT))
+       {
+ 	 facing = (cc < 0.0) ^ ctx->Polygon._FrontBit;
+-         ctx->_Facing = facing;
+ 
+ 	 if (IND & SS_UNFILLED_BIT)
+ 	    mode = facing ? ctx->Polygon.BackMode : ctx->Polygon.FrontMode;
+diff --git a/src/mesa/tnl/t_vb_program.c b/src/mesa/tnl/t_vb_program.c
+index 9961af7..03e1ad2 100644
+--- a/src/mesa/tnl/t_vb_program.c
++++ b/src/mesa/tnl/t_vb_program.c
+@@ -1,6 +1,6 @@
+ /*
+  * Mesa 3-D graphics library
+- * Version:  6.5.3
++ * Version:  7.1
+  *
+  * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+@@ -30,29 +30,150 @@
+  */
+ 
+ 
+-#include "glheader.h"
+-#include "colormac.h"
+-#include "context.h"
+-#include "macros.h"
+-#include "imports.h"
+-#include "prog_instruction.h"
+-#include "prog_statevars.h"
+-#include "prog_execute.h"
++#include "main/glheader.h"
++#include "main/colormac.h"
++#include "main/context.h"
++#include "main/macros.h"
++#include "main/imports.h"
++#include "shader/prog_instruction.h"
++#include "shader/prog_statevars.h"
++#include "shader/prog_execute.h"
++#include "swrast/s_context.h"
++#include "swrast/s_texfilter.h"
+ 
+-#include "tnl.h"
+-#include "t_context.h"
+-#include "t_pipeline.h"
++#include "tnl/tnl.h"
++#include "tnl/t_context.h"
++#include "tnl/t_pipeline.h"
+ 
+ #include "swrast/s_context.h"
+ #include "swrast/s_texfilter.h"
+ 
++
++/*!
++ * Private storage for the vertex program pipeline stage.
++ */
++struct vp_stage_data {
++   /** The results of running the vertex program go into these arrays. */
++   GLvector4f results[VERT_RESULT_MAX];
++
++   GLvector4f ndcCoords;              /**< normalized device coords */
++   GLubyte *clipmask;                 /**< clip flags */
++   GLubyte ormask, andmask;           /**< for clipping */
++};
++
++
++#define VP_STAGE_DATA(stage) ((struct vp_stage_data *)(stage->privatePtr))
++
++
++static void
++userclip( GLcontext *ctx,
++          GLvector4f *clip,
++          GLubyte *clipmask,
++          GLubyte *clipormask,
++          GLubyte *clipandmask )
++{
++   GLuint p;
++
++   for (p = 0; p < ctx->Const.MaxClipPlanes; p++) {
++      if (ctx->Transform.ClipPlanesEnabled & (1 << p)) {
++	 GLuint nr, i;
++	 const GLfloat a = ctx->Transform._ClipUserPlane[p][0];
++	 const GLfloat b = ctx->Transform._ClipUserPlane[p][1];
++	 const GLfloat c = ctx->Transform._ClipUserPlane[p][2];
++	 const GLfloat d = ctx->Transform._ClipUserPlane[p][3];
++         GLfloat *coord = (GLfloat *)clip->data;
++         GLuint stride = clip->stride;
++         GLuint count = clip->count;
++
++	 for (nr = 0, i = 0 ; i < count ; i++) {
++	    GLfloat dp = (coord[0] * a + 
++			  coord[1] * b +
++			  coord[2] * c +
++			  coord[3] * d);
++
++	    if (dp < 0) {
++	       nr++;
++	       clipmask[i] |= CLIP_USER_BIT;
++	    }
++
++	    STRIDE_F(coord, stride);
++	 }
++
++	 if (nr > 0) {
++	    *clipormask |= CLIP_USER_BIT;
++	    if (nr == count) {
++	       *clipandmask |= CLIP_USER_BIT;
++	       return;
++	    }
++	 }
++      }
++   }
++}
++
++
++static GLboolean
++do_ndc_cliptest(GLcontext *ctx, struct vp_stage_data *store)
++{
++   TNLcontext *tnl = TNL_CONTEXT(ctx);
++   struct vertex_buffer *VB = &tnl->vb;
++   /* Cliptest and perspective divide.  Clip functions must clear
++    * the clipmask.
++    */
++   store->ormask = 0;
++   store->andmask = CLIP_FRUSTUM_BITS;
++
++   if (tnl->NeedNdcCoords) {
++      VB->NdcPtr =
++         _mesa_clip_tab[VB->ClipPtr->size]( VB->ClipPtr,
++                                            &store->ndcCoords,
++                                            store->clipmask,
++                                            &store->ormask,
++                                            &store->andmask );
++   }
++   else {
++      VB->NdcPtr = NULL;
++      _mesa_clip_np_tab[VB->ClipPtr->size]( VB->ClipPtr,
++                                            NULL,
++                                            store->clipmask,
++                                            &store->ormask,
++                                            &store->andmask );
++   }
++
++   if (store->andmask) {
++      /* All vertices are outside the frustum */
++      return GL_FALSE;
++   }
++
++   /* Test userclip planes.  This contributes to VB->ClipMask.
++    */
++   /** XXX NEW_SLANG _Enabled ??? */
++   if (ctx->Transform.ClipPlanesEnabled && (!ctx->VertexProgram._Enabled ||
++      ctx->VertexProgram.Current->IsPositionInvariant)) {
++      userclip( ctx,
++		VB->ClipPtr,
++		store->clipmask,
++		&store->ormask,
++		&store->andmask );
++
++      if (store->andmask) {
++	 return GL_FALSE;
++      }
++   }
++
++   VB->ClipAndMask = store->andmask;
++   VB->ClipOrMask = store->ormask;
++   VB->ClipMask = store->clipmask;
++
++   return GL_TRUE;
++}
++
++
+ /**
+  * XXX the texture sampling code in this module is a bit of a hack.
+  * The texture sampling code is in swrast, though it doesn't have any
+  * real dependencies on the rest of swrast.  It should probably be
+  * moved into main/ someday.
+  */
+-
+ static void
+ vp_fetch_texel(GLcontext *ctx, const GLfloat texcoord[4], GLfloat lambda,
+                GLuint unit, GLfloat color[4])
+@@ -85,22 +206,6 @@ _tnl_program_string(GLcontext *ctx, GLenum target, struct gl_program *program)
+ }
+ 
+ 
+-/*!
+- * Private storage for the vertex program pipeline stage.
+- */
+-struct vp_stage_data {
+-   /** The results of running the vertex program go into these arrays. */
+-   GLvector4f results[VERT_RESULT_MAX];
+-
+-   GLvector4f ndcCoords;              /**< normalized device coords */
+-   GLubyte *clipmask;                 /**< clip flags */
+-   GLubyte ormask, andmask;           /**< for clipping */
+-};
+-
+-
+-#define VP_STAGE_DATA(stage) ((struct vp_stage_data *)(stage->privatePtr))
+-
+-
+ /**
+  * Initialize virtual machine state prior to executing vertex program.
+  */
+@@ -143,92 +248,44 @@ init_machine(GLcontext *ctx, struct gl_program_machine *machine)
+ 
+ 
+ /**
+- * Copy the 16 elements of a matrix into four consecutive program
+- * registers starting at 'pos'.
++ * Map the texture images which the vertex program will access (if any).
+  */
+ static void
+-load_matrix(GLfloat registers[][4], GLuint pos, const GLfloat mat[16])
++map_textures(GLcontext *ctx, const struct gl_vertex_program *vp)
+ {
+-   GLuint i;
+-   for (i = 0; i < 4; i++) {
+-      registers[pos + i][0] = mat[0 + i];
+-      registers[pos + i][1] = mat[4 + i];
+-      registers[pos + i][2] = mat[8 + i];
+-      registers[pos + i][3] = mat[12 + i];
+-   }
+-}
++   GLuint u;
+ 
++   if (!ctx->Driver.MapTexture)
++      return;
+ 
+-/**
+- * As above, but transpose the matrix.
+- */
+-static void
+-load_transpose_matrix(GLfloat registers[][4], GLuint pos,
+-                      const GLfloat mat[16])
+-{
+-   MEMCPY(registers[pos], mat, 16 * sizeof(GLfloat));
++   for (u = 0; u < ctx->Const.MaxVertexTextureImageUnits; u++) {
++      if (vp->Base.TexturesUsed[u]) {
++         /* Note: _Current *should* correspond to the target indicated
++          * in TexturesUsed[u].
++          */
++         ctx->Driver.MapTexture(ctx, ctx->Texture.Unit[u]._Current);
++      }
++   }
+ }
+ 
+ 
+ /**
+- * Load current vertex program's parameter registers with tracked
+- * matrices (if NV program).  This only needs to be done per
+- * glBegin/glEnd, not per-vertex.
++ * Unmap the texture images which were used by the vertex program (if any).
+  */
+-void
+-_mesa_load_tracked_matrices(GLcontext *ctx)
++static void
++unmap_textures(GLcontext *ctx, const struct gl_vertex_program *vp)
+ {
+-   GLuint i;
++   GLuint u;
+ 
+-   for (i = 0; i < MAX_NV_VERTEX_PROGRAM_PARAMS / 4; i++) {
+-      /* point 'mat' at source matrix */
+-      GLmatrix *mat;
+-      if (ctx->VertexProgram.TrackMatrix[i] == GL_MODELVIEW) {
+-         mat = ctx->ModelviewMatrixStack.Top;
+-      }
+-      else if (ctx->VertexProgram.TrackMatrix[i] == GL_PROJECTION) {
+-         mat = ctx->ProjectionMatrixStack.Top;
+-      }
+-      else if (ctx->VertexProgram.TrackMatrix[i] == GL_TEXTURE) {
+-         mat = ctx->TextureMatrixStack[ctx->Texture.CurrentUnit].Top;
+-      }
+-      else if (ctx->VertexProgram.TrackMatrix[i] == GL_COLOR) {
+-         mat = ctx->ColorMatrixStack.Top;
+-      }
+-      else if (ctx->VertexProgram.TrackMatrix[i]==GL_MODELVIEW_PROJECTION_NV) {
+-         /* XXX verify the combined matrix is up to date */
+-         mat = &ctx->_ModelProjectMatrix;
+-      }
+-      else if (ctx->VertexProgram.TrackMatrix[i] >= GL_MATRIX0_NV &&
+-               ctx->VertexProgram.TrackMatrix[i] <= GL_MATRIX7_NV) {
+-         GLuint n = ctx->VertexProgram.TrackMatrix[i] - GL_MATRIX0_NV;
+-         ASSERT(n < MAX_PROGRAM_MATRICES);
+-         mat = ctx->ProgramMatrixStack[n].Top;
+-      }
+-      else {
+-         /* no matrix is tracked, but we leave the register values as-is */
+-         assert(ctx->VertexProgram.TrackMatrix[i] == GL_NONE);
+-         continue;
+-      }
++   if (!ctx->Driver.MapTexture)
++      return;
+ 
+-      /* load the matrix values into sequential registers */
+-      if (ctx->VertexProgram.TrackMatrixTransform[i] == GL_IDENTITY_NV) {
+-         load_matrix(ctx->VertexProgram.Parameters, i*4, mat->m);
+-      }
+-      else if (ctx->VertexProgram.TrackMatrixTransform[i] == GL_INVERSE_NV) {
+-         _math_matrix_analyse(mat); /* update the inverse */
+-         ASSERT(!_math_matrix_is_dirty(mat));
+-         load_matrix(ctx->VertexProgram.Parameters, i*4, mat->inv);
+-      }
+-      else if (ctx->VertexProgram.TrackMatrixTransform[i] == GL_TRANSPOSE_NV) {
+-         load_transpose_matrix(ctx->VertexProgram.Parameters, i*4, mat->m);
+-      }
+-      else {
+-         assert(ctx->VertexProgram.TrackMatrixTransform[i]
+-                == GL_INVERSE_TRANSPOSE_NV);
+-         _math_matrix_analyse(mat); /* update the inverse */
+-         ASSERT(!_math_matrix_is_dirty(mat));
+-         load_transpose_matrix(ctx->VertexProgram.Parameters, i*4, mat->inv);
++   for (u = 0; u < ctx->Const.MaxVertexTextureImageUnits; u++) {
++      if (vp->Base.TexturesUsed[u]) {
++         /* Note: _Current *should* correspond to the target indicated
++          * in TexturesUsed[u].
++          */
++         ctx->Driver.UnmapTexture(ctx, ctx->Texture.Unit[u]._Current);
+       }
+    }
+ }
+@@ -259,6 +316,7 @@ run_vp( GLcontext *ctx, struct tnl_pipeline_stage *stage )
+       _mesa_load_state_parameters(ctx, program->Base.Parameters);
+    }
+ 
++   /* make list of outputs to save some time below */
+    numOutputs = 0;
+    for (i = 0; i < VERT_RESULT_MAX; i++) {
+       if (program->Base.OutputsWritten & (1 << i)) {
+@@ -266,6 +324,8 @@ run_vp( GLcontext *ctx, struct tnl_pipeline_stage *stage )
+       }
+    }
+ 
++   map_textures(ctx, program);
++
+    for (i = 0; i < VB->Count; i++) {
+       GLuint attr;
+ 
+@@ -317,6 +377,8 @@ run_vp( GLcontext *ctx, struct tnl_pipeline_stage *stage )
+ #endif
+    }
+ 
++   unmap_textures(ctx, program);
++
+    /* Fixup fog and point size results if needed */
+    if (program->IsNVProgram) {
+       if (ctx->Fog.Enabled &&
+@@ -334,12 +396,39 @@ run_vp( GLcontext *ctx, struct tnl_pipeline_stage *stage )
+       }
+    }
+ 
+-   /* Setup the VB pointers so that the next pipeline stages get
+-    * their data from the right place (the program output arrays).
+-    */
+-   VB->ClipPtr = &store->results[VERT_RESULT_HPOS];
+-   VB->ClipPtr->size = 4;
+-   VB->ClipPtr->count = VB->Count;
++   if (program->IsPositionInvariant) {
++      /* We need the exact same transform as in the fixed function path here
++       * to guarantee invariance, depending on compiler optimization flags
++       * results could be different otherwise.
++       */
++      VB->ClipPtr = TransformRaw( &store->results[0],
++				  &ctx->_ModelProjectMatrix,
++				  VB->AttribPtr[0] );
++
++      /* Drivers expect this to be clean to element 4...
++       */
++      switch (VB->ClipPtr->size) {
++      case 1:
++	 /* impossible */
++      case 2:
++	 _mesa_vector4f_clean_elem( VB->ClipPtr, VB->Count, 2 );
++	 /* fall-through */
++      case 3:
++	 _mesa_vector4f_clean_elem( VB->ClipPtr, VB->Count, 3 );
++	 /* fall-through */
++      case 4:
++	 break;
++      }
++   }
++   else {
++      /* Setup the VB pointers so that the next pipeline stages get
++       * their data from the right place (the program output arrays).
++       */
++      VB->ClipPtr = &store->results[VERT_RESULT_HPOS];
++      VB->ClipPtr->size = 4;
++      VB->ClipPtr->count = VB->Count;
++   }
++
+    VB->ColorPtr[0] = &store->results[VERT_RESULT_COL0];
+    VB->ColorPtr[1] = &store->results[VERT_RESULT_BFC0];
+    VB->SecondaryColorPtr[0] = &store->results[VERT_RESULT_COL1];
+@@ -365,41 +454,10 @@ run_vp( GLcontext *ctx, struct tnl_pipeline_stage *stage )
+       }
+    }
+ 
+-   /* Cliptest and perspective divide.  Clip functions must clear
+-    * the clipmask.
+-    */
+-   store->ormask = 0;
+-   store->andmask = CLIP_FRUSTUM_BITS;
+-
+-   if (tnl->NeedNdcCoords) {
+-      VB->NdcPtr =
+-         _mesa_clip_tab[VB->ClipPtr->size]( VB->ClipPtr,
+-                                            &store->ndcCoords,
+-                                            store->clipmask,
+-                                            &store->ormask,
+-                                            &store->andmask );
+-   }
+-   else {
+-      VB->NdcPtr = NULL;
+-      _mesa_clip_np_tab[VB->ClipPtr->size]( VB->ClipPtr,
+-                                            NULL,
+-                                            store->clipmask,
+-                                            &store->ormask,
+-                                            &store->andmask );
+-   }
+-
+-   if (store->andmask)  /* All vertices are outside the frustum */
+-      return GL_FALSE;
+ 
+-
+-   /* This is where we'd do clip testing against the user-defined
+-    * clipping planes, but they're not supported by vertex programs.
++   /* Perform NDC and cliptest operations:
+     */
+-
+-   VB->ClipOrMask = store->ormask;
+-   VB->ClipMask = store->clipmask;
+-
+-   return GL_TRUE;
++   return do_ndc_cliptest(ctx, store);
+ }
+ 
+ 
+diff --git a/src/mesa/tnl/tnl.h b/src/mesa/tnl/tnl.h
+index 20bed55..c8c0093 100644
+--- a/src/mesa/tnl/tnl.h
++++ b/src/mesa/tnl/tnl.h
+@@ -1,9 +1,8 @@
+-
+ /*
+  * Mesa 3-D graphics library
+- * Version:  3.5
++ * Version:  7.1
+  *
+- * Copyright (C) 1999-2001  Brian Paul   All Rights Reserved.
++ * Copyright (C) 1999-2007  Brian Paul   All Rights Reserved.
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the "Software"),
+@@ -82,7 +81,4 @@ _tnl_draw_prims( GLcontext *ctx,
+ 		 GLuint min_index,
+ 		 GLuint max_index);
+ 
+-extern void
+-_mesa_load_tracked_matrices(GLcontext *ctx);
+-
+ #endif
+diff --git a/src/mesa/tnl_dd/t_dd_tritmp.h b/src/mesa/tnl_dd/t_dd_tritmp.h
+index 0bf32ff..6c2378f 100644
+--- a/src/mesa/tnl_dd/t_dd_tritmp.h
++++ b/src/mesa/tnl_dd/t_dd_tritmp.h
+@@ -155,10 +155,6 @@ static void TAG(triangle)( GLcontext *ctx, GLuint e0, GLuint e1, GLuint e2 )
+       {
+ 	 facing = AREA_IS_CCW( cc ) ^ ctx->Polygon._FrontBit;
+ 
+-         if (DO_TWOSTENCIL && ctx->Stencil.TestTwoSide) {
+-            ctx->_Facing = facing; /* mixed mode rendering: for 2-sided stencil test */
+-         }
+-
+ 	 if (DO_UNFILLED) {
+ 	    if (facing) {
+ 	       mode = ctx->Polygon.BackMode;
+@@ -421,10 +417,6 @@ static void TAG(quad)( GLcontext *ctx,
+       {
+ 	 facing = AREA_IS_CCW( cc ) ^ ctx->Polygon._FrontBit;
+ 
+-         if (DO_TWOSTENCIL && ctx->Stencil.TestTwoSide) {
+-            ctx->_Facing = facing; /* mixed mode rendering: for 2-sided stencil test */
+-         }
+-
+ 	 if (DO_UNFILLED) {
+ 	    if (facing) {
+ 	       mode = ctx->Polygon.BackMode;
