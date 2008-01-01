@@ -51,7 +51,6 @@ Patch23: mesa-6.5.2-bindcontext-paranoia.patch
 Patch25: mesa-7.0-symlinks-before-depend.patch
 Patch27: mesa-7.0-use_master-r300.patch
 Patch28: mesa-7.0.1-r300-fix-writemask.patch
-Patch29: mesa-7.0.1-r200-settexoffset.patch
 Patch30: mesa-7.0.2-rx00-vertprog-num-temps-off-by-one.patch
 Patch31: mesa-7.0.2-t_vp_build-use-less-temps.patch
 
