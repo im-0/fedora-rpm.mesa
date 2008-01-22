@@ -32,7 +32,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.0.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -53,6 +53,7 @@ Patch27: mesa-7.0-use_master-r300.patch
 Patch28: mesa-7.0.1-r300-fix-writemask.patch
 Patch30: mesa-7.0.2-rx00-vertprog-num-temps-off-by-one.patch
 Patch31: mesa-7.0.2-t_vp_build-use-less-temps.patch
+Patch32: mesa-7.0.2-e7221.patch
 
 BuildRequires: pkgconfig
 %if %{with_dri}
@@ -185,6 +186,7 @@ chmod a-x progs/demos/glslnoise.c
 %patch28 -p1 -b .r300-writemask
 %patch30 -p1 -b .rx00-fix-vp
 %patch31 -p1 -b .vp-temp-fix
+%patch32 -p1 -b .e7221
 
 # WARNING: The following files are copyright "Mark J. Kilgard" under the GLUT
 # license and are not open source/free software, so we remove them.
@@ -414,6 +416,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Tue Jan 22 2008 Adam Jackson <ajax@redhat.com> 7.0.2-3
+- mesa-7.0.2-e7221.patch: Enable i915 DRI on E7221. (Carlos Martín, #425790)
+
 * Tue Jan 01 2008 Dave Airlie <airlied@redhat.com> 7.0.2-2
 - mesa-7.0.2-stable-branch.patch: add in mesa 7.0.2 stable patches so far
 
