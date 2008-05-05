@@ -1,0 +1,784 @@
+commit fc35fb99411fc1bac92a7da9d90a16f28602623f
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Mon May 5 23:49:50 2008 +1000
+
+    r300: fix swtcl texrect path properly.
+    
+    We really need to update the shader state so the texrect parameters work.
+    
+    This should fix compiz looking crappy on rs480 and rs690
+    (cherry picked from commit 66a5562ce2906fbf5b96d1cee18f9a31a78c4360)
+    (cherry picked from commit a7016949f27f7612ffba7a4d0c5e6280cb3e66ba)
+
+commit 5344028569e7c5fa7349685923c9ecc319c86fc6
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Sat May 3 21:31:22 2008 +1000
+
+    r300: add R300_NO_TCL to allow testing of non-tcl on tcl cards
+    (cherry picked from commit 026ef8111a94f6449dfa5e5cc0ae91fca4e68c0c)
+    (cherry picked from commit 2f0a75f0040b0de339c78448844a7b18ab995c46)
+
+commit f232d553352fa8ace512564f371f623da4c08485
+Author: Markus Amsler <markus.amsler@oribi.org>
+Date:   Fri May 2 01:58:18 2008 +0000
+
+    r300: Set correct VAP_CNTL per vertex program.
+    (cherry picked from commit acb47dee69a165f242d88f9eac60fc5646e33410)
+
+commit 135c59946a341e93f5e2a8f61a658d8c49ce2395
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Thu May 1 14:59:34 2008 -0600
+
+    fix conversion of GLfloat display list IDs
+    
+    Use floor() to convert to int (per Mark Kildard and the SI).
+    Also, change translate_id() to return a signed integer since we may be
+    offsetting from GL_LIST_BASE.
+    (cherry picked from commit 6e19f82c37191dabcdd882d0edac98a2ca9c11e4)
+
+commit d8dc7982bc38a1e28a123d5f63736bb8deea134c
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Wed Apr 30 16:05:01 2008 -0600
+
+    Add support for GL_REPLACE_EXT texture env mode.
+    
+    GL_REPLACE_EXT comes from the ancient GL_EXT_texture extension.  Found an old demo that
+    actually uses it.
+    The values of the GL_REPLACE and GL_REPLACE_EXT tokens is different, unfortunately.
+    (cherry picked from commit 5f0fa82f68e3f4f7086ed6cf5616ef94820e19ee)
+
+commit 736cb42b9f6dc60ad83858bb6e244f5e9a0df3ef
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Wed Apr 30 16:27:52 2008 +0800
+
+    intel: test cpp to ensure mipmap tree matches texture image.
+    (cherry picked from commit d12fa3511da23d8285f3ea1a51a1f328cdbb1462)
+
+commit 1bae58ce0dab2bc69b4467cae8cdc8a007c446ac
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Tue Apr 29 15:02:46 2008 -0600
+
+    disable GL_TEXTURE_1D at end of frame to fix failed assertion
+    (cherry picked from commit aef4ca647d1d8275b1586a92485ea6c5bc8e950c)
+
+commit 2ec4728f9175e2184a2af009d7d2be1f191d35d9
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Fri Apr 25 09:46:43 2008 -0600
+
+    mesa: adjust glBitmap coords by a small epsilon
+    
+    Fixes problem with bitmaps jumping around by one pixel depending on window
+    size.  The rasterpos is often X.9999 instead of X+1.
+    Run progs/redbook/drawf and resize window to check.
+    
+    Cherry picked from gallium-0.1 branch
+    (cherry picked from commit 4e0e02ae684c0286599309ae166cfc716db940d7)
+
+commit 28b887a05543e67d0e40eb17502fcf590145022a
+Author: Ove Kaaven <ovek@arcticnet.no>
+Date:   Tue Apr 29 22:14:05 2008 +0200
+
+    r200: fix state submission issue causing bogus textures (bug 15730)
+    (cherry picked from commit 4f474c7d1e1e6807af0f3db55f641fbd66be2e90)
+
+commit 52a964a87f5155bad582b2b48ff8ba8ca9669a69
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Tue Apr 29 18:43:28 2008 +0200
+
+    Change default of driconf "allow_large_textures" to announce hardware limits.
+    
+    The previous default these days served mostly to cause artifical problems with
+    GLX compositing managers like compiz (see e.g.
+    http://bugs.freedesktop.org/show_bug.cgi?id=10501).
+    (cherry picked from commit acba9c1771d653126fd6f604cb80c050b9e8ffb3)
+
+commit 98b53ad38218a4392f0dc070fd425f9cc61fdfa7
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Apr 25 16:07:12 2008 -0700
+
+    [i965] short immediate values must be replicated to both halves of the dword
+    
+    The 32-bit immediate value in the i965 instruction word must contain two
+    copies of any 16-bit constants. brw_imm_uw and brw_imm_w just needed to
+    copy the value into both halves of the immediate value instruction field.
+    (cherry picked from commit ca73488f48e3ee278f0185bb7dcc03d7bdedb62d)
+
+commit 5b77d659ef8d57b74b7ff2a8d1126808d9ee1de2
+Author: Pierre Beyssac <mesa-bugzilla@fasterix.frmug.org>
+Date:   Thu Apr 24 16:29:34 2008 -0600
+
+    enable GL_EXT_multi_draw_arrays (see bug 15670)
+    (cherry picked from commit fddb0f6e4fa67f3d6940e10519560941b59f5a5e)
+
+commit 36de683cfa560c20ae7a068ed3906ccafc399b91
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Tue Apr 22 16:25:23 2008 +0800
+
+    i965: fix DEPTH_TEXTURE_MODE (bug #14220)
+    (cherry picked from commit 6e620162a1b235ade227368b87fa993e844d7077)
+
+commit 7786e8a122717c1f68e943994ed99fda697f29dc
+Author: Zou Nan hai <nanhai.zou@intel.com>
+Date:   Tue Apr 22 15:50:40 2008 +0800
+
+     [i965] This is to fix random crash in some maps of Ut2004 demo.
+    	e.g. bridge of fate.
+     	If vs output is big, driver may fall back to use 8 urb entries for vs,
+    	unfortunally, for some unknown reason, if vs is working at 4x2 mode,
+    	8 entries is not enough, may lead to gpu hang.
+    (cherry picked from commit c9c64a100d5d0661fd672af040a68bd4e7292940)
+
+commit b557beb6572e5662a21375b6aa9e25df4fa4dc34
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Tue Apr 22 11:11:42 2008 +0800
+
+    i965: save the offset of target buffer after last execution, not relocatee buffer.
+    (cherry picked from commit f61e51ee98a2f43ad61e98353eae2cd8dc8a272f)
+
+commit 96aff7d90e5404bb8b023fcae676c2de78829eb3
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Mon Apr 21 17:34:00 2008 +0800
+
+    intel: fix an assertion failure. fix bug #15575
+    (cherry picked from commit 7c2a3fced8bbf0915ee4160c23b1752917c1e69d)
+
+commit e82b0a1a63d6438328d0821d271bbf9946e7a96c
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Mon Apr 21 14:02:50 2008 +0800
+
+    i965: clear the PRESUMED_OFFSET flag from bo_req.hint, not bo_req.flags. fix #15574
+    (cherry picked from commit 33107357a1226b9218fac410a7502a981aac5cc5)
+
+commit 6c33450bfdb38592ea77dd2ff65d522b47bcaa41
+Author: Dave Airlie <airlied@panoply-rh.(none)>
+Date:   Fri Apr 18 15:37:54 2008 +1000
+
+    i965: fixup depth buffer check
+    (cherry picked from commit 27e06a52342b94b4fb1d60a57c3bdaa2b30607cf)
+diff --git a/progs/demos/shadowtex.c b/progs/demos/shadowtex.c
+index c2d40bd..b6bdbe4 100644
+--- a/progs/demos/shadowtex.c
++++ b/progs/demos/shadowtex.c
+@@ -658,6 +658,7 @@ Display(void)
+          glDisable(GL_FRAGMENT_PROGRAM_ARB);
+       }
+ 
++      glDisable(GL_TEXTURE_1D);
+       glDisable(GL_TEXTURE_2D);
+    }
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_eu.h b/src/mesa/drivers/dri/i965/brw_eu.h
+index 25f1f89..c138d15 100644
+--- a/src/mesa/drivers/dri/i965/brw_eu.h
++++ b/src/mesa/drivers/dri/i965/brw_eu.h
+@@ -335,14 +335,14 @@ static __inline struct brw_reg brw_imm_ud( GLuint ud )
+ static __inline struct brw_reg brw_imm_uw( GLushort uw )
+ {
+    struct brw_reg imm = brw_imm_reg(BRW_REGISTER_TYPE_UW);
+-   imm.dw1.ud = uw;
++   imm.dw1.ud = uw | (uw << 16);
+    return imm;
+ }
+ 
+ static __inline struct brw_reg brw_imm_w( GLshort w )
+ {
+    struct brw_reg imm = brw_imm_reg(BRW_REGISTER_TYPE_W);
+-   imm.dw1.d = w;
++   imm.dw1.d = w | (w << 16);
+    return imm;
+ }
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_misc_state.c b/src/mesa/drivers/dri/i965/brw_misc_state.c
+index ec0bd6b..26ec797 100644
+--- a/src/mesa/drivers/dri/i965/brw_misc_state.c
++++ b/src/mesa/drivers/dri/i965/brw_misc_state.c
+@@ -183,7 +183,7 @@ static int prepare_depthbuffer(struct brw_context *brw)
+ {
+    struct intel_region *region = brw->state.depth_region;
+ 
+-   if (region->buffer)
++   if (!region || !region->buffer)
+       return 0;
+    return dri_bufmgr_check_aperture_space(region->buffer);
+ }
+diff --git a/src/mesa/drivers/dri/i965/brw_urb.c b/src/mesa/drivers/dri/i965/brw_urb.c
+index 4b03838..c423dbe 100644
+--- a/src/mesa/drivers/dri/i965/brw_urb.c
++++ b/src/mesa/drivers/dri/i965/brw_urb.c
+@@ -52,7 +52,7 @@ static const struct {
+    GLuint min_entry_size;
+    GLuint max_entry_size;
+ } limits[CS+1] = {
+-   { 8, 32, 1, 5 },			/* vs */
++   { 16, 32, 1, 5 },			/* vs */
+    { 4, 8,  1, 5 },			/* gs */
+    { 6, 8,  1, 5 },			/* clp */
+    { 1, 8,  1, 12 },		        /* sf */
+diff --git a/src/mesa/drivers/dri/i965/brw_wm_emit.c b/src/mesa/drivers/dri/i965/brw_wm_emit.c
+index a02f70a..4cda559 100644
+--- a/src/mesa/drivers/dri/i965/brw_wm_emit.c
++++ b/src/mesa/drivers/dri/i965/brw_wm_emit.c
+@@ -724,9 +724,6 @@ static void emit_tex( struct brw_wm_compile *c,
+ 	      responseLength,
+ 	      msgLength,
+ 	      0);	
+-
+-   if (shadow)
+-       brw_MOV(p, dst[3], brw_imm_f(1.0));
+ }
+ 
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_wm_surface_state.c b/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
+index eff4555..0d91391 100644
+--- a/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
++++ b/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
+@@ -69,7 +69,7 @@ static GLuint translate_tex_target( GLenum target )
+ }
+ 
+ 
+-static GLuint translate_tex_format( GLuint mesa_format )
++static GLuint translate_tex_format( GLuint mesa_format, GLenum depth_mode )
+ {
+    switch( mesa_format ) {
+    case MESA_FORMAT_L8:
+@@ -114,7 +114,12 @@ static GLuint translate_tex_format( GLuint mesa_format )
+       return BRW_SURFACEFORMAT_FXT1;
+ 
+    case MESA_FORMAT_Z16:
+-      return BRW_SURFACEFORMAT_I16_UNORM;
++      if (depth_mode == GL_INTENSITY) 
++	  return BRW_SURFACEFORMAT_I16_UNORM;
++      else if (depth_mode == GL_ALPHA)
++	  return BRW_SURFACEFORMAT_A16_UNORM;
++      else
++	  return BRW_SURFACEFORMAT_L16_UNORM;
+ 
+    case MESA_FORMAT_RGB_DXT1:
+        return BRW_SURFACEFORMAT_DXT1_RGB;
+@@ -143,7 +148,7 @@ static GLuint translate_tex_format( GLuint mesa_format )
+ }
+ 
+ struct brw_wm_surface_key {
+-   GLenum target;
++   GLenum target, depthmode;
+    dri_bo *bo;
+    GLint format;
+    GLint first_level, last_level;
+@@ -163,7 +168,7 @@ brw_create_texture_surface( struct brw_context *brw,
+ 
+    surf.ss0.mipmap_layout_mode = BRW_SURFACE_MIPMAPLAYOUT_BELOW;
+    surf.ss0.surface_type = translate_tex_target(key->target);
+-   surf.ss0.surface_format = translate_tex_format(key->format);
++   surf.ss0.surface_format = translate_tex_format(key->format, key->depthmode);
+ 
+    /* This is ok for all textures with channel width 8bit or less:
+     */
+@@ -219,6 +224,7 @@ brw_update_texture_surface( GLcontext *ctx, GLuint unit )
+ 
+    memset(&key, 0, sizeof(key));
+    key.target = tObj->Target;
++   key.depthmode = tObj->DepthMode;
+    key.format = firstImage->TexFormat->MesaFormat;
+    key.bo = intelObj->mt->region->buffer;
+    key.first_level = intelObj->firstLevel;
+diff --git a/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c b/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c
+index 6828425..545913f 100644
+--- a/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c
++++ b/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c
+@@ -889,7 +889,7 @@ dri_ttm_bo_process_reloc(dri_bo *bo)
+ 	   struct intel_validate_entry *entry =
+ 	      &bufmgr_ttm->validate_array[target_buf_ttm->validate_index];
+ 
+-	   entry->bo_arg.d.req.bo_req.flags &= ~DRM_BO_HINT_PRESUMED_OFFSET;
++	   entry->bo_arg.d.req.bo_req.hint &= ~DRM_BO_HINT_PRESUMED_OFFSET;
+ 	}
+     }
+ }
+@@ -993,7 +993,7 @@ dri_ttm_bo_post_submit(dri_bo *bo)
+ 	/* Continue walking the tree depth-first. */
+ 	dri_ttm_bo_post_submit(r->target_buf);
+ 
+-	r->last_target_offset = bo->offset;
++	r->last_target_offset = r->target_buf->offset;
+     }
+ }
+ 
+diff --git a/src/mesa/drivers/dri/intel/intel_mipmap_tree.c b/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
+index 55503f4..9205627 100644
+--- a/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
++++ b/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
+@@ -272,6 +272,11 @@ intel_miptree_match_image(struct intel_mipmap_tree *mt,
+        image->IsCompressed != mt->compressed)
+       return GL_FALSE;
+ 
++   if (!image->IsCompressed &&
++       !mt->compressed &&
++       image->TexFormat->TexelBytes != mt->cpp)
++      return GL_FALSE;
++
+    /* Test image dimensions against the base level image adjusted for
+     * minification.  This will also catch images not present in the
+     * tree, changed targets, etc.
+diff --git a/src/mesa/drivers/dri/intel/intel_screen.c b/src/mesa/drivers/dri/intel/intel_screen.c
+index 5aeb2a1..52e062e 100644
+--- a/src/mesa/drivers/dri/intel/intel_screen.c
++++ b/src/mesa/drivers/dri/intel/intel_screen.c
+@@ -68,7 +68,7 @@ PUBLIC const char __driConfigOptions[] =
+    DRI_CONF_SECTION_END
+    DRI_CONF_SECTION_QUALITY
+       DRI_CONF_FORCE_S3TC_ENABLE(false)
+-      DRI_CONF_ALLOW_LARGE_TEXTURES(1)
++      DRI_CONF_ALLOW_LARGE_TEXTURES(2)
+    DRI_CONF_SECTION_END
+    DRI_CONF_SECTION_DEBUG
+      DRI_CONF_NO_RAST(false)
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_image.c b/src/mesa/drivers/dri/intel/intel_tex_image.c
+index a56a395..bcb6583 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_image.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_image.c
+@@ -348,8 +348,10 @@ intelTexImage(GLcontext * ctx,
+ 	 postConvWidth = 32 / texelBytes;
+ 	 texImage->RowStride = postConvWidth;
+       }
+-      
+-      assert(texImage->RowStride == postConvWidth);
++
++      if (!intelImage->mt) {      
++	  assert(texImage->RowStride == postConvWidth);
++      }
+    }
+ 
+    /* Release the reference to a potentially orphaned buffer.   
+diff --git a/src/mesa/drivers/dri/r200/r200_context.c b/src/mesa/drivers/dri/r200/r200_context.c
+index 20c1107..c567349 100644
+--- a/src/mesa/drivers/dri/r200/r200_context.c
++++ b/src/mesa/drivers/dri/r200/r200_context.c
+@@ -69,6 +69,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ #define need_GL_ATI_fragment_shader
+ #define need_GL_EXT_blend_minmax
+ #define need_GL_EXT_fog_coord
++#define need_GL_EXT_multi_draw_arrays
+ #define need_GL_EXT_secondary_color
+ #define need_GL_EXT_blend_equation_separate
+ #define need_GL_EXT_blend_func_separate
+@@ -132,6 +133,7 @@ const struct dri_extension card_extensions[] =
+     { "GL_EXT_blend_minmax",               GL_EXT_blend_minmax_functions },
+     { "GL_EXT_blend_subtract",             NULL },
+     { "GL_EXT_fog_coord",                  GL_EXT_fog_coord_functions },
++    { "GL_EXT_multi_draw_arrays",          GL_EXT_multi_draw_arrays_functions },
+     { "GL_EXT_secondary_color",            GL_EXT_secondary_color_functions },
+     { "GL_EXT_stencil_wrap",               NULL },
+     { "GL_EXT_texture_edge_clamp",         NULL },
+diff --git a/src/mesa/drivers/dri/r200/r200_texstate.c b/src/mesa/drivers/dri/r200/r200_texstate.c
+index 05ff595..4edf304 100644
+--- a/src/mesa/drivers/dri/r200/r200_texstate.c
++++ b/src/mesa/drivers/dri/r200/r200_texstate.c
+@@ -1815,6 +1815,12 @@ void r200UpdateTextureState( GLcontext *ctx )
+    GLboolean ok;
+    GLuint dbg;
+ 
++   /* NOTE: must not manipulate rmesa->state.texture.unit[].unitneeded or
++      rmesa->state.envneeded before a R200_STATECHANGE (or R200_NEWPRIM) since
++      we use these to determine if we want to emit the corresponding state
++      atoms. */
++   R200_NEWPRIM( rmesa );
++
+    if (ctx->ATIFragmentShader._Enabled) {
+       GLuint i;
+       for (i = 0; i < R200_MAX_TEXTURE_UNITS; i++) {
+diff --git a/src/mesa/drivers/dri/r300/r300_context.c b/src/mesa/drivers/dri/r300/r300_context.c
+index d2ed310..c56a762 100644
+--- a/src/mesa/drivers/dri/r300/r300_context.c
++++ b/src/mesa/drivers/dri/r300/r300_context.c
+@@ -84,6 +84,7 @@ int hw_tcl_on = 1;
+ #define need_GL_ARB_vertex_program
+ #define need_GL_EXT_blend_minmax
+ //#define need_GL_EXT_fog_coord
++#define need_GL_EXT_multi_draw_arrays
+ #define need_GL_EXT_secondary_color
+ #define need_GL_EXT_blend_equation_separate
+ #define need_GL_EXT_blend_func_separate
+@@ -112,6 +113,7 @@ const struct dri_extension card_extensions[] = {
+   {"GL_EXT_blend_minmax",		GL_EXT_blend_minmax_functions},
+   {"GL_EXT_blend_subtract",		NULL},
+ //  {"GL_EXT_fog_coord",			GL_EXT_fog_coord_functions },
++  {"GL_EXT_multi_draw_arrays",		GL_EXT_multi_draw_arrays_functions},
+   {"GL_EXT_gpu_program_parameters",     GL_EXT_gpu_program_parameters_functions},
+   {"GL_EXT_secondary_color", 		GL_EXT_secondary_color_functions},
+   {"GL_EXT_stencil_two_side",		GL_EXT_stencil_two_side_functions},
+diff --git a/src/mesa/drivers/dri/r300/r300_ioctl.c b/src/mesa/drivers/dri/r300/r300_ioctl.c
+index 1b40588..baa7418 100644
+--- a/src/mesa/drivers/dri/r300/r300_ioctl.c
++++ b/src/mesa/drivers/dri/r300/r300_ioctl.c
+@@ -316,6 +316,14 @@ static void r300EmitClearState(GLcontext * ctx)
+ 	e32(FP_SELA(0, NO, W, FP_TMP(0), 0, 0));
+ 
+ 	if (has_tcl) {
++		R300_STATECHANGE(rmesa, vap_cntl);
++		reg_start(R300_VAP_CNTL, 0);
++
++		e32((10 << R300_VAP_CNTL__PVS_NUM_SLOTS__SHIFT) |
++		    (6 << R300_VAP_CNTL__PVS_NUM_CNTRLS__SHIFT) |
++		    (4 << R300_VAP_CNTL__PVS_NUM_FPUS__SHIFT) |
++		    (12 << R300_VAP_CNTL__VF_MAX_VTX_NUM__SHIFT));
++
+ 		R300_STATECHANGE(r300, pvs);
+ 		reg_start(R300_VAP_PVS_CNTL_1, 2);
+ 
+diff --git a/src/mesa/drivers/dri/r300/r300_reg.h b/src/mesa/drivers/dri/r300/r300_reg.h
+index 2200cec..d2a8175 100644
+--- a/src/mesa/drivers/dri/r300/r300_reg.h
++++ b/src/mesa/drivers/dri/r300/r300_reg.h
+@@ -67,9 +67,15 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 
+ /*
+  * Vertex Array Processing (VAP) Control
+- * Stolen from r200 code from Christoph Brill (It's a guess!)
+  */
+ #define R300_VAP_CNTL	0x2080
++#	define  R300_VAP_CNTL__PVS_NUM_SLOTS__SHIFT             0
++#	define  R300_VAP_CNTL__PVS_NUM_CNTRLS__SHIFT            4
++#	define  R300_VAP_CNTL__PVS_NUM_FPUS__SHIFT              8
++#	define  R300_VAP_CNTL__VF_MAX_VTX_NUM__SHIFT            18
++#	define  R500_VAP_CNTL__VAP_NO_RENDER                    (1<<17)
++#	define  R300_VAP_CNTL__DX_CLIP_SPACE_DEF                (1<<22)
++#	define  R500_VAP_CNTL__TCL_STATE_OPTIMIZATION           (1<<23)
+ 
+ /* This register is written directly and also starts data section
+  * in many 3d CP_PACKET3's
+diff --git a/src/mesa/drivers/dri/r300/r300_state.c b/src/mesa/drivers/dri/r300/r300_state.c
+index e11b5af..aa0de4e 100644
+--- a/src/mesa/drivers/dri/r300/r300_state.c
++++ b/src/mesa/drivers/dri/r300/r300_state.c
+@@ -1648,10 +1648,51 @@ static inline void r300SetupVertexProgramFragment(r300ContextPtr r300, int dest,
+ 	}
+ }
+ 
++/* FIXME: move near the MIN2 define. */
++#define MIN3(a, b, c)	((a) < (b) ? MIN2(a, c) : MIN2(b, c))
++
++/* FIXME: need to add a structure for per-card/chipset values; they are
++ * currently hard-coded. */
++static void r300VapCntl(r300ContextPtr rmesa, GLuint input_count,
++			GLuint output_count, GLuint temp_count)
++{
++	int cmd_reserved = 0;
++	int cmd_written = 0;
++	drm_radeon_cmd_header_t *cmd = NULL;
++
++	int vtx_mem_size = 72;	/* FIXME: R3XX vs R5XX */
++
++	/* Flush PVS engine before changing PVS_NUM_SLOTS, PVS_NUM_CNTRLS.
++	 * See r500 docs 6.5.2 */
++	reg_start(R300_VAP_PVS_WAITIDLE, 0);
++	e32(0x00000000);
++
++	/* avoid division by zero */
++	if (input_count == 0)
++		input_count = 1;
++	if (output_count == 0)
++		output_count = 1;
++	if (temp_count == 0)
++		temp_count = 1;
++
++	int pvs_num_slots =
++	    MIN3(10, vtx_mem_size / input_count, vtx_mem_size / output_count);
++	int pvs_num_cntrls = MIN2(6, vtx_mem_size / temp_count);
++
++	R300_STATECHANGE(rmesa, vap_cntl);
++	rmesa->hw.vap_cntl.cmd[1] =
++	    (pvs_num_slots << R300_VAP_CNTL__PVS_NUM_SLOTS__SHIFT) |
++	    (pvs_num_cntrls << R300_VAP_CNTL__PVS_NUM_CNTRLS__SHIFT) |
++	    (4 << R300_VAP_CNTL__PVS_NUM_FPUS__SHIFT) |
++	    (12 << R300_VAP_CNTL__VF_MAX_VTX_NUM__SHIFT) |
++	    R500_VAP_CNTL__TCL_STATE_OPTIMIZATION;
++}
++
+ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ {
+ 	struct r300_vertex_shader_state *prog = &(rmesa->state.vertex_shader);
+ 	GLuint o_reg = 0;
++	GLuint i_reg = 0;
+ 	int i;
+ 	int inst_count = 0;
+ 	int param_count = 0;
+@@ -1664,6 +1705,7 @@ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ 			prog->program.body.i[program_end + 2] = PVS_SRC_OPERAND(rmesa->state.sw_tcl_inputs[i], PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_REG_INPUT, VSF_FLAG_NONE);
+ 			prog->program.body.i[program_end + 3] = PVS_SRC_OPERAND(rmesa->state.sw_tcl_inputs[i], PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_REG_INPUT, VSF_FLAG_NONE);
+ 			program_end += 4;
++			i_reg++;
+ 		}
+ 	}
+ 
+@@ -1673,6 +1715,8 @@ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ 				       &(prog->program));
+ 	inst_count = (prog->program.length / 4) - 1;
+ 
++	r300VapCntl(rmesa, i_reg, o_reg, 0);
++
+ 	R300_STATECHANGE(rmesa, pvs);
+ 	rmesa->hw.pvs.cmd[R300_PVS_CNTL_1] =
+ 	    (0 << R300_PVS_CNTL_1_PROGRAM_START_SHIFT) |
+@@ -1686,6 +1730,15 @@ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ 	    (inst_count << R300_PVS_CNTL_3_PROGRAM_UNKNOWN2_SHIFT);
+ }
+ 
++static int r300BitCount(int x)
++{
++	x = ((x & 0xaaaaaaaaU) >> 1) + (x & 0x55555555U);
++	x = ((x & 0xccccccccU) >> 2) + (x & 0x33333333U);
++	x = (x >> 16) + (x & 0xffff);
++	x = ((x & 0xf0f0) >> 4) + (x & 0x0f0f);
++	return (x >> 8) + (x & 0x00ff);
++}
++
+ static void r300SetupRealVertexProgram(r300ContextPtr rmesa)
+ {
+ 	GLcontext *ctx = rmesa->radeon.glCtx;
+@@ -1707,6 +1760,10 @@ static void r300SetupRealVertexProgram(r300ContextPtr rmesa)
+ 	r300SetupVertexProgramFragment(rmesa, R300_PVS_UPLOAD_PROGRAM, &(prog->program));
+ 	inst_count = (prog->program.length / 4) - 1;
+ 
++	r300VapCntl(rmesa, r300BitCount(prog->key.InputsRead),
++		    r300BitCount(prog->key.OutputsWritten),
++		    prog->num_temporaries);
++	
+ 	R300_STATECHANGE(rmesa, pvs);
+ 	rmesa->hw.pvs.cmd[R300_PVS_CNTL_1] =
+ 	  (0 << R300_PVS_CNTL_1_PROGRAM_START_SHIFT) |
+@@ -1740,13 +1797,6 @@ static void r300SetupVertexProgram(r300ContextPtr rmesa)
+ 		r300SetupDefaultVertexProgram(rmesa);
+ 	}
+ 
+-
+-	/* FIXME: This is done for vertex shader fragments, but also needs to be
+-	 * done for vap_pvs, so I leave it as a reminder. */
+-#if 0
+-	reg_start(R300_VAP_PVS_WAITIDLE, 0);
+-	e32(0x00000000);
+-#endif
+ }
+ 
+ /**
+@@ -1848,11 +1898,6 @@ static void r300ResetHwState(r300ContextPtr r300)
+ 	r300AlphaFunc(ctx, ctx->Color.AlphaFunc, ctx->Color.AlphaRef);
+ 	r300Enable(ctx, GL_ALPHA_TEST, ctx->Color.AlphaEnabled);
+ 
+-	if (!has_tcl)
+-		r300->hw.vap_cntl.cmd[1] = 0x0014045a;
+-	else
+-		r300->hw.vap_cntl.cmd[1] = 0x0030045A;	//0x0030065a /* Dangerous */
+-
+ 	r300->hw.vte.cmd[1] = R300_VPORT_X_SCALE_ENA
+ 	    | R300_VPORT_X_OFFSET_ENA
+ 	    | R300_VPORT_Y_SCALE_ENA
+@@ -2084,10 +2129,11 @@ void r300UpdateShaders(r300ContextPtr rmesa)
+ 			hw_tcl_on = future_hw_tcl_on = 0;
+ 			r300ResetHwState(rmesa);
+ 
++			r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ 			return;
+ 		}
+-		r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ 	}
++	r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ }
+ 
+ static void r300SetupPixelShader(r300ContextPtr rmesa)
+diff --git a/src/mesa/drivers/dri/r300/r300_swtcl.c b/src/mesa/drivers/dri/r300/r300_swtcl.c
+index a732bdb..1452ed5 100644
+--- a/src/mesa/drivers/dri/r300/r300_swtcl.c
++++ b/src/mesa/drivers/dri/r300/r300_swtcl.c
+@@ -591,6 +591,7 @@ static void r300RenderStart(GLcontext *ctx)
+ 	r300ChooseRenderState(ctx);	
+ 	r300SetVertexFormat(ctx);
+ 
++	r300UpdateShaders(rmesa);
+ 	r300UpdateShaderStates(rmesa);
+ 
+ 	r300EmitCacheFlush(rmesa);
+diff --git a/src/mesa/drivers/dri/radeon/radeon_screen.c b/src/mesa/drivers/dri/radeon/radeon_screen.c
+index 27d233c..5cf7f89 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_screen.c
++++ b/src/mesa/drivers/dri/radeon/radeon_screen.c
+@@ -90,7 +90,7 @@ DRI_CONF_BEGIN
+         DRI_CONF_COLOR_REDUCTION(DRI_CONF_COLOR_REDUCTION_DITHER)
+         DRI_CONF_ROUND_MODE(DRI_CONF_ROUND_TRUNC)
+         DRI_CONF_DITHER_MODE(DRI_CONF_DITHER_XERRORDIFF)
+-        DRI_CONF_ALLOW_LARGE_TEXTURES(1)
++        DRI_CONF_ALLOW_LARGE_TEXTURES(2)
+     DRI_CONF_SECTION_END
+     DRI_CONF_SECTION_DEBUG
+         DRI_CONF_NO_RAST(false)
+@@ -117,7 +117,7 @@ DRI_CONF_BEGIN
+         DRI_CONF_COLOR_REDUCTION(DRI_CONF_COLOR_REDUCTION_DITHER)
+         DRI_CONF_ROUND_MODE(DRI_CONF_ROUND_TRUNC)
+         DRI_CONF_DITHER_MODE(DRI_CONF_DITHER_XERRORDIFF)
+-        DRI_CONF_ALLOW_LARGE_TEXTURES(1)
++        DRI_CONF_ALLOW_LARGE_TEXTURES(2)
+         DRI_CONF_TEXTURE_BLEND_QUALITY(1.0,"0.0:1.0")
+     DRI_CONF_SECTION_END
+     DRI_CONF_SECTION_DEBUG
+@@ -697,6 +697,9 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+       return NULL;
+    }
+ 
++   if (getenv("R300_NO_TCL"))
++     screen->chip_flags &= ~RADEON_CHIPSET_TCL;
++
+    if (screen->chip_family <= CHIP_FAMILY_RS200)
+       screen->chip_flags |= RADEON_CLASS_R100;
+    else if (screen->chip_family <= CHIP_FAMILY_RV280)
+diff --git a/src/mesa/main/dlist.c b/src/mesa/main/dlist.c
+index 8d10d8a..23ede7b 100644
+--- a/src/mesa/main/dlist.c
++++ b/src/mesa/main/dlist.c
+@@ -611,9 +611,9 @@ destroy_list(GLcontext *ctx, GLuint list)
+ 
+ 
+ /*
+- * Translate the nth element of list from type to GLuint.
++ * Translate the nth element of list from <type> to GLint.
+  */
+-static GLuint
++static GLint
+ translate_id(GLsizei n, GLenum type, const GLvoid * list)
+ {
+    GLbyte *bptr;
+@@ -627,37 +627,40 @@ translate_id(GLsizei n, GLenum type, const GLvoid * list)
+    switch (type) {
+    case GL_BYTE:
+       bptr = (GLbyte *) list;
+-      return (GLuint) *(bptr + n);
++      return (GLint) bptr[n];
+    case GL_UNSIGNED_BYTE:
+       ubptr = (GLubyte *) list;
+-      return (GLuint) *(ubptr + n);
++      return (GLint) ubptr[n];
+    case GL_SHORT:
+       sptr = (GLshort *) list;
+-      return (GLuint) *(sptr + n);
++      return (GLint) sptr[n];
+    case GL_UNSIGNED_SHORT:
+       usptr = (GLushort *) list;
+-      return (GLuint) *(usptr + n);
++      return (GLint) usptr[n];
+    case GL_INT:
+       iptr = (GLint *) list;
+-      return (GLuint) *(iptr + n);
++      return iptr[n];
+    case GL_UNSIGNED_INT:
+       uiptr = (GLuint *) list;
+-      return (GLuint) *(uiptr + n);
++      return (GLint) uiptr[n];
+    case GL_FLOAT:
+       fptr = (GLfloat *) list;
+-      return (GLuint) *(fptr + n);
++      return (GLint) FLOORF(fptr[n]);
+    case GL_2_BYTES:
+       ubptr = ((GLubyte *) list) + 2 * n;
+-      return (GLuint) *ubptr * 256 + (GLuint) * (ubptr + 1);
++      return (GLint) ubptr[0] * 256
++           + (GLint) ubptr[1];
+    case GL_3_BYTES:
+       ubptr = ((GLubyte *) list) + 3 * n;
+-      return (GLuint) * ubptr * 65536
+-           + (GLuint) *(ubptr + 1) * 256 + (GLuint) * (ubptr + 2);
++      return (GLint) ubptr[0] * 65536
++           + (GLint) ubptr[1] * 256
++           + (GLint) ubptr[2];
+    case GL_4_BYTES:
+       ubptr = ((GLubyte *) list) + 4 * n;
+-      return (GLuint) *ubptr * 16777216
+-           + (GLuint) *(ubptr + 1) * 65536
+-           + (GLuint) *(ubptr + 2) * 256 + (GLuint) * (ubptr + 3);
++      return (GLint) ubptr[0] * 16777216
++           + (GLint) ubptr[1] * 65536
++           + (GLint) ubptr[2] * 256
++           + (GLint) ubptr[3];
+    default:
+       return 0;
+    }
+@@ -992,10 +995,10 @@ _mesa_save_CallLists(GLsizei n, GLenum type, const GLvoid * lists)
+    }
+ 
+    for (i = 0; i < n; i++) {
+-      GLuint list = translate_id(i, type, lists);
++      GLint list = translate_id(i, type, lists);
+       Node *n = ALLOC_INSTRUCTION(ctx, OPCODE_CALL_LIST_OFFSET, 2);
+       if (n) {
+-         n[1].ui = list;
++         n[1].i = list;
+          n[2].b = typeErrorFlag;
+       }
+    }
+@@ -5774,7 +5777,8 @@ execute_list(GLcontext *ctx, GLuint list)
+                _mesa_error(ctx, GL_INVALID_ENUM, "glCallLists(type)");
+             }
+             else if (ctx->ListState.CallDepth < MAX_LIST_NESTING) {
+-               execute_list(ctx, ctx->List.ListBase + n[1].ui);
++               GLuint list = (GLuint) (ctx->List.ListBase + n[1].i);
++               execute_list(ctx, list);
+             }
+             break;
+          case OPCODE_CLEAR:
+@@ -6822,7 +6826,6 @@ void GLAPIENTRY
+ _mesa_CallLists(GLsizei n, GLenum type, const GLvoid * lists)
+ {
+    GET_CURRENT_CONTEXT(ctx);
+-   GLuint list;
+    GLint i;
+    GLboolean save_compile_flag;
+ 
+@@ -6854,8 +6857,8 @@ _mesa_CallLists(GLsizei n, GLenum type, const GLvoid * lists)
+    ctx->CompileFlag = GL_FALSE;
+ 
+    for (i = 0; i < n; i++) {
+-      list = translate_id(i, type, lists);
+-      execute_list(ctx, ctx->List.ListBase + list);
++      GLuint list = (GLuint) (ctx->List.ListBase + translate_id(i, type, lists));
++      execute_list(ctx, list);
+    }
+ 
+    ctx->CompileFlag = save_compile_flag;
+diff --git a/src/mesa/main/drawpix.c b/src/mesa/main/drawpix.c
+index 4f28766..fde9338 100644
+--- a/src/mesa/main/drawpix.c
++++ b/src/mesa/main/drawpix.c
+@@ -374,8 +374,9 @@ _mesa_Bitmap( GLsizei width, GLsizei height,
+ 
+    if (ctx->RenderMode == GL_RENDER) {
+       /* Truncate, to satisfy conformance tests (matches SGI's OpenGL). */
+-      GLint x = IFLOOR(ctx->Current.RasterPos[0] - xorig);
+-      GLint y = IFLOOR(ctx->Current.RasterPos[1] - yorig);
++      const GLfloat epsilon = 0.0001;
++      GLint x = IFLOOR(ctx->Current.RasterPos[0] + epsilon - xorig);
++      GLint y = IFLOOR(ctx->Current.RasterPos[1] + epsilon - yorig);
+ 
+       if (ctx->Unpack.BufferObj->Name) {
+          /* unpack from PBO */
+diff --git a/src/mesa/main/texstate.c b/src/mesa/main/texstate.c
+index 288b334..626c264 100644
+--- a/src/mesa/main/texstate.c
++++ b/src/mesa/main/texstate.c
+@@ -213,6 +213,9 @@ calculate_derived_texenv( struct gl_tex_env_combine_state *state,
+       return;
+    }
+ 
++   if (mode == GL_REPLACE_EXT)
++      mode = GL_REPLACE;
++
+    switch (mode) {
+    case GL_REPLACE:
+    case GL_MODULATE:
+@@ -315,7 +318,9 @@ _mesa_TexEnvfv( GLenum target, GLenum pname, const GLfloat *param )
+       switch (pname) {
+       case GL_TEXTURE_ENV_MODE:
+          {
+-            const GLenum mode = (GLenum) (GLint) *param;
++            GLenum mode = (GLenum) (GLint) *param;
++            if (mode == GL_REPLACE_EXT)
++               mode = GL_REPLACE;
+ 	    if (texUnit->EnvMode == mode)
+ 	       return;
+             if (mode == GL_MODULATE ||
