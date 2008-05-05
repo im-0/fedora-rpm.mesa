@@ -1,0 +1,43 @@
+diff --git a/src/mesa/drivers/dri/r300/r300_state.c b/src/mesa/drivers/dri/r300/r300_state.c
+index ae5d8a8..aa0de4e 100644
+--- a/src/mesa/drivers/dri/r300/r300_state.c
++++ b/src/mesa/drivers/dri/r300/r300_state.c
+@@ -2129,10 +2129,11 @@ void r300UpdateShaders(r300ContextPtr rmesa)
+ 			hw_tcl_on = future_hw_tcl_on = 0;
+ 			r300ResetHwState(rmesa);
+ 
++			r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ 			return;
+ 		}
+-		r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ 	}
++	r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ }
+ 
+ static void r300SetupPixelShader(r300ContextPtr rmesa)
+diff --git a/src/mesa/drivers/dri/r300/r300_swtcl.c b/src/mesa/drivers/dri/r300/r300_swtcl.c
+index a732bdb..1452ed5 100644
+--- a/src/mesa/drivers/dri/r300/r300_swtcl.c
++++ b/src/mesa/drivers/dri/r300/r300_swtcl.c
+@@ -591,6 +591,7 @@ static void r300RenderStart(GLcontext *ctx)
+ 	r300ChooseRenderState(ctx);	
+ 	r300SetVertexFormat(ctx);
+ 
++	r300UpdateShaders(rmesa);
+ 	r300UpdateShaderStates(rmesa);
+ 
+ 	r300EmitCacheFlush(rmesa);
+diff --git a/src/mesa/drivers/dri/radeon/radeon_screen.c b/src/mesa/drivers/dri/radeon/radeon_screen.c
+index 6107577..5cf7f89 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_screen.c
++++ b/src/mesa/drivers/dri/radeon/radeon_screen.c
+@@ -697,6 +697,9 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+       return NULL;
+    }
+ 
++   if (getenv("R300_NO_TCL"))
++     screen->chip_flags &= ~RADEON_CHIPSET_TCL;
++
+    if (screen->chip_family <= CHIP_FAMILY_RS200)
+       screen->chip_flags |= RADEON_CLASS_R100;
+    else if (screen->chip_family <= CHIP_FAMILY_RV280)
