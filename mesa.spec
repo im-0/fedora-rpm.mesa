@@ -38,7 +38,7 @@ Patch7: mesa-7.1-link-shared.patch
 # lets only build drivers on sparc that are remotely useful
 Patch8: mesa-7.1-sparc.patch
 
-Patch9: mesa-fix-965-buffer-check.patch
+Patch10: mesa-7.1-f9-intel-and-radeon-fixes.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
@@ -167,7 +167,7 @@ This package provides some demo applications for testing Mesa.
 %patch4 -p1 -b .disable-tex-offset
 %patch7 -p1 -b .dricore
 %patch8 -p1
-%patch9 -p1 -b .965-depth
+%patch10 -p1 -b .misc-fixes
 
 # WARNING: The following files are copyright "Mark J. Kilgard" under the GLUT
 # license and are not open source/free software, so we remove them.
@@ -416,6 +416,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Mon May 05 2008 Dave Airlie <airlied@redhat.com> 7.1-0.29
+- mesa-7.1-f9-intel-and-radeon-fixes.patch - Update mesa 
+  package with cherrypicked fixes from master.
+- Fixes numerous i965 3D issues
+- Fixes compiz on rs48x and rs690 radeon chipsets
+
 * Fri Apr 18 2008 Dave Airlie <airlied@redhat.com> 7.1-0.28
 - okay fire me now - I swear it runs compiz really well...
 - fix more bugs on 965
