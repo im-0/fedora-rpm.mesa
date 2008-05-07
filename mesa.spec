@@ -15,7 +15,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.29%{?dist}
+Release: 0.30%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -39,6 +39,8 @@ Patch7: mesa-7.1-link-shared.patch
 Patch8: mesa-7.1-sparc.patch
 
 Patch10: mesa-7.1-f9-intel-and-radeon-fixes.patch
+Patch11: mesa-7.1-fix-965-googleearth.patch
+Patch12: mesa-7.1-disable-intel-classic-warn.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
@@ -168,6 +170,8 @@ This package provides some demo applications for testing Mesa.
 %patch7 -p1 -b .dricore
 %patch8 -p1
 %patch10 -p1 -b .misc-fixes
+%patch11 -p1 -b .965-googleearth
+%patch12 -p1 -b .intel-nowarn
 
 # WARNING: The following files are copyright "Mark J. Kilgard" under the GLUT
 # license and are not open source/free software, so we remove them.
@@ -416,6 +420,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Wed May 07 2008 Dave Airlie <airlied@redhat.com> 7.1-0.30
+- fix googleearth on Intel 965 (#443930)
+- disable classic warning to avoid people reporting it.
+
 * Mon May 05 2008 Dave Airlie <airlied@redhat.com> 7.1-0.29
 - mesa-7.1-f9-intel-and-radeon-fixes.patch - Update mesa 
   package with cherrypicked fixes from master.
