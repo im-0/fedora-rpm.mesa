@@ -1,0 +1,2054 @@
+commit 81c4e373bd687983ced6cb632b8c9bd599c1ecd0
+Author: Dave Airlie <airlied@panoply-rh.(none)>
+Date:   Tue May 6 18:52:47 2008 +1000
+
+    i965: fix googleearth in classic mode.
+    
+    In classic mode googleearth triggered a case where vbos weren't getting accounted properly.
+    (cherry picked from commit 17adf04e5c1da72a51815f3fdb9de2f3a8149c1a)
+
+commit fbb82e911658b29b3961370e497011f9dd4b281f
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Fri May 9 13:51:37 2008 +1000
+
+    intel: use new mipmap generation hooks in driver.
+    (cherry picked from commit 0dbd5c864047ad2ad3d459493c9e82be57427f83)
+
+commit 9436f301bb06dabde75059b7e15d69ae37af2984
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Fri May 9 13:41:02 2008 +1000
+
+    swrast/dri: switch over users of generate_mipmap to new interface
+    (cherry picked from commit 86bd98c6aa0d1a8533699af911c7c40c549b3965)
+
+commit 69fef7f46a3285ca1786ba7e384eae3119dc3753
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Fri Feb 8 14:45:58 2008 -0700
+
+    Remove unused texunit parameter to ctx->Driver.GenerateMipmap()
+    (cherry picked from commit c3395f4473c8fdf75d04c0dd72e687bc8d8127a7)
+    (cherry picked from commit d4e1d85dba8ec4a37f68a284b5a2be15b4f2987a)
+
+commit b2f4ad6b373b44fed2cfa6e7528480df46af315c
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Fri May 9 13:33:06 2008 +1000
+
+    Added ctx->Driver.GenerateMipmap() driver hook
+    (cherry picked from commit 4c2f3dbca940f289e67248682b84a3516d5a3031)
+    
+    Conflicts:
+    
+    	src/mesa/drivers/common/driverfuncs.c
+    (cherry picked from commit a638676473bd7bf2d47275ed2fd708e5b9d47e0b)
+
+commit 0fdb3fde63561e95c00482a660604ddd7c3d655d
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Thu May 8 19:48:32 2008 -0400
+
+    Add RS690M PCI ID.
+    (cherry picked from commit 990e010394a2685c1daeaef61cf4f7e2a0ba419e)
+
+commit ab134426b1645a536684ffe1294f1029b4954d00
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Thu May 8 10:59:31 2008 -0600
+
+    disable debug printfs
+    (cherry picked from commit b4e75d6c41b2561ca86321fb775ca774c8af44eb)
+
+commit 2407499bc013e53d4c0936bed0622bdc758677b3
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Thu May 8 08:39:30 2008 -0600
+
+    disable GL_DEPTH_TEST before glDrawPixels in case window has unrequested depth buffer
+    (cherry picked from commit 45668806567c0f31479c8bf9b1a85930cac70c5d)
+
+commit 9146fffba3e68d642c5712ec0bc414c3ac0e4d5a
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Thu May 8 08:36:49 2008 -0600
+
+    call glutDestroyWindow()
+    (cherry picked from commit 6a3fac871104c5cf3cd1c6a7767ba66d10446475)
+
+commit e073db2739497c03674c006f1dab61a64755cb14
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Wed May 7 18:51:44 2008 -0600
+
+    fix refcounting bugs in tnl/tex program caches
+    (cherry picked from commit 5b5c9315275752add1215dba0f86d5f5068d856b)
+
+commit 2f56de178297cb08e26b0e1c70d7beb1e0d4f841
+Author: Brian <brian.paul@tungstengraphics.com>
+Date:   Tue May 6 23:08:51 2008 -0600
+
+    implement full reference counting for vertex/fragment programs
+    
+    Use _mesa_reference_vert/fragprog() wherever we assign program pointers.
+    Fixes a memory corruption bug found with glean/api2 test.
+    (cherry picked from commit df43fb661b2030d9b833a42dd47b8d7bf58d73aa)
+
+commit 329f8ccddd4309aade2a53b633b32ac6c5e50f27
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Thu May 8 11:52:57 2008 +0800
+
+    mesa: Call RENDER_FINISH on the zero pixel case.
+    (cherry picked from commit 9508293e0186ded3be212a377b1fe39d68070da7)
+
+commit fc35fb99411fc1bac92a7da9d90a16f28602623f
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Mon May 5 23:49:50 2008 +1000
+
+    r300: fix swtcl texrect path properly.
+    
+    We really need to update the shader state so the texrect parameters work.
+    
+    This should fix compiz looking crappy on rs480 and rs690
+    (cherry picked from commit 66a5562ce2906fbf5b96d1cee18f9a31a78c4360)
+    (cherry picked from commit a7016949f27f7612ffba7a4d0c5e6280cb3e66ba)
+
+commit 5344028569e7c5fa7349685923c9ecc319c86fc6
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Sat May 3 21:31:22 2008 +1000
+
+    r300: add R300_NO_TCL to allow testing of non-tcl on tcl cards
+    (cherry picked from commit 026ef8111a94f6449dfa5e5cc0ae91fca4e68c0c)
+    (cherry picked from commit 2f0a75f0040b0de339c78448844a7b18ab995c46)
+
+commit f232d553352fa8ace512564f371f623da4c08485
+Author: Markus Amsler <markus.amsler@oribi.org>
+Date:   Fri May 2 01:58:18 2008 +0000
+
+    r300: Set correct VAP_CNTL per vertex program.
+    (cherry picked from commit acb47dee69a165f242d88f9eac60fc5646e33410)
+
+commit 135c59946a341e93f5e2a8f61a658d8c49ce2395
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Thu May 1 14:59:34 2008 -0600
+
+    fix conversion of GLfloat display list IDs
+    
+    Use floor() to convert to int (per Mark Kildard and the SI).
+    Also, change translate_id() to return a signed integer since we may be
+    offsetting from GL_LIST_BASE.
+    (cherry picked from commit 6e19f82c37191dabcdd882d0edac98a2ca9c11e4)
+
+commit d8dc7982bc38a1e28a123d5f63736bb8deea134c
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Wed Apr 30 16:05:01 2008 -0600
+
+    Add support for GL_REPLACE_EXT texture env mode.
+    
+    GL_REPLACE_EXT comes from the ancient GL_EXT_texture extension.  Found an old demo that
+    actually uses it.
+    The values of the GL_REPLACE and GL_REPLACE_EXT tokens is different, unfortunately.
+    (cherry picked from commit 5f0fa82f68e3f4f7086ed6cf5616ef94820e19ee)
+
+commit 736cb42b9f6dc60ad83858bb6e244f5e9a0df3ef
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Wed Apr 30 16:27:52 2008 +0800
+
+    intel: test cpp to ensure mipmap tree matches texture image.
+    (cherry picked from commit d12fa3511da23d8285f3ea1a51a1f328cdbb1462)
+
+commit 1bae58ce0dab2bc69b4467cae8cdc8a007c446ac
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Tue Apr 29 15:02:46 2008 -0600
+
+    disable GL_TEXTURE_1D at end of frame to fix failed assertion
+    (cherry picked from commit aef4ca647d1d8275b1586a92485ea6c5bc8e950c)
+
+commit 2ec4728f9175e2184a2af009d7d2be1f191d35d9
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Fri Apr 25 09:46:43 2008 -0600
+
+    mesa: adjust glBitmap coords by a small epsilon
+    
+    Fixes problem with bitmaps jumping around by one pixel depending on window
+    size.  The rasterpos is often X.9999 instead of X+1.
+    Run progs/redbook/drawf and resize window to check.
+    
+    Cherry picked from gallium-0.1 branch
+    (cherry picked from commit 4e0e02ae684c0286599309ae166cfc716db940d7)
+
+commit 28b887a05543e67d0e40eb17502fcf590145022a
+Author: Ove Kaaven <ovek@arcticnet.no>
+Date:   Tue Apr 29 22:14:05 2008 +0200
+
+    r200: fix state submission issue causing bogus textures (bug 15730)
+    (cherry picked from commit 4f474c7d1e1e6807af0f3db55f641fbd66be2e90)
+
+commit 52a964a87f5155bad582b2b48ff8ba8ca9669a69
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Tue Apr 29 18:43:28 2008 +0200
+
+    Change default of driconf "allow_large_textures" to announce hardware limits.
+    
+    The previous default these days served mostly to cause artifical problems with
+    GLX compositing managers like compiz (see e.g.
+    http://bugs.freedesktop.org/show_bug.cgi?id=10501).
+    (cherry picked from commit acba9c1771d653126fd6f604cb80c050b9e8ffb3)
+
+commit 98b53ad38218a4392f0dc070fd425f9cc61fdfa7
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Apr 25 16:07:12 2008 -0700
+
+    [i965] short immediate values must be replicated to both halves of the dword
+    
+    The 32-bit immediate value in the i965 instruction word must contain two
+    copies of any 16-bit constants. brw_imm_uw and brw_imm_w just needed to
+    copy the value into both halves of the immediate value instruction field.
+    (cherry picked from commit ca73488f48e3ee278f0185bb7dcc03d7bdedb62d)
+
+commit 5b77d659ef8d57b74b7ff2a8d1126808d9ee1de2
+Author: Pierre Beyssac <mesa-bugzilla@fasterix.frmug.org>
+Date:   Thu Apr 24 16:29:34 2008 -0600
+
+    enable GL_EXT_multi_draw_arrays (see bug 15670)
+    (cherry picked from commit fddb0f6e4fa67f3d6940e10519560941b59f5a5e)
+
+commit 36de683cfa560c20ae7a068ed3906ccafc399b91
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Tue Apr 22 16:25:23 2008 +0800
+
+    i965: fix DEPTH_TEXTURE_MODE (bug #14220)
+    (cherry picked from commit 6e620162a1b235ade227368b87fa993e844d7077)
+
+commit 7786e8a122717c1f68e943994ed99fda697f29dc
+Author: Zou Nan hai <nanhai.zou@intel.com>
+Date:   Tue Apr 22 15:50:40 2008 +0800
+
+     [i965] This is to fix random crash in some maps of Ut2004 demo.
+    	e.g. bridge of fate.
+     	If vs output is big, driver may fall back to use 8 urb entries for vs,
+    	unfortunally, for some unknown reason, if vs is working at 4x2 mode,
+    	8 entries is not enough, may lead to gpu hang.
+    (cherry picked from commit c9c64a100d5d0661fd672af040a68bd4e7292940)
+
+commit b557beb6572e5662a21375b6aa9e25df4fa4dc34
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Tue Apr 22 11:11:42 2008 +0800
+
+    i965: save the offset of target buffer after last execution, not relocatee buffer.
+    (cherry picked from commit f61e51ee98a2f43ad61e98353eae2cd8dc8a272f)
+
+commit 96aff7d90e5404bb8b023fcae676c2de78829eb3
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Mon Apr 21 17:34:00 2008 +0800
+
+    intel: fix an assertion failure. fix bug #15575
+    (cherry picked from commit 7c2a3fced8bbf0915ee4160c23b1752917c1e69d)
+
+commit e82b0a1a63d6438328d0821d271bbf9946e7a96c
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Mon Apr 21 14:02:50 2008 +0800
+
+    i965: clear the PRESUMED_OFFSET flag from bo_req.hint, not bo_req.flags. fix #15574
+    (cherry picked from commit 33107357a1226b9218fac410a7502a981aac5cc5)
+
+commit 6c33450bfdb38592ea77dd2ff65d522b47bcaa41
+Author: Dave Airlie <airlied@panoply-rh.(none)>
+Date:   Fri Apr 18 15:37:54 2008 +1000
+
+    i965: fixup depth buffer check
+    (cherry picked from commit 27e06a52342b94b4fb1d60a57c3bdaa2b30607cf)
+diff --git a/progs/demos/shadowtex.c b/progs/demos/shadowtex.c
+index c2d40bd..b6bdbe4 100644
+--- a/progs/demos/shadowtex.c
++++ b/progs/demos/shadowtex.c
+@@ -658,6 +658,7 @@ Display(void)
+          glDisable(GL_FRAGMENT_PROGRAM_ARB);
+       }
+ 
++      glDisable(GL_TEXTURE_1D);
+       glDisable(GL_TEXTURE_2D);
+    }
+ 
+diff --git a/progs/tests/fbotest2.c b/progs/tests/fbotest2.c
+index 18f2897..5283c7e 100644
+--- a/progs/tests/fbotest2.c
++++ b/progs/tests/fbotest2.c
+@@ -68,6 +68,7 @@ Display( void )
+ 
+    /* draw to window */
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
++   glDisable(GL_DEPTH_TEST);  /* in case window has depth buffer */
+    glWindowPos2iARB(0, 0);
+    glDrawPixels(Width, Height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+ 
+diff --git a/progs/trivial/tri.c b/progs/trivial/tri.c
+index 58a650b..d4a7f08 100644
+--- a/progs/trivial/tri.c
++++ b/progs/trivial/tri.c
+@@ -33,6 +33,7 @@
+ 
+ 
+ GLenum doubleBuffer;
++int win;
+ 
+ static void Init(void)
+ {
+@@ -59,7 +60,8 @@ static void Key(unsigned char key, int x, int y)
+ 
+     switch (key) {
+       case 27:
+-	exit(1);
++         glutDestroyWindow(win);
++	exit(0);
+       default:
+ 	return;
+     }
+@@ -122,7 +124,8 @@ int main(int argc, char **argv)
+     type |= (doubleBuffer) ? GLUT_DOUBLE : GLUT_SINGLE;
+     glutInitDisplayMode(type);
+ 
+-    if (glutCreateWindow("First Tri") == GL_FALSE) {
++    win = glutCreateWindow("First Tri");
++    if (!win) {
+ 	exit(1);
+     }
+ 
+diff --git a/src/mesa/drivers/common/driverfuncs.c b/src/mesa/drivers/common/driverfuncs.c
+index 03fbab6..7fe1162 100644
+--- a/src/mesa/drivers/common/driverfuncs.c
++++ b/src/mesa/drivers/common/driverfuncs.c
+@@ -29,6 +29,7 @@
+ #include "buffers.h"
+ #include "context.h"
+ #include "framebuffer.h"
++#include "mipmap.h"
+ #include "queryobj.h"
+ #include "renderbuffer.h"
+ #include "texcompress.h"
+@@ -98,6 +99,7 @@ _mesa_init_driver_functions(struct dd_function_table *driver)
+    driver->CopyTexSubImage1D = _swrast_copy_texsubimage1d;
+    driver->CopyTexSubImage2D = _swrast_copy_texsubimage2d;
+    driver->CopyTexSubImage3D = _swrast_copy_texsubimage3d;
++   driver->GenerateMipmap = _mesa_generate_mipmap;
+    driver->TestProxyTexImage = _mesa_test_proxy_teximage;
+    driver->CompressedTexImage1D = _mesa_store_compressed_teximage1d;
+    driver->CompressedTexImage2D = _mesa_store_compressed_teximage2d;
+diff --git a/src/mesa/drivers/dri/i965/brw_draw_upload.c b/src/mesa/drivers/dri/i965/brw_draw_upload.c
+index aa985d6..2d99238 100644
+--- a/src/mesa/drivers/dri/i965/brw_draw_upload.c
++++ b/src/mesa/drivers/dri/i965/brw_draw_upload.c
+@@ -404,6 +404,7 @@ int brw_prepare_vertices( struct brw_context *brw,
+        */
+       copy_array_to_vbo_array(brw, upload[0], interleave);
+ 
++      ret |= dri_bufmgr_check_aperture_space(upload[0]->bo);
+       for (i = 1; i < nr_uploads; i++) {
+ 	 /* Then, just point upload[i] at upload[0]'s buffer. */
+ 	 upload[i]->stride = interleave;
+@@ -416,13 +417,13 @@ int brw_prepare_vertices( struct brw_context *brw,
+    else {
+       /* Upload non-interleaved arrays */
+       for (i = 0; i < nr_uploads; i++) {
+-	 copy_array_to_vbo_array(brw, upload[i], upload[i]->element_size);
++          copy_array_to_vbo_array(brw, upload[i], upload[i]->element_size);
++          if (upload[i]->bo) {
++              ret |= dri_bufmgr_check_aperture_space(upload[i]->bo);
++          }
+       }
+    }
+ 
+-   if (brw->vb.upload.bo) {
+-     ret |= dri_bufmgr_check_aperture_space(brw->vb.upload.bo);
+-   }
+ 
+    if (ret)
+      return 1;
+diff --git a/src/mesa/drivers/dri/i965/brw_eu.h b/src/mesa/drivers/dri/i965/brw_eu.h
+index 25f1f89..c138d15 100644
+--- a/src/mesa/drivers/dri/i965/brw_eu.h
++++ b/src/mesa/drivers/dri/i965/brw_eu.h
+@@ -335,14 +335,14 @@ static __inline struct brw_reg brw_imm_ud( GLuint ud )
+ static __inline struct brw_reg brw_imm_uw( GLushort uw )
+ {
+    struct brw_reg imm = brw_imm_reg(BRW_REGISTER_TYPE_UW);
+-   imm.dw1.ud = uw;
++   imm.dw1.ud = uw | (uw << 16);
+    return imm;
+ }
+ 
+ static __inline struct brw_reg brw_imm_w( GLshort w )
+ {
+    struct brw_reg imm = brw_imm_reg(BRW_REGISTER_TYPE_W);
+-   imm.dw1.d = w;
++   imm.dw1.d = w | (w << 16);
+    return imm;
+ }
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_misc_state.c b/src/mesa/drivers/dri/i965/brw_misc_state.c
+index ec0bd6b..26ec797 100644
+--- a/src/mesa/drivers/dri/i965/brw_misc_state.c
++++ b/src/mesa/drivers/dri/i965/brw_misc_state.c
+@@ -183,7 +183,7 @@ static int prepare_depthbuffer(struct brw_context *brw)
+ {
+    struct intel_region *region = brw->state.depth_region;
+ 
+-   if (region->buffer)
++   if (!region || !region->buffer)
+       return 0;
+    return dri_bufmgr_check_aperture_space(region->buffer);
+ }
+diff --git a/src/mesa/drivers/dri/i965/brw_urb.c b/src/mesa/drivers/dri/i965/brw_urb.c
+index 4b03838..c423dbe 100644
+--- a/src/mesa/drivers/dri/i965/brw_urb.c
++++ b/src/mesa/drivers/dri/i965/brw_urb.c
+@@ -52,7 +52,7 @@ static const struct {
+    GLuint min_entry_size;
+    GLuint max_entry_size;
+ } limits[CS+1] = {
+-   { 8, 32, 1, 5 },			/* vs */
++   { 16, 32, 1, 5 },			/* vs */
+    { 4, 8,  1, 5 },			/* gs */
+    { 6, 8,  1, 5 },			/* clp */
+    { 1, 8,  1, 12 },		        /* sf */
+diff --git a/src/mesa/drivers/dri/i965/brw_wm_emit.c b/src/mesa/drivers/dri/i965/brw_wm_emit.c
+index a02f70a..4cda559 100644
+--- a/src/mesa/drivers/dri/i965/brw_wm_emit.c
++++ b/src/mesa/drivers/dri/i965/brw_wm_emit.c
+@@ -724,9 +724,6 @@ static void emit_tex( struct brw_wm_compile *c,
+ 	      responseLength,
+ 	      msgLength,
+ 	      0);	
+-
+-   if (shadow)
+-       brw_MOV(p, dst[3], brw_imm_f(1.0));
+ }
+ 
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_wm_surface_state.c b/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
+index eff4555..0d91391 100644
+--- a/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
++++ b/src/mesa/drivers/dri/i965/brw_wm_surface_state.c
+@@ -69,7 +69,7 @@ static GLuint translate_tex_target( GLenum target )
+ }
+ 
+ 
+-static GLuint translate_tex_format( GLuint mesa_format )
++static GLuint translate_tex_format( GLuint mesa_format, GLenum depth_mode )
+ {
+    switch( mesa_format ) {
+    case MESA_FORMAT_L8:
+@@ -114,7 +114,12 @@ static GLuint translate_tex_format( GLuint mesa_format )
+       return BRW_SURFACEFORMAT_FXT1;
+ 
+    case MESA_FORMAT_Z16:
+-      return BRW_SURFACEFORMAT_I16_UNORM;
++      if (depth_mode == GL_INTENSITY) 
++	  return BRW_SURFACEFORMAT_I16_UNORM;
++      else if (depth_mode == GL_ALPHA)
++	  return BRW_SURFACEFORMAT_A16_UNORM;
++      else
++	  return BRW_SURFACEFORMAT_L16_UNORM;
+ 
+    case MESA_FORMAT_RGB_DXT1:
+        return BRW_SURFACEFORMAT_DXT1_RGB;
+@@ -143,7 +148,7 @@ static GLuint translate_tex_format( GLuint mesa_format )
+ }
+ 
+ struct brw_wm_surface_key {
+-   GLenum target;
++   GLenum target, depthmode;
+    dri_bo *bo;
+    GLint format;
+    GLint first_level, last_level;
+@@ -163,7 +168,7 @@ brw_create_texture_surface( struct brw_context *brw,
+ 
+    surf.ss0.mipmap_layout_mode = BRW_SURFACE_MIPMAPLAYOUT_BELOW;
+    surf.ss0.surface_type = translate_tex_target(key->target);
+-   surf.ss0.surface_format = translate_tex_format(key->format);
++   surf.ss0.surface_format = translate_tex_format(key->format, key->depthmode);
+ 
+    /* This is ok for all textures with channel width 8bit or less:
+     */
+@@ -219,6 +224,7 @@ brw_update_texture_surface( GLcontext *ctx, GLuint unit )
+ 
+    memset(&key, 0, sizeof(key));
+    key.target = tObj->Target;
++   key.depthmode = tObj->DepthMode;
+    key.format = firstImage->TexFormat->MesaFormat;
+    key.bo = intelObj->mt->region->buffer;
+    key.first_level = intelObj->firstLevel;
+diff --git a/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c b/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c
+index 6828425..545913f 100644
+--- a/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c
++++ b/src/mesa/drivers/dri/intel/intel_bufmgr_ttm.c
+@@ -889,7 +889,7 @@ dri_ttm_bo_process_reloc(dri_bo *bo)
+ 	   struct intel_validate_entry *entry =
+ 	      &bufmgr_ttm->validate_array[target_buf_ttm->validate_index];
+ 
+-	   entry->bo_arg.d.req.bo_req.flags &= ~DRM_BO_HINT_PRESUMED_OFFSET;
++	   entry->bo_arg.d.req.bo_req.hint &= ~DRM_BO_HINT_PRESUMED_OFFSET;
+ 	}
+     }
+ }
+@@ -993,7 +993,7 @@ dri_ttm_bo_post_submit(dri_bo *bo)
+ 	/* Continue walking the tree depth-first. */
+ 	dri_ttm_bo_post_submit(r->target_buf);
+ 
+-	r->last_target_offset = bo->offset;
++	r->last_target_offset = r->target_buf->offset;
+     }
+ }
+ 
+diff --git a/src/mesa/drivers/dri/intel/intel_mipmap_tree.c b/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
+index 55503f4..9205627 100644
+--- a/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
++++ b/src/mesa/drivers/dri/intel/intel_mipmap_tree.c
+@@ -272,6 +272,11 @@ intel_miptree_match_image(struct intel_mipmap_tree *mt,
+        image->IsCompressed != mt->compressed)
+       return GL_FALSE;
+ 
++   if (!image->IsCompressed &&
++       !mt->compressed &&
++       image->TexFormat->TexelBytes != mt->cpp)
++      return GL_FALSE;
++
+    /* Test image dimensions against the base level image adjusted for
+     * minification.  This will also catch images not present in the
+     * tree, changed targets, etc.
+diff --git a/src/mesa/drivers/dri/intel/intel_screen.c b/src/mesa/drivers/dri/intel/intel_screen.c
+index 5aeb2a1..52e062e 100644
+--- a/src/mesa/drivers/dri/intel/intel_screen.c
++++ b/src/mesa/drivers/dri/intel/intel_screen.c
+@@ -68,7 +68,7 @@ PUBLIC const char __driConfigOptions[] =
+    DRI_CONF_SECTION_END
+    DRI_CONF_SECTION_QUALITY
+       DRI_CONF_FORCE_S3TC_ENABLE(false)
+-      DRI_CONF_ALLOW_LARGE_TEXTURES(1)
++      DRI_CONF_ALLOW_LARGE_TEXTURES(2)
+    DRI_CONF_SECTION_END
+    DRI_CONF_SECTION_DEBUG
+      DRI_CONF_NO_RAST(false)
+diff --git a/src/mesa/drivers/dri/intel/intel_tex.c b/src/mesa/drivers/dri/intel/intel_tex.c
+index 329af0d..f1d6a6d 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex.c
++++ b/src/mesa/drivers/dri/intel/intel_tex.c
+@@ -172,14 +172,13 @@ timed_memcpy(void *dest, const void *src, size_t n)
+  */
+ void
+ intel_generate_mipmap(GLcontext *ctx, GLenum target,
+-                      const struct gl_texture_unit *texUnit,
+                       struct gl_texture_object *texObj)
+ {
+    struct intel_texture_object *intelObj = intel_texture_object(texObj);
+    GLuint nr_faces = (intelObj->base.Target == GL_TEXTURE_CUBE_MAP) ? 6 : 1;
+    int face, i;
+ 
+-   _mesa_generate_mipmap(ctx, target, texUnit, texObj);
++   _mesa_generate_mipmap(ctx, target, texObj);
+ 
+    /* Update the level information in our private data in the new images, since
+     * it didn't get set as part of a normal TexImage path.
+@@ -198,6 +197,15 @@ intel_generate_mipmap(GLcontext *ctx, GLenum target,
+    }
+ }
+ 
++static void intelGenerateMipmap(GLcontext *ctx, GLenum target, struct gl_texture_object *texObj)
++{
++   struct intel_context *intel = intel_context(ctx);
++   struct intel_texture_object *intelObj = intel_texture_object(texObj);
++
++   intel_tex_map_images(intel, intelObj);
++   intel_generate_mipmap(ctx, target, texObj);
++   intel_tex_unmap_images(intel, intelObj);
++}
+ 
+ void
+ intelInitTextureFuncs(struct dd_function_table *functions)
+@@ -221,6 +229,7 @@ intelInitTextureFuncs(struct dd_function_table *functions)
+    functions->CopyTexSubImage2D = _swrast_copy_texsubimage2d;
+ #endif
+    functions->GetTexImage = intelGetTexImage;
++   functions->GenerateMipmap = intelGenerateMipmap;
+ 
+    /* compressed texture functions */
+    functions->CompressedTexImage2D = intelCompressedTexImage2D;
+diff --git a/src/mesa/drivers/dri/intel/intel_tex.h b/src/mesa/drivers/dri/intel/intel_tex.h
+index 3a87137..60ab820 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex.h
++++ b/src/mesa/drivers/dri/intel/intel_tex.h
+@@ -151,7 +151,6 @@ void intel_tex_unmap_images(struct intel_context *intel,
+ int intel_compressed_num_bytes(GLuint mesaFormat);
+ 
+ void intel_generate_mipmap(GLcontext *ctx, GLenum target,
+-			   const struct gl_texture_unit *texUnit,
+ 			   struct gl_texture_object *texObj);
+ 
+ #endif
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_copy.c b/src/mesa/drivers/dri/intel/intel_tex_copy.c
+index 7facc46..1add7c6 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_copy.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_copy.c
+@@ -161,9 +161,7 @@ do_copy_texsubimage(struct intel_context *intel,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (intelImage->level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      intel_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      intel_generate_mipmap(ctx, target, texObj);
+    }
+ 
+    return GL_TRUE;
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_image.c b/src/mesa/drivers/dri/intel/intel_tex_image.c
+index a56a395..95ddbd5 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_image.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_image.c
+@@ -348,8 +348,10 @@ intelTexImage(GLcontext * ctx,
+ 	 postConvWidth = 32 / texelBytes;
+ 	 texImage->RowStride = postConvWidth;
+       }
+-      
+-      assert(texImage->RowStride == postConvWidth);
++
++      if (!intelImage->mt) {      
++	  assert(texImage->RowStride == postConvWidth);
++      }
+    }
+ 
+    /* Release the reference to a potentially orphaned buffer.   
+@@ -520,9 +522,7 @@ intelTexImage(GLcontext * ctx,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      intel_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      intel_generate_mipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, unpack);
+diff --git a/src/mesa/drivers/dri/intel/intel_tex_subimage.c b/src/mesa/drivers/dri/intel/intel_tex_subimage.c
+index 688e387..9ba494b 100644
+--- a/src/mesa/drivers/dri/intel/intel_tex_subimage.c
++++ b/src/mesa/drivers/dri/intel/intel_tex_subimage.c
+@@ -102,9 +102,7 @@ intelTexSubimage(GLcontext * ctx,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      intel_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      intel_generate_mipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+diff --git a/src/mesa/drivers/dri/r200/r200_context.c b/src/mesa/drivers/dri/r200/r200_context.c
+index 20c1107..c567349 100644
+--- a/src/mesa/drivers/dri/r200/r200_context.c
++++ b/src/mesa/drivers/dri/r200/r200_context.c
+@@ -69,6 +69,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ #define need_GL_ATI_fragment_shader
+ #define need_GL_EXT_blend_minmax
+ #define need_GL_EXT_fog_coord
++#define need_GL_EXT_multi_draw_arrays
+ #define need_GL_EXT_secondary_color
+ #define need_GL_EXT_blend_equation_separate
+ #define need_GL_EXT_blend_func_separate
+@@ -132,6 +133,7 @@ const struct dri_extension card_extensions[] =
+     { "GL_EXT_blend_minmax",               GL_EXT_blend_minmax_functions },
+     { "GL_EXT_blend_subtract",             NULL },
+     { "GL_EXT_fog_coord",                  GL_EXT_fog_coord_functions },
++    { "GL_EXT_multi_draw_arrays",          GL_EXT_multi_draw_arrays_functions },
+     { "GL_EXT_secondary_color",            GL_EXT_secondary_color_functions },
+     { "GL_EXT_stencil_wrap",               NULL },
+     { "GL_EXT_texture_edge_clamp",         NULL },
+diff --git a/src/mesa/drivers/dri/r200/r200_texstate.c b/src/mesa/drivers/dri/r200/r200_texstate.c
+index 05ff595..4edf304 100644
+--- a/src/mesa/drivers/dri/r200/r200_texstate.c
++++ b/src/mesa/drivers/dri/r200/r200_texstate.c
+@@ -1815,6 +1815,12 @@ void r200UpdateTextureState( GLcontext *ctx )
+    GLboolean ok;
+    GLuint dbg;
+ 
++   /* NOTE: must not manipulate rmesa->state.texture.unit[].unitneeded or
++      rmesa->state.envneeded before a R200_STATECHANGE (or R200_NEWPRIM) since
++      we use these to determine if we want to emit the corresponding state
++      atoms. */
++   R200_NEWPRIM( rmesa );
++
+    if (ctx->ATIFragmentShader._Enabled) {
+       GLuint i;
+       for (i = 0; i < R200_MAX_TEXTURE_UNITS; i++) {
+diff --git a/src/mesa/drivers/dri/r300/r300_context.c b/src/mesa/drivers/dri/r300/r300_context.c
+index d2ed310..c56a762 100644
+--- a/src/mesa/drivers/dri/r300/r300_context.c
++++ b/src/mesa/drivers/dri/r300/r300_context.c
+@@ -84,6 +84,7 @@ int hw_tcl_on = 1;
+ #define need_GL_ARB_vertex_program
+ #define need_GL_EXT_blend_minmax
+ //#define need_GL_EXT_fog_coord
++#define need_GL_EXT_multi_draw_arrays
+ #define need_GL_EXT_secondary_color
+ #define need_GL_EXT_blend_equation_separate
+ #define need_GL_EXT_blend_func_separate
+@@ -112,6 +113,7 @@ const struct dri_extension card_extensions[] = {
+   {"GL_EXT_blend_minmax",		GL_EXT_blend_minmax_functions},
+   {"GL_EXT_blend_subtract",		NULL},
+ //  {"GL_EXT_fog_coord",			GL_EXT_fog_coord_functions },
++  {"GL_EXT_multi_draw_arrays",		GL_EXT_multi_draw_arrays_functions},
+   {"GL_EXT_gpu_program_parameters",     GL_EXT_gpu_program_parameters_functions},
+   {"GL_EXT_secondary_color", 		GL_EXT_secondary_color_functions},
+   {"GL_EXT_stencil_two_side",		GL_EXT_stencil_two_side_functions},
+diff --git a/src/mesa/drivers/dri/r300/r300_ioctl.c b/src/mesa/drivers/dri/r300/r300_ioctl.c
+index 1b40588..baa7418 100644
+--- a/src/mesa/drivers/dri/r300/r300_ioctl.c
++++ b/src/mesa/drivers/dri/r300/r300_ioctl.c
+@@ -316,6 +316,14 @@ static void r300EmitClearState(GLcontext * ctx)
+ 	e32(FP_SELA(0, NO, W, FP_TMP(0), 0, 0));
+ 
+ 	if (has_tcl) {
++		R300_STATECHANGE(rmesa, vap_cntl);
++		reg_start(R300_VAP_CNTL, 0);
++
++		e32((10 << R300_VAP_CNTL__PVS_NUM_SLOTS__SHIFT) |
++		    (6 << R300_VAP_CNTL__PVS_NUM_CNTRLS__SHIFT) |
++		    (4 << R300_VAP_CNTL__PVS_NUM_FPUS__SHIFT) |
++		    (12 << R300_VAP_CNTL__VF_MAX_VTX_NUM__SHIFT));
++
+ 		R300_STATECHANGE(r300, pvs);
+ 		reg_start(R300_VAP_PVS_CNTL_1, 2);
+ 
+diff --git a/src/mesa/drivers/dri/r300/r300_reg.h b/src/mesa/drivers/dri/r300/r300_reg.h
+index 2200cec..d2a8175 100644
+--- a/src/mesa/drivers/dri/r300/r300_reg.h
++++ b/src/mesa/drivers/dri/r300/r300_reg.h
+@@ -67,9 +67,15 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
+ 
+ /*
+  * Vertex Array Processing (VAP) Control
+- * Stolen from r200 code from Christoph Brill (It's a guess!)
+  */
+ #define R300_VAP_CNTL	0x2080
++#	define  R300_VAP_CNTL__PVS_NUM_SLOTS__SHIFT             0
++#	define  R300_VAP_CNTL__PVS_NUM_CNTRLS__SHIFT            4
++#	define  R300_VAP_CNTL__PVS_NUM_FPUS__SHIFT              8
++#	define  R300_VAP_CNTL__VF_MAX_VTX_NUM__SHIFT            18
++#	define  R500_VAP_CNTL__VAP_NO_RENDER                    (1<<17)
++#	define  R300_VAP_CNTL__DX_CLIP_SPACE_DEF                (1<<22)
++#	define  R500_VAP_CNTL__TCL_STATE_OPTIMIZATION           (1<<23)
+ 
+ /* This register is written directly and also starts data section
+  * in many 3d CP_PACKET3's
+diff --git a/src/mesa/drivers/dri/r300/r300_state.c b/src/mesa/drivers/dri/r300/r300_state.c
+index e11b5af..aa0de4e 100644
+--- a/src/mesa/drivers/dri/r300/r300_state.c
++++ b/src/mesa/drivers/dri/r300/r300_state.c
+@@ -1648,10 +1648,51 @@ static inline void r300SetupVertexProgramFragment(r300ContextPtr r300, int dest,
+ 	}
+ }
+ 
++/* FIXME: move near the MIN2 define. */
++#define MIN3(a, b, c)	((a) < (b) ? MIN2(a, c) : MIN2(b, c))
++
++/* FIXME: need to add a structure for per-card/chipset values; they are
++ * currently hard-coded. */
++static void r300VapCntl(r300ContextPtr rmesa, GLuint input_count,
++			GLuint output_count, GLuint temp_count)
++{
++	int cmd_reserved = 0;
++	int cmd_written = 0;
++	drm_radeon_cmd_header_t *cmd = NULL;
++
++	int vtx_mem_size = 72;	/* FIXME: R3XX vs R5XX */
++
++	/* Flush PVS engine before changing PVS_NUM_SLOTS, PVS_NUM_CNTRLS.
++	 * See r500 docs 6.5.2 */
++	reg_start(R300_VAP_PVS_WAITIDLE, 0);
++	e32(0x00000000);
++
++	/* avoid division by zero */
++	if (input_count == 0)
++		input_count = 1;
++	if (output_count == 0)
++		output_count = 1;
++	if (temp_count == 0)
++		temp_count = 1;
++
++	int pvs_num_slots =
++	    MIN3(10, vtx_mem_size / input_count, vtx_mem_size / output_count);
++	int pvs_num_cntrls = MIN2(6, vtx_mem_size / temp_count);
++
++	R300_STATECHANGE(rmesa, vap_cntl);
++	rmesa->hw.vap_cntl.cmd[1] =
++	    (pvs_num_slots << R300_VAP_CNTL__PVS_NUM_SLOTS__SHIFT) |
++	    (pvs_num_cntrls << R300_VAP_CNTL__PVS_NUM_CNTRLS__SHIFT) |
++	    (4 << R300_VAP_CNTL__PVS_NUM_FPUS__SHIFT) |
++	    (12 << R300_VAP_CNTL__VF_MAX_VTX_NUM__SHIFT) |
++	    R500_VAP_CNTL__TCL_STATE_OPTIMIZATION;
++}
++
+ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ {
+ 	struct r300_vertex_shader_state *prog = &(rmesa->state.vertex_shader);
+ 	GLuint o_reg = 0;
++	GLuint i_reg = 0;
+ 	int i;
+ 	int inst_count = 0;
+ 	int param_count = 0;
+@@ -1664,6 +1705,7 @@ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ 			prog->program.body.i[program_end + 2] = PVS_SRC_OPERAND(rmesa->state.sw_tcl_inputs[i], PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_REG_INPUT, VSF_FLAG_NONE);
+ 			prog->program.body.i[program_end + 3] = PVS_SRC_OPERAND(rmesa->state.sw_tcl_inputs[i], PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_SELECT_FORCE_1, PVS_SRC_REG_INPUT, VSF_FLAG_NONE);
+ 			program_end += 4;
++			i_reg++;
+ 		}
+ 	}
+ 
+@@ -1673,6 +1715,8 @@ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ 				       &(prog->program));
+ 	inst_count = (prog->program.length / 4) - 1;
+ 
++	r300VapCntl(rmesa, i_reg, o_reg, 0);
++
+ 	R300_STATECHANGE(rmesa, pvs);
+ 	rmesa->hw.pvs.cmd[R300_PVS_CNTL_1] =
+ 	    (0 << R300_PVS_CNTL_1_PROGRAM_START_SHIFT) |
+@@ -1686,6 +1730,15 @@ static void r300SetupDefaultVertexProgram(r300ContextPtr rmesa)
+ 	    (inst_count << R300_PVS_CNTL_3_PROGRAM_UNKNOWN2_SHIFT);
+ }
+ 
++static int r300BitCount(int x)
++{
++	x = ((x & 0xaaaaaaaaU) >> 1) + (x & 0x55555555U);
++	x = ((x & 0xccccccccU) >> 2) + (x & 0x33333333U);
++	x = (x >> 16) + (x & 0xffff);
++	x = ((x & 0xf0f0) >> 4) + (x & 0x0f0f);
++	return (x >> 8) + (x & 0x00ff);
++}
++
+ static void r300SetupRealVertexProgram(r300ContextPtr rmesa)
+ {
+ 	GLcontext *ctx = rmesa->radeon.glCtx;
+@@ -1707,6 +1760,10 @@ static void r300SetupRealVertexProgram(r300ContextPtr rmesa)
+ 	r300SetupVertexProgramFragment(rmesa, R300_PVS_UPLOAD_PROGRAM, &(prog->program));
+ 	inst_count = (prog->program.length / 4) - 1;
+ 
++	r300VapCntl(rmesa, r300BitCount(prog->key.InputsRead),
++		    r300BitCount(prog->key.OutputsWritten),
++		    prog->num_temporaries);
++	
+ 	R300_STATECHANGE(rmesa, pvs);
+ 	rmesa->hw.pvs.cmd[R300_PVS_CNTL_1] =
+ 	  (0 << R300_PVS_CNTL_1_PROGRAM_START_SHIFT) |
+@@ -1740,13 +1797,6 @@ static void r300SetupVertexProgram(r300ContextPtr rmesa)
+ 		r300SetupDefaultVertexProgram(rmesa);
+ 	}
+ 
+-
+-	/* FIXME: This is done for vertex shader fragments, but also needs to be
+-	 * done for vap_pvs, so I leave it as a reminder. */
+-#if 0
+-	reg_start(R300_VAP_PVS_WAITIDLE, 0);
+-	e32(0x00000000);
+-#endif
+ }
+ 
+ /**
+@@ -1848,11 +1898,6 @@ static void r300ResetHwState(r300ContextPtr r300)
+ 	r300AlphaFunc(ctx, ctx->Color.AlphaFunc, ctx->Color.AlphaRef);
+ 	r300Enable(ctx, GL_ALPHA_TEST, ctx->Color.AlphaEnabled);
+ 
+-	if (!has_tcl)
+-		r300->hw.vap_cntl.cmd[1] = 0x0014045a;
+-	else
+-		r300->hw.vap_cntl.cmd[1] = 0x0030045A;	//0x0030065a /* Dangerous */
+-
+ 	r300->hw.vte.cmd[1] = R300_VPORT_X_SCALE_ENA
+ 	    | R300_VPORT_X_OFFSET_ENA
+ 	    | R300_VPORT_Y_SCALE_ENA
+@@ -2084,10 +2129,11 @@ void r300UpdateShaders(r300ContextPtr rmesa)
+ 			hw_tcl_on = future_hw_tcl_on = 0;
+ 			r300ResetHwState(rmesa);
+ 
++			r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ 			return;
+ 		}
+-		r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ 	}
++	r300UpdateStateParameters(ctx, _NEW_PROGRAM);
+ }
+ 
+ static void r300SetupPixelShader(r300ContextPtr rmesa)
+diff --git a/src/mesa/drivers/dri/r300/r300_swtcl.c b/src/mesa/drivers/dri/r300/r300_swtcl.c
+index a732bdb..1452ed5 100644
+--- a/src/mesa/drivers/dri/r300/r300_swtcl.c
++++ b/src/mesa/drivers/dri/r300/r300_swtcl.c
+@@ -591,6 +591,7 @@ static void r300RenderStart(GLcontext *ctx)
+ 	r300ChooseRenderState(ctx);	
+ 	r300SetVertexFormat(ctx);
+ 
++	r300UpdateShaders(rmesa);
+ 	r300UpdateShaderStates(rmesa);
+ 
+ 	r300EmitCacheFlush(rmesa);
+diff --git a/src/mesa/drivers/dri/radeon/radeon_screen.c b/src/mesa/drivers/dri/radeon/radeon_screen.c
+index 27d233c..f92fdd4 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_screen.c
++++ b/src/mesa/drivers/dri/radeon/radeon_screen.c
+@@ -90,7 +90,7 @@ DRI_CONF_BEGIN
+         DRI_CONF_COLOR_REDUCTION(DRI_CONF_COLOR_REDUCTION_DITHER)
+         DRI_CONF_ROUND_MODE(DRI_CONF_ROUND_TRUNC)
+         DRI_CONF_DITHER_MODE(DRI_CONF_DITHER_XERRORDIFF)
+-        DRI_CONF_ALLOW_LARGE_TEXTURES(1)
++        DRI_CONF_ALLOW_LARGE_TEXTURES(2)
+     DRI_CONF_SECTION_END
+     DRI_CONF_SECTION_DEBUG
+         DRI_CONF_NO_RAST(false)
+@@ -117,7 +117,7 @@ DRI_CONF_BEGIN
+         DRI_CONF_COLOR_REDUCTION(DRI_CONF_COLOR_REDUCTION_DITHER)
+         DRI_CONF_ROUND_MODE(DRI_CONF_ROUND_TRUNC)
+         DRI_CONF_DITHER_MODE(DRI_CONF_DITHER_XERRORDIFF)
+-        DRI_CONF_ALLOW_LARGE_TEXTURES(1)
++        DRI_CONF_ALLOW_LARGE_TEXTURES(2)
+         DRI_CONF_TEXTURE_BLEND_QUALITY(1.0,"0.0:1.0")
+     DRI_CONF_SECTION_END
+     DRI_CONF_SECTION_DEBUG
+@@ -682,6 +682,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+       break;
+ 
+    case PCI_CHIP_RS690_791E:
++   case PCI_CHIP_RS690_791F:
+       screen->chip_family = CHIP_FAMILY_RS690;
+       fprintf(stderr, "Warning, RS690 detected, 3D support is incomplete.\n");
+       break;
+@@ -697,6 +698,9 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+       return NULL;
+    }
+ 
++   if (getenv("R300_NO_TCL"))
++     screen->chip_flags &= ~RADEON_CHIPSET_TCL;
++
+    if (screen->chip_family <= CHIP_FAMILY_RS200)
+       screen->chip_flags |= RADEON_CLASS_R100;
+    else if (screen->chip_family <= CHIP_FAMILY_RV280)
+diff --git a/src/mesa/drivers/dri/unichrome/via_tex.c b/src/mesa/drivers/dri/unichrome/via_tex.c
+index 0261a3f..15f15a8 100644
+--- a/src/mesa/drivers/dri/unichrome/via_tex.c
++++ b/src/mesa/drivers/dri/unichrome/via_tex.c
+@@ -820,9 +820,7 @@ static void viaTexImage(GLcontext *ctx,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      _mesa_generate_mipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+diff --git a/src/mesa/main/context.c b/src/mesa/main/context.c
+index d94876e..417a49f 100644
+--- a/src/mesa/main/context.c
++++ b/src/mesa/main/context.c
+@@ -150,8 +150,6 @@ int MESA_DEBUG_FLAGS = 0;
+ /* ubyte -> float conversion */
+ GLfloat _mesa_ubyte_to_float_color_tab[256];
+ 
+-static void
+-free_shared_state( GLcontext *ctx, struct gl_shared_state *ss );
+ 
+ 
+ /**
+@@ -421,12 +419,14 @@ alloc_shared_state( GLcontext *ctx )
+ #endif
+ 
+ #if FEATURE_ARB_vertex_program
+-   ss->DefaultVertexProgram = ctx->Driver.NewProgram(ctx, GL_VERTEX_PROGRAM_ARB, 0);
++   ss->DefaultVertexProgram = (struct gl_vertex_program *)
++      ctx->Driver.NewProgram(ctx, GL_VERTEX_PROGRAM_ARB, 0);
+    if (!ss->DefaultVertexProgram)
+       goto cleanup;
+ #endif
+ #if FEATURE_ARB_fragment_program
+-   ss->DefaultFragmentProgram = ctx->Driver.NewProgram(ctx, GL_FRAGMENT_PROGRAM_ARB, 0);
++   ss->DefaultFragmentProgram = (struct gl_fragment_program *)
++      ctx->Driver.NewProgram(ctx, GL_FRAGMENT_PROGRAM_ARB, 0);
+    if (!ss->DefaultFragmentProgram)
+       goto cleanup;
+ #endif
+@@ -503,12 +503,10 @@ cleanup:
+       _mesa_DeleteHashTable(ss->Programs);
+ #endif
+ #if FEATURE_ARB_vertex_program
+-   if (ss->DefaultVertexProgram)
+-      ctx->Driver.DeleteProgram(ctx, ss->DefaultVertexProgram);
++   _mesa_reference_vertprog(ctx, &ss->DefaultVertexProgram, NULL);
+ #endif
+ #if FEATURE_ARB_fragment_program
+-   if (ss->DefaultFragmentProgram)
+-      ctx->Driver.DeleteProgram(ctx, ss->DefaultFragmentProgram);
++   _mesa_reference_fragprog(ctx, &ss->DefaultFragmentProgram, NULL);
+ #endif
+ #if FEATURE_ATI_fragment_shader
+    if (ss->DefaultFragmentShader)
+@@ -715,10 +713,10 @@ free_shared_state( GLcontext *ctx, struct gl_shared_state *ss )
+    _mesa_DeleteHashTable(ss->Programs);
+ #endif
+ #if FEATURE_ARB_vertex_program
+-   ctx->Driver.DeleteProgram(ctx, ss->DefaultVertexProgram);
++   _mesa_reference_vertprog(ctx, &ss->DefaultVertexProgram, NULL);
+ #endif
+ #if FEATURE_ARB_fragment_program
+-   ctx->Driver.DeleteProgram(ctx, ss->DefaultFragmentProgram);
++   _mesa_reference_fragprog(ctx, &ss->DefaultFragmentProgram, NULL);
+ #endif
+ 
+ #if FEATURE_ATI_fragment_shader
+@@ -1252,6 +1250,14 @@ _mesa_free_context_data( GLcontext *ctx )
+    _mesa_unreference_framebuffer(&ctx->DrawBuffer);
+    _mesa_unreference_framebuffer(&ctx->ReadBuffer);
+ 
++   _mesa_reference_vertprog(ctx, &ctx->VertexProgram.Current, NULL);
++   _mesa_reference_vertprog(ctx, &ctx->VertexProgram._Current, NULL);
++   _mesa_reference_vertprog(ctx, &ctx->VertexProgram._TnlProgram, NULL);
++
++   _mesa_reference_fragprog(ctx, &ctx->FragmentProgram.Current, NULL);
++   _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._Current, NULL);
++   _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._TexEnvProgram, NULL);
++
+    _mesa_free_attrib_data(ctx);
+    _mesa_free_lighting_data( ctx );
+    _mesa_free_eval_data( ctx );
+diff --git a/src/mesa/main/dd.h b/src/mesa/main/dd.h
+index ce33905..e3ded41 100644
+--- a/src/mesa/main/dd.h
++++ b/src/mesa/main/dd.h
+@@ -328,6 +328,12 @@ struct dd_function_table {
+                               GLsizei width, GLsizei height );
+ 
+    /**
++    * Called by glGenerateMipmap() or when GL_GENERATE_MIPMAP_SGIS is enabled.
++    */
++   void (*GenerateMipmap)(GLcontext *ctx, GLenum target,
++                          struct gl_texture_object *texObj);
++
++   /**
+     * Called by glTexImage[123]D when user specifies a proxy texture
+     * target.  
+     *
+diff --git a/src/mesa/main/dlist.c b/src/mesa/main/dlist.c
+index 8d10d8a..23ede7b 100644
+--- a/src/mesa/main/dlist.c
++++ b/src/mesa/main/dlist.c
+@@ -611,9 +611,9 @@ destroy_list(GLcontext *ctx, GLuint list)
+ 
+ 
+ /*
+- * Translate the nth element of list from type to GLuint.
++ * Translate the nth element of list from <type> to GLint.
+  */
+-static GLuint
++static GLint
+ translate_id(GLsizei n, GLenum type, const GLvoid * list)
+ {
+    GLbyte *bptr;
+@@ -627,37 +627,40 @@ translate_id(GLsizei n, GLenum type, const GLvoid * list)
+    switch (type) {
+    case GL_BYTE:
+       bptr = (GLbyte *) list;
+-      return (GLuint) *(bptr + n);
++      return (GLint) bptr[n];
+    case GL_UNSIGNED_BYTE:
+       ubptr = (GLubyte *) list;
+-      return (GLuint) *(ubptr + n);
++      return (GLint) ubptr[n];
+    case GL_SHORT:
+       sptr = (GLshort *) list;
+-      return (GLuint) *(sptr + n);
++      return (GLint) sptr[n];
+    case GL_UNSIGNED_SHORT:
+       usptr = (GLushort *) list;
+-      return (GLuint) *(usptr + n);
++      return (GLint) usptr[n];
+    case GL_INT:
+       iptr = (GLint *) list;
+-      return (GLuint) *(iptr + n);
++      return iptr[n];
+    case GL_UNSIGNED_INT:
+       uiptr = (GLuint *) list;
+-      return (GLuint) *(uiptr + n);
++      return (GLint) uiptr[n];
+    case GL_FLOAT:
+       fptr = (GLfloat *) list;
+-      return (GLuint) *(fptr + n);
++      return (GLint) FLOORF(fptr[n]);
+    case GL_2_BYTES:
+       ubptr = ((GLubyte *) list) + 2 * n;
+-      return (GLuint) *ubptr * 256 + (GLuint) * (ubptr + 1);
++      return (GLint) ubptr[0] * 256
++           + (GLint) ubptr[1];
+    case GL_3_BYTES:
+       ubptr = ((GLubyte *) list) + 3 * n;
+-      return (GLuint) * ubptr * 65536
+-           + (GLuint) *(ubptr + 1) * 256 + (GLuint) * (ubptr + 2);
++      return (GLint) ubptr[0] * 65536
++           + (GLint) ubptr[1] * 256
++           + (GLint) ubptr[2];
+    case GL_4_BYTES:
+       ubptr = ((GLubyte *) list) + 4 * n;
+-      return (GLuint) *ubptr * 16777216
+-           + (GLuint) *(ubptr + 1) * 65536
+-           + (GLuint) *(ubptr + 2) * 256 + (GLuint) * (ubptr + 3);
++      return (GLint) ubptr[0] * 16777216
++           + (GLint) ubptr[1] * 65536
++           + (GLint) ubptr[2] * 256
++           + (GLint) ubptr[3];
+    default:
+       return 0;
+    }
+@@ -992,10 +995,10 @@ _mesa_save_CallLists(GLsizei n, GLenum type, const GLvoid * lists)
+    }
+ 
+    for (i = 0; i < n; i++) {
+-      GLuint list = translate_id(i, type, lists);
++      GLint list = translate_id(i, type, lists);
+       Node *n = ALLOC_INSTRUCTION(ctx, OPCODE_CALL_LIST_OFFSET, 2);
+       if (n) {
+-         n[1].ui = list;
++         n[1].i = list;
+          n[2].b = typeErrorFlag;
+       }
+    }
+@@ -5774,7 +5777,8 @@ execute_list(GLcontext *ctx, GLuint list)
+                _mesa_error(ctx, GL_INVALID_ENUM, "glCallLists(type)");
+             }
+             else if (ctx->ListState.CallDepth < MAX_LIST_NESTING) {
+-               execute_list(ctx, ctx->List.ListBase + n[1].ui);
++               GLuint list = (GLuint) (ctx->List.ListBase + n[1].i);
++               execute_list(ctx, list);
+             }
+             break;
+          case OPCODE_CLEAR:
+@@ -6822,7 +6826,6 @@ void GLAPIENTRY
+ _mesa_CallLists(GLsizei n, GLenum type, const GLvoid * lists)
+ {
+    GET_CURRENT_CONTEXT(ctx);
+-   GLuint list;
+    GLint i;
+    GLboolean save_compile_flag;
+ 
+@@ -6854,8 +6857,8 @@ _mesa_CallLists(GLsizei n, GLenum type, const GLvoid * lists)
+    ctx->CompileFlag = GL_FALSE;
+ 
+    for (i = 0; i < n; i++) {
+-      list = translate_id(i, type, lists);
+-      execute_list(ctx, ctx->List.ListBase + list);
++      GLuint list = (GLuint) (ctx->List.ListBase + translate_id(i, type, lists));
++      execute_list(ctx, list);
+    }
+ 
+    ctx->CompileFlag = save_compile_flag;
+diff --git a/src/mesa/main/drawpix.c b/src/mesa/main/drawpix.c
+index 4f28766..fde9338 100644
+--- a/src/mesa/main/drawpix.c
++++ b/src/mesa/main/drawpix.c
+@@ -374,8 +374,9 @@ _mesa_Bitmap( GLsizei width, GLsizei height,
+ 
+    if (ctx->RenderMode == GL_RENDER) {
+       /* Truncate, to satisfy conformance tests (matches SGI's OpenGL). */
+-      GLint x = IFLOOR(ctx->Current.RasterPos[0] - xorig);
+-      GLint y = IFLOOR(ctx->Current.RasterPos[1] - yorig);
++      const GLfloat epsilon = 0.0001;
++      GLint x = IFLOOR(ctx->Current.RasterPos[0] + epsilon - xorig);
++      GLint y = IFLOOR(ctx->Current.RasterPos[1] + epsilon - yorig);
+ 
+       if (ctx->Unpack.BufferObj->Name) {
+          /* unpack from PBO */
+diff --git a/src/mesa/main/fbobject.c b/src/mesa/main/fbobject.c
+index 9b60c73..8e9948c 100644
+--- a/src/mesa/main/fbobject.c
++++ b/src/mesa/main/fbobject.c
+@@ -1544,7 +1544,7 @@ _mesa_GenerateMipmapEXT(GLenum target)
+ 
+    /* XXX this might not handle cube maps correctly */
+    _mesa_lock_texture(ctx, texObj);
+-   _mesa_generate_mipmap(ctx, target, texUnit, texObj);
++   ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    _mesa_unlock_texture(ctx, texObj);
+ }
+ 
+diff --git a/src/mesa/main/mipmap.c b/src/mesa/main/mipmap.c
+index 44357fb..8ca912b 100644
+--- a/src/mesa/main/mipmap.c
++++ b/src/mesa/main/mipmap.c
+@@ -934,7 +934,6 @@ make_2d_stack_mipmap(const struct gl_texture_format *format, GLint border,
+  */
+ void
+ _mesa_generate_mipmap(GLcontext *ctx, GLenum target,
+-                      const struct gl_texture_unit *texUnit,
+                       struct gl_texture_object *texObj)
+ {
+    const struct gl_texture_image *srcImage;
+diff --git a/src/mesa/main/mipmap.h b/src/mesa/main/mipmap.h
+index df78603..46e1690 100644
+--- a/src/mesa/main/mipmap.h
++++ b/src/mesa/main/mipmap.h
+@@ -30,7 +30,6 @@
+ 
+ extern void
+ _mesa_generate_mipmap(GLcontext *ctx, GLenum target,
+-                      const struct gl_texture_unit *texUnit,
+                       struct gl_texture_object *texObj);
+ 
+ 
+diff --git a/src/mesa/main/mtypes.h b/src/mesa/main/mtypes.h
+index c8718a7..001240a 100644
+--- a/src/mesa/main/mtypes.h
++++ b/src/mesa/main/mtypes.h
+@@ -1544,19 +1544,17 @@ struct gl_texture_unit
+    /*@}*/
+ };
+ 
+-struct texenvprog_cache_item {
+-   GLuint hash;
+-   void *key;
+-   struct gl_fragment_program *data;
+-   struct texenvprog_cache_item *next;
+-};
+ 
+-struct texenvprog_cache {
++struct texenvprog_cache_item;
++
++struct texenvprog_cache
++{
+    struct texenvprog_cache_item **items;
+    GLuint size, n_items;
+    GLcontext *ctx;
+ };
+ 
++
+ /**
+  * Texture attribute group (GL_TEXTURE_BIT).
+  */
+@@ -2185,10 +2183,10 @@ struct gl_shared_state
+    /*@{*/
+    struct _mesa_HashTable *Programs; /**< All vertex/fragment programs */
+ #if FEATURE_ARB_vertex_program
+-   struct gl_program *DefaultVertexProgram;
++   struct gl_vertex_program *DefaultVertexProgram;
+ #endif
+ #if FEATURE_ARB_fragment_program
+-   struct gl_program *DefaultFragmentProgram;
++   struct gl_fragment_program *DefaultFragmentProgram;
+ #endif
+    /*@}*/
+ 
+diff --git a/src/mesa/main/state.c b/src/mesa/main/state.c
+index 5ff67b6..1c73c5c 100644
+--- a/src/mesa/main/state.c
++++ b/src/mesa/main/state.c
+@@ -978,50 +978,60 @@ update_program(GLcontext *ctx)
+     *   3. Programs derived from fixed-function state.
+     */
+ 
+-   ctx->FragmentProgram._Current = NULL;
++   _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._Current, NULL);
+ 
+    if (shProg && shProg->LinkStatus) {
+       /* Use shader programs */
+       /* XXX this isn't quite right, since we may have either a vertex
+        * _or_ fragment shader (not always both).
+        */
+-      ctx->VertexProgram._Current = shProg->VertexProgram;
+-      ctx->FragmentProgram._Current = shProg->FragmentProgram;
++      _mesa_reference_vertprog(ctx, &ctx->VertexProgram._Current,
++                               shProg->VertexProgram);
++      _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._Current,
++                               shProg->FragmentProgram);
+    }
+    else {
+       if (ctx->VertexProgram._Enabled) {
+          /* use user-defined vertex program */
+-         ctx->VertexProgram._Current = ctx->VertexProgram.Current;
++         _mesa_reference_vertprog(ctx, &ctx->VertexProgram._Current,
++                                  ctx->VertexProgram.Current);
+       }
+       else if (ctx->VertexProgram._MaintainTnlProgram) {
+          /* Use vertex program generated from fixed-function state.
+           * The _Current pointer will get set in
+           * _tnl_UpdateFixedFunctionProgram() later if appropriate.
+           */
+-         ctx->VertexProgram._Current = NULL;
++         _mesa_reference_vertprog(ctx, &ctx->VertexProgram._Current, NULL);
+       }
+       else {
+          /* no vertex program */
+-         ctx->VertexProgram._Current = NULL;
++         _mesa_reference_vertprog(ctx, &ctx->VertexProgram._Current, NULL);
+       }
+ 
+       if (ctx->FragmentProgram._Enabled) {
+          /* use user-defined vertex program */
+-         ctx->FragmentProgram._Current = ctx->FragmentProgram.Current;
++         _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._Current,
++                                  ctx->FragmentProgram.Current);
+       }
+       else if (ctx->FragmentProgram._MaintainTexEnvProgram) {
+          /* Use fragment program generated from fixed-function state.
+           * The _Current pointer will get set in _mesa_UpdateTexEnvProgram()
+           * later if appropriate.
+           */
+-         ctx->FragmentProgram._Current = NULL;
++         _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._Current, NULL);
+       }
+       else {
+          /* no fragment program */
+-         ctx->FragmentProgram._Current = NULL;
++         _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._Current, NULL);
+       }
+    }
+ 
++   if (ctx->VertexProgram._Current)
++      assert(ctx->VertexProgram._Current->Base.Parameters);
++   if (ctx->FragmentProgram._Current)
++      assert(ctx->FragmentProgram._Current->Base.Parameters);
++
++
+    ctx->FragmentProgram._Active = ctx->FragmentProgram._Enabled;
+    if (ctx->FragmentProgram._MaintainTexEnvProgram &&
+        !ctx->FragmentProgram._Enabled) {
+diff --git a/src/mesa/main/texenvprogram.c b/src/mesa/main/texenvprogram.c
+index fb68bf0..68a4db9 100644
+--- a/src/mesa/main/texenvprogram.c
++++ b/src/mesa/main/texenvprogram.c
+@@ -28,12 +28,23 @@
+ #include "glheader.h"
+ #include "macros.h"
+ #include "enums.h"
++#include "shader/program.h"
+ #include "shader/prog_parameter.h"
+ #include "shader/prog_instruction.h"
+ #include "shader/prog_print.h"
+ #include "shader/prog_statevars.h"
+ #include "texenvprogram.h"
+ 
++
++struct texenvprog_cache_item
++{
++   GLuint hash;
++   void *key;
++   struct gl_fragment_program *data;
++   struct texenvprog_cache_item *next;
++};
++
++
+ /**
+  * This MAX is probably a bit generous, but that's OK.  There can be
+  * up to four instructions per texture unit (TEX + 3 for combine),
+@@ -1133,7 +1144,7 @@ search_cache(const struct texenvprog_cache *cache,
+ 
+    for (c = cache->items[hash % cache->size]; c; c = c->next) {
+       if (c->hash == hash && memcmp(c->key, key, keysize) == 0)
+-	 return (struct gl_fragment_program *) c->data;
++	 return c->data;
+    }
+ 
+    return NULL;
+@@ -1161,7 +1172,7 @@ static void rehash( struct texenvprog_cache *cache )
+    cache->size = size;
+ }
+ 
+-static void clear_cache( struct texenvprog_cache *cache )
++static void clear_cache(GLcontext *ctx, struct texenvprog_cache *cache)
+ {
+    struct texenvprog_cache_item *c, *next;
+    GLuint i;
+@@ -1170,8 +1181,7 @@ static void clear_cache( struct texenvprog_cache *cache )
+       for (c = cache->items[i]; c; c = next) {
+ 	 next = c->next;
+ 	 _mesa_free(c->key);
+-	 cache->ctx->Driver.DeleteProgram(cache->ctx,
+-                                          (struct gl_program *) c->data);
++         _mesa_reference_fragprog(ctx, &c->data, NULL);
+ 	 _mesa_free(c);
+       }
+       cache->items[i] = NULL;
+@@ -1182,25 +1192,25 @@ static void clear_cache( struct texenvprog_cache *cache )
+ }
+ 
+ 
+-static void cache_item( struct texenvprog_cache *cache,
++static void cache_item( GLcontext *ctx,
++                        struct texenvprog_cache *cache,
+ 			GLuint hash,
+ 			const struct state_key *key,
+-			void *data )
++                        struct gl_fragment_program *prog)
+ {
+-   struct texenvprog_cache_item *c
+-      = (struct texenvprog_cache_item *) MALLOC(sizeof(*c));
++   struct texenvprog_cache_item *c = CALLOC_STRUCT(texenvprog_cache_item);
+    c->hash = hash;
+ 
+    c->key = _mesa_malloc(sizeof(*key));
+    memcpy(c->key, key, sizeof(*key));
+ 
+-   c->data = (struct gl_fragment_program *) data;
++   _mesa_reference_fragprog(ctx, &c->data, prog);
+ 
+    if (cache->n_items > cache->size * 1.5) {
+       if (cache->size < 1000)
+ 	 rehash(cache);
+       else 
+-	 clear_cache(cache);
++	 clear_cache(ctx, cache);
+    }
+ 
+    cache->n_items++;
+@@ -1243,32 +1253,29 @@ _mesa_UpdateTexEnvProgram( GLcontext *ctx )
+    /* If a conventional fragment program/shader isn't in effect... */
+    if (!ctx->FragmentProgram._Enabled &&
+        (!ctx->Shader.CurrentProgram || !ctx->Shader.CurrentProgram->FragmentProgram)) {
++      struct gl_fragment_program *newProg;
++
+       make_state_key(ctx, &key);
+       hash = hash_key(&key);
+       
+-      ctx->FragmentProgram._Current =
+-      ctx->FragmentProgram._TexEnvProgram =
+-         search_cache(&ctx->Texture.env_fp_cache, hash, &key, sizeof(key));
++      newProg = search_cache(&ctx->Texture.env_fp_cache, hash, &key, sizeof(key));
++
++      if (!newProg) {
++         /* create new tex env program */
+ 
+-      if (!ctx->FragmentProgram._TexEnvProgram) {
+          if (0)
+             _mesa_printf("Building new texenv proggy for key %x\n", hash);
+ 
+-         /* create new tex env program */
+-	 ctx->FragmentProgram._Current =
+-         ctx->FragmentProgram._TexEnvProgram =
+-            (struct gl_fragment_program *) 
++         newProg = (struct gl_fragment_program *) 
+             ctx->Driver.NewProgram(ctx, GL_FRAGMENT_PROGRAM_ARB, 0);
+ 
+-         create_new_program(ctx, &key, ctx->FragmentProgram._TexEnvProgram);
++         create_new_program(ctx, &key, newProg);
+ 
+-         cache_item(&ctx->Texture.env_fp_cache, hash, &key,
+-                    ctx->FragmentProgram._TexEnvProgram);
+-      }
+-      else {
+-         if (0)
+-            _mesa_printf("Found existing texenv program for key %x\n", hash);
++         cache_item(ctx, &ctx->Texture.env_fp_cache, hash, &key, newProg);
+       }
++
++      _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._Current, newProg);
++      _mesa_reference_fragprog(ctx, &ctx->FragmentProgram._TexEnvProgram, newProg);
+    } 
+    else {
+       /* _Current pointer has been updated in update_program */
+@@ -1298,6 +1305,6 @@ void _mesa_TexEnvProgramCacheInit( GLcontext *ctx )
+ 
+ void _mesa_TexEnvProgramCacheDestroy( GLcontext *ctx )
+ {
+-   clear_cache(&ctx->Texture.env_fp_cache);
++   clear_cache(ctx, &ctx->Texture.env_fp_cache);
+    _mesa_free(ctx->Texture.env_fp_cache.items);
+ }
+diff --git a/src/mesa/main/texstate.c b/src/mesa/main/texstate.c
+index 288b334..626c264 100644
+--- a/src/mesa/main/texstate.c
++++ b/src/mesa/main/texstate.c
+@@ -213,6 +213,9 @@ calculate_derived_texenv( struct gl_tex_env_combine_state *state,
+       return;
+    }
+ 
++   if (mode == GL_REPLACE_EXT)
++      mode = GL_REPLACE;
++
+    switch (mode) {
+    case GL_REPLACE:
+    case GL_MODULATE:
+@@ -315,7 +318,9 @@ _mesa_TexEnvfv( GLenum target, GLenum pname, const GLfloat *param )
+       switch (pname) {
+       case GL_TEXTURE_ENV_MODE:
+          {
+-            const GLenum mode = (GLenum) (GLint) *param;
++            GLenum mode = (GLenum) (GLint) *param;
++            if (mode == GL_REPLACE_EXT)
++               mode = GL_REPLACE;
+ 	    if (texUnit->EnvMode == mode)
+ 	       return;
+             if (mode == GL_MODULATE ||
+diff --git a/src/mesa/main/texstore.c b/src/mesa/main/texstore.c
+index 90edca8..5363e9e 100644
+--- a/src/mesa/main/texstore.c
++++ b/src/mesa/main/texstore.c
+@@ -2918,9 +2918,7 @@ _mesa_store_teximage1d(GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+@@ -3004,9 +3002,7 @@ _mesa_store_teximage2d(GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+@@ -3080,9 +3076,7 @@ _mesa_store_teximage3d(GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+@@ -3128,9 +3122,7 @@ _mesa_store_texsubimage1d(GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+@@ -3183,9 +3175,7 @@ _mesa_store_texsubimage2d(GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+@@ -3238,9 +3228,7 @@ _mesa_store_texsubimage3d(GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, packing);
+@@ -3314,9 +3302,7 @@ _mesa_store_compressed_teximage2d(GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, &ctx->Unpack);
+@@ -3426,9 +3412,7 @@ _mesa_store_compressed_texsubimage2d(GLcontext *ctx, GLenum target,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target,
+-                            &ctx->Texture.Unit[ctx->Texture.CurrentUnit],
+-                            texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ 
+    _mesa_unmap_teximage_pbo(ctx, &ctx->Unpack);
+diff --git a/src/mesa/shader/program.c b/src/mesa/shader/program.c
+index d2c9183..787013b 100644
+--- a/src/mesa/shader/program.c
++++ b/src/mesa/shader/program.c
+@@ -59,9 +59,9 @@ _mesa_init_program(GLcontext *ctx)
+    ctx->VertexProgram.Enabled = GL_FALSE;
+    ctx->VertexProgram.PointSizeEnabled = GL_FALSE;
+    ctx->VertexProgram.TwoSideEnabled = GL_FALSE;
+-   ctx->VertexProgram.Current = (struct gl_vertex_program *) ctx->Shared->DefaultVertexProgram;
++   _mesa_reference_vertprog(ctx, &ctx->VertexProgram.Current,
++                            ctx->Shared->DefaultVertexProgram);
+    assert(ctx->VertexProgram.Current);
+-   ctx->VertexProgram.Current->Base.RefCount++;
+    for (i = 0; i < MAX_NV_VERTEX_PROGRAM_PARAMS / 4; i++) {
+       ctx->VertexProgram.TrackMatrix[i] = GL_NONE;
+       ctx->VertexProgram.TrackMatrixTransform[i] = GL_IDENTITY_NV;
+@@ -70,7 +70,8 @@ _mesa_init_program(GLcontext *ctx)
+ 
+ #if FEATURE_NV_fragment_program || FEATURE_ARB_fragment_program
+    ctx->FragmentProgram.Enabled = GL_FALSE;
+-   ctx->FragmentProgram.Current = (struct gl_fragment_program *) ctx->Shared->DefaultFragmentProgram;
++   _mesa_reference_fragprog(ctx, &ctx->FragmentProgram.Current,
++                            ctx->Shared->DefaultFragmentProgram);
+    assert(ctx->FragmentProgram.Current);
+    ctx->FragmentProgram.Current->Base.RefCount++;
+ #endif
+@@ -92,18 +93,10 @@ void
+ _mesa_free_program_data(GLcontext *ctx)
+ {
+ #if FEATURE_NV_vertex_program || FEATURE_ARB_vertex_program
+-   if (ctx->VertexProgram.Current) {
+-      ctx->VertexProgram.Current->Base.RefCount--;
+-      if (ctx->VertexProgram.Current->Base.RefCount <= 0)
+-         ctx->Driver.DeleteProgram(ctx, &(ctx->VertexProgram.Current->Base));
+-   }
++   _mesa_reference_vertprog(ctx, &ctx->VertexProgram.Current, NULL);
+ #endif
+ #if FEATURE_NV_fragment_program || FEATURE_ARB_fragment_program
+-   if (ctx->FragmentProgram.Current) {
+-      ctx->FragmentProgram.Current->Base.RefCount--;
+-      if (ctx->FragmentProgram.Current->Base.RefCount <= 0)
+-         ctx->Driver.DeleteProgram(ctx, &(ctx->FragmentProgram.Current->Base));
+-   }
++   _mesa_reference_fragprog(ctx, &ctx->FragmentProgram.Current, NULL);
+ #endif
+    /* XXX probably move this stuff */
+ #if FEATURE_ATI_fragment_shader
+@@ -311,7 +304,7 @@ void
+ _mesa_delete_program(GLcontext *ctx, struct gl_program *prog)
+ {
+    (void) ctx;
+-   ASSERT(prog);
++   ASSERT(prog);   assert(prog->RefCount==0);
+ 
+    if (prog == &_mesa_DummyProgram)
+       return;
+@@ -367,6 +360,59 @@ _mesa_lookup_program(GLcontext *ctx, GLuint id)
+ 
+ 
+ /**
++ * Reference counting for vertex/fragment programs
++ */
++void
++_mesa_reference_program(GLcontext *ctx,
++                        struct gl_program **ptr,
++                        struct gl_program *prog)
++{
++   assert(ptr);
++   if (*ptr && prog) {
++      /* sanity check */
++      ASSERT((*ptr)->Target == prog->Target);
++   }
++   if (*ptr == prog) {
++      return;  /* no change */
++   }
++   if (*ptr) {
++      GLboolean deleteFlag;
++
++      /*_glthread_LOCK_MUTEX((*ptr)->Mutex);*/
++#if 0
++      printf("Program %p %u 0x%x  Refcount-- to %d\n",
++             *ptr, (*ptr)->Id, (*ptr)->Target, (*ptr)->RefCount - 1);
++#endif
++      ASSERT((*ptr)->RefCount > 0);
++      (*ptr)->RefCount--;
++
++      deleteFlag = ((*ptr)->RefCount == 0);
++      /*_glthread_UNLOCK_MUTEX((*ptr)->Mutex);*/
++      
++      if (deleteFlag) {
++         ASSERT(ctx);
++         ctx->Driver.DeleteProgram(ctx, *ptr);
++      }
++
++      *ptr = NULL;
++   }
++
++   assert(!*ptr);
++   if (prog) {
++      /*_glthread_LOCK_MUTEX(prog->Mutex);*/
++      prog->RefCount++;
++#if 0
++      printf("Program %p %u 0x%x  Refcount++ to %d\n",
++             prog, prog->Id, prog->Target, prog->RefCount);
++#endif
++      /*_glthread_UNLOCK_MUTEX(prog->Mutex);*/
++   }
++
++   *ptr = prog;
++}
++
++
++/**
+  * Return a copy of a program.
+  * XXX Problem here if the program object is actually OO-derivation
+  * made by a device driver.
+@@ -381,8 +427,9 @@ _mesa_clone_program(GLcontext *ctx, const struct gl_program *prog)
+       return NULL;
+ 
+    assert(clone->Target == prog->Target);
++   assert(clone->RefCount == 1);
++
+    clone->String = (GLubyte *) _mesa_strdup((char *) prog->String);
+-   clone->RefCount = 1;
+    clone->Format = prog->Format;
+    clone->Instructions = _mesa_alloc_instructions(prog->NumInstructions);
+    if (!clone->Instructions) {
+@@ -514,9 +561,9 @@ _mesa_BindProgram(GLenum target, GLuint id)
+       /* Bind a default program */
+       newProg = NULL;
+       if (target == GL_VERTEX_PROGRAM_ARB) /* == GL_VERTEX_PROGRAM_NV */
+-         newProg = ctx->Shared->DefaultVertexProgram;
++         newProg = &ctx->Shared->DefaultVertexProgram->Base;
+       else
+-         newProg = ctx->Shared->DefaultFragmentProgram;
++         newProg = &ctx->Shared->DefaultFragmentProgram->Base;
+    }
+    else {
+       /* Bind a user program */
+@@ -544,26 +591,16 @@ _mesa_BindProgram(GLenum target, GLuint id)
+       return;
+    }
+ 
+-   /* unbind/delete oldProg */
+-   if (curProg->Id != 0) {
+-      /* decrement refcount on previously bound fragment program */
+-      curProg->RefCount--;
+-      /* and delete if refcount goes below one */
+-      if (curProg->RefCount <= 0) {
+-         /* the program ID was already removed from the hash table */
+-         ctx->Driver.DeleteProgram(ctx, curProg);
+-      }
+-   }
+-
+    /* bind newProg */
+    if (target == GL_VERTEX_PROGRAM_ARB) { /* == GL_VERTEX_PROGRAM_NV */
+-      ctx->VertexProgram.Current = (struct gl_vertex_program *) newProg;
++      _mesa_reference_vertprog(ctx, &ctx->VertexProgram.Current,
++                               (struct gl_vertex_program *) newProg);
+    }
+    else if (target == GL_FRAGMENT_PROGRAM_NV ||
+             target == GL_FRAGMENT_PROGRAM_ARB) {
+-      ctx->FragmentProgram.Current = (struct gl_fragment_program *) newProg;
++      _mesa_reference_fragprog(ctx, &ctx->FragmentProgram.Current,
++                               (struct gl_fragment_program *) newProg);
+    }
+-   newProg->RefCount++;
+ 
+    /* Never null pointers */
+    ASSERT(ctx->VertexProgram.Current);
+@@ -621,10 +658,7 @@ _mesa_DeletePrograms(GLsizei n, const GLuint *ids)
+             }
+             /* The ID is immediately available for re-use now */
+             _mesa_HashRemove(ctx->Shared->Programs, ids[i]);
+-            prog->RefCount--;
+-            if (prog->RefCount <= 0) {
+-               ctx->Driver.DeleteProgram(ctx, prog);
+-            }
++            _mesa_reference_program(ctx, &prog, NULL);
+          }
+       }
+    }
+diff --git a/src/mesa/shader/program.h b/src/mesa/shader/program.h
+index ea2c8c3..9a6883e 100644
+--- a/src/mesa/shader/program.h
++++ b/src/mesa/shader/program.h
+@@ -86,6 +86,28 @@ _mesa_delete_program(GLcontext *ctx, struct gl_program *prog);
+ extern struct gl_program *
+ _mesa_lookup_program(GLcontext *ctx, GLuint id);
+ 
++extern void
++_mesa_reference_program(GLcontext *ctx,
++                        struct gl_program **ptr,
++                        struct gl_program *prog);
++
++static INLINE void
++_mesa_reference_vertprog(GLcontext *ctx,
++                         struct gl_vertex_program **ptr,
++                         struct gl_vertex_program *prog)
++{
++   _mesa_reference_program(ctx, (struct gl_program **) ptr,
++                           (struct gl_program *) prog);
++}
++
++static INLINE void
++_mesa_reference_fragprog(GLcontext *ctx,
++                         struct gl_fragment_program **ptr,
++                         struct gl_fragment_program *prog)
++{
++   _mesa_reference_program(ctx, (struct gl_program **) ptr,
++                           (struct gl_program *) prog);
++}
+ 
+ extern struct gl_program *
+ _mesa_clone_program(GLcontext *ctx, const struct gl_program *prog);
+diff --git a/src/mesa/shader/shader_api.c b/src/mesa/shader/shader_api.c
+index 01a237c..684d62d 100644
+--- a/src/mesa/shader/shader_api.c
++++ b/src/mesa/shader/shader_api.c
+@@ -79,8 +79,7 @@ _mesa_clear_shader_program_data(GLcontext *ctx,
+          /* to prevent a double-free in the next call */
+          shProg->VertexProgram->Base.Parameters = NULL;
+       }
+-      ctx->Driver.DeleteProgram(ctx, &shProg->VertexProgram->Base);
+-      shProg->VertexProgram = NULL;
++      _mesa_reference_vertprog(ctx, &shProg->VertexProgram, NULL);
+    }
+ 
+    if (shProg->FragmentProgram) {
+@@ -88,8 +87,7 @@ _mesa_clear_shader_program_data(GLcontext *ctx,
+          /* to prevent a double-free in the next call */
+          shProg->FragmentProgram->Base.Parameters = NULL;
+       }
+-      ctx->Driver.DeleteProgram(ctx, &shProg->FragmentProgram->Base);
+-      shProg->FragmentProgram = NULL;
++      _mesa_reference_fragprog(ctx, &shProg->FragmentProgram, NULL);
+    }
+ 
+    if (shProg->Uniforms) {
+@@ -1098,6 +1096,8 @@ _mesa_link_program(GLcontext *ctx, GLuint program)
+       return;
+    }
+ 
++   FLUSH_VERTICES(ctx, _NEW_PROGRAM);
++
+    _slang_link(ctx, program, shProg);
+ }
+ 
+diff --git a/src/mesa/shader/slang/slang_link.c b/src/mesa/shader/slang/slang_link.c
+index c8457fc..72fe999 100644
+--- a/src/mesa/shader/slang/slang_link.c
++++ b/src/mesa/shader/slang/slang_link.c
+@@ -516,19 +516,19 @@ _slang_link(GLcontext *ctx,
+     * changing src/dst registers after merging the uniforms and varying vars.
+     */
+    if (vertProg) {
+-      shProg->VertexProgram
+-         = vertex_program(_mesa_clone_program(ctx, &vertProg->Base));
++      _mesa_reference_vertprog(ctx, &shProg->VertexProgram,
++                               vertex_program(_mesa_clone_program(ctx, &vertProg->Base)));
+    }
+    else {
+-      shProg->VertexProgram = NULL;
++      _mesa_reference_vertprog(ctx, &shProg->VertexProgram, NULL);
+    }
+ 
+    if (fragProg) {
+-      shProg->FragmentProgram
+-         = fragment_program(_mesa_clone_program(ctx, &fragProg->Base));
++      _mesa_reference_fragprog(ctx, &shProg->FragmentProgram,
++                               fragment_program(_mesa_clone_program(ctx, &fragProg->Base)));
+    }
+    else {
+-      shProg->FragmentProgram = NULL;
++      _mesa_reference_fragprog(ctx, &shProg->FragmentProgram, NULL);
+    }
+ 
+    if (shProg->VertexProgram)
+@@ -545,10 +545,12 @@ _slang_link(GLcontext *ctx,
+    if (shProg->VertexProgram) {
+       _mesa_free_parameter_list(shProg->VertexProgram->Base.Parameters);
+       shProg->VertexProgram->Base.Parameters = shProg->Uniforms;
++      assert(shProg->Uniforms);
+    }
+    if (shProg->FragmentProgram) {
+       _mesa_free_parameter_list(shProg->FragmentProgram->Base.Parameters);
+       shProg->FragmentProgram->Base.Parameters = shProg->Uniforms;
++      assert(shProg->Uniforms);
+    }
+ 
+    if (shProg->VertexProgram) {
+diff --git a/src/mesa/swrast/s_drawpix.c b/src/mesa/swrast/s_drawpix.c
+index 81f5caa..730798c 100644
+--- a/src/mesa/swrast/s_drawpix.c
++++ b/src/mesa/swrast/s_drawpix.c
+@@ -840,8 +840,10 @@ _swrast_DrawPixels( GLcontext *ctx,
+       _swrast_validate_derived( ctx );
+ 
+     pixels = _mesa_map_drawpix_pbo(ctx, unpack, pixels);
+-    if (!pixels)
++    if (!pixels) {
++       RENDER_FINISH(swrast,ctx);
+        return;
++    }
+ 
+    switch (format) {
+    case GL_STENCIL_INDEX:
+diff --git a/src/mesa/swrast/s_texstore.c b/src/mesa/swrast/s_texstore.c
+index 3f49b40..547d5b9 100644
+--- a/src/mesa/swrast/s_texstore.c
++++ b/src/mesa/swrast/s_texstore.c
+@@ -305,7 +305,7 @@ _swrast_copy_teximage1d( GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target, texUnit, texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ }
+ 
+@@ -381,7 +381,7 @@ _swrast_copy_teximage2d( GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target, texUnit, texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ }
+ 
+@@ -450,7 +450,7 @@ _swrast_copy_texsubimage1d( GLcontext *ctx, GLenum target, GLint level,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target, texUnit, texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ }
+ 
+@@ -526,7 +526,7 @@ _swrast_copy_texsubimage2d( GLcontext *ctx,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target, texUnit, texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ }
+ 
+@@ -599,6 +599,6 @@ _swrast_copy_texsubimage3d( GLcontext *ctx,
+ 
+    /* GL_SGIS_generate_mipmap */
+    if (level == texObj->BaseLevel && texObj->GenerateMipmap) {
+-      _mesa_generate_mipmap(ctx, target, texUnit, texObj);
++      ctx->Driver.GenerateMipmap(ctx, target, texObj);
+    }
+ }
+diff --git a/src/mesa/tnl/t_context.h b/src/mesa/tnl/t_context.h
+index baf283e..1ac508f 100644
+--- a/src/mesa/tnl/t_context.h
++++ b/src/mesa/tnl/t_context.h
+@@ -388,7 +388,7 @@ struct tnl_clipspace
+ struct tnl_cache_item {
+    GLuint hash;
+    void *key;
+-   void *data;
++   struct gl_vertex_program *prog;
+    struct tnl_cache_item *next;
+ };
+ 
+diff --git a/src/mesa/tnl/t_vp_build.c b/src/mesa/tnl/t_vp_build.c
+index a7fd815..2b1eefe 100644
+--- a/src/mesa/tnl/t_vp_build.c
++++ b/src/mesa/tnl/t_vp_build.c
+@@ -1464,21 +1464,22 @@ create_new_program( const struct state_key *key,
+    build_tnl_program( &p );
+ }
+ 
+-static void *search_cache( struct tnl_cache *cache,
+-			   GLuint hash,
+-			   const void *key,
+-			   GLuint keysize)
++
++static struct gl_vertex_program *
++search_cache(struct tnl_cache *cache, GLuint hash,
++             const void *key, GLuint keysize)
+ {
+    struct tnl_cache_item *c;
+ 
+    for (c = cache->items[hash % cache->size]; c; c = c->next) {
+       if (c->hash == hash && _mesa_memcmp(c->key, key, keysize) == 0)
+-	 return c->data;
++	 return c->prog;
+    }
+ 
+    return NULL;
+ }
+ 
++
+ static void rehash( struct tnl_cache *cache )
+ {
+    struct tnl_cache_item **items;
+@@ -1501,15 +1502,16 @@ static void rehash( struct tnl_cache *cache )
+    cache->size = size;
+ }
+ 
+-static void cache_item( struct tnl_cache *cache,
++static void cache_item( GLcontext *ctx,
++                        struct tnl_cache *cache,
+ 			GLuint hash,
+ 			void *key,
+-			void *data )
++			struct gl_vertex_program *prog )
+ {
+-   struct tnl_cache_item *c = (struct tnl_cache_item*) _mesa_malloc(sizeof(*c));
++   struct tnl_cache_item *c = CALLOC_STRUCT(tnl_cache_item);
+    c->hash = hash;
+    c->key = key;
+-   c->data = data;
++   _mesa_reference_vertprog(ctx, &c->prog, prog);
+ 
+    if (++cache->n_items > cache->size * 1.5)
+       rehash(cache);
+@@ -1540,6 +1542,8 @@ void _tnl_UpdateFixedFunctionProgram( GLcontext *ctx )
+ 
+    if (!ctx->VertexProgram._Current ||
+        ctx->VertexProgram._Current == ctx->VertexProgram._TnlProgram) {
++      struct gl_vertex_program *newProg;
++
+       /* Grab all the relevent state and put it in a single structure:
+        */
+       key = make_state_key(ctx);
+@@ -1547,33 +1551,31 @@ void _tnl_UpdateFixedFunctionProgram( GLcontext *ctx )
+ 
+       /* Look for an already-prepared program for this state:
+        */
+-      ctx->VertexProgram._TnlProgram = (struct gl_vertex_program *)
+-	 search_cache( tnl->vp_cache, hash, key, sizeof(*key) );
++      newProg = search_cache( tnl->vp_cache, hash, key, sizeof(*key));
+    
+       /* OK, we'll have to build a new one:
+        */
+-      if (!ctx->VertexProgram._TnlProgram) {
++      if (!newProg) {
++
+ 	 if (0)
+ 	    _mesa_printf("Build new TNL program\n");
+ 	 
+-	 ctx->VertexProgram._TnlProgram = (struct gl_vertex_program *)
++	 newProg = (struct gl_vertex_program *)
+ 	    ctx->Driver.NewProgram(ctx, GL_VERTEX_PROGRAM_ARB, 0); 
+ 
+-	 create_new_program( key, ctx->VertexProgram._TnlProgram, 
+-			     ctx->Const.VertexProgram.MaxTemps );
++	 create_new_program( key, newProg, ctx->Const.VertexProgram.MaxTemps );
+ 
+ 	 if (ctx->Driver.ProgramStringNotify)
+ 	    ctx->Driver.ProgramStringNotify( ctx, GL_VERTEX_PROGRAM_ARB, 
+-                                       &ctx->VertexProgram._TnlProgram->Base );
++                                             &newProg->Base );
+ 
+-	 cache_item(tnl->vp_cache, hash, key, ctx->VertexProgram._TnlProgram );
+-      }
+-      else {
+-	 FREE(key);
+-	 if (0) 
+-	    _mesa_printf("Found existing TNL program for key %x\n", hash);
++	 cache_item(ctx, tnl->vp_cache, hash, key, newProg);
++
++         _mesa_reference_vertprog(ctx, &ctx->VertexProgram._TnlProgram, newProg);
+       }
+-      ctx->VertexProgram._Current = ctx->VertexProgram._TnlProgram;
++
++      _mesa_reference_vertprog(ctx, &ctx->VertexProgram._TnlProgram, newProg);
++      _mesa_reference_vertprog(ctx, &ctx->VertexProgram._Current, newProg);
+    }
+ 
+    /* Tell the driver about the change.  Could define a new target for
+@@ -1606,7 +1608,7 @@ void _tnl_ProgramCacheDestroy( GLcontext *ctx )
+       for (c = tnl->vp_cache->items[i]; c; c = next) {
+ 	 next = c->next;
+ 	 FREE(c->key);
+-	 FREE(c->data);
++	 _mesa_reference_vertprog(ctx, &c->prog, NULL);
+ 	 FREE(c);
+       }
+ 
