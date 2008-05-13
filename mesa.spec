@@ -15,7 +15,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.31%{?dist}
+Release: 0.32%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -48,6 +48,7 @@ BuildRequires: libdrm-devel >= 2.4.0-0.5
 BuildRequires: libXxf86vm-devel
 BuildRequires: expat-devel >= 2.0
 BuildRequires: xorg-x11-proto-devel >= 7.1-10
+BuildRequires: dri2proto >= 1.1
 BuildRequires: makedepend
 BuildRequires: libselinux-devel
 BuildRequires: libXext-devel
@@ -418,6 +419,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Tue May 13 2008 Adam Jackson <ajax@redhat.com> 7.1-0.32
+- Update dri2proto requirement.  (#446166)
+
 * Sat May 10 2008 Dave Airlie <airlied@redhat.com> 7.1-0.31
 - Bring in a bunch of fixes from upstream, missing rs690 pci id,
 - DRI2 + modeset + 965 + compiz + alt-tab fixed.
