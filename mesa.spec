@@ -15,7 +15,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.32%{?dist}
+Release: 0.33%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -40,10 +40,11 @@ Patch8: mesa-7.1-sparc.patch
 
 Patch10: mesa-7.1-bag-of-fixes.patch
 Patch12: mesa-7.1-disable-intel-classic-warn.patch
+Patch13: mesa-r500-support.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
-BuildRequires: libdrm-devel >= 2.4.0-0.5
+BuildRequires: libdrm-devel >= 2.4.0-0.12
 %endif
 BuildRequires: libXxf86vm-devel
 BuildRequires: expat-devel >= 2.0
@@ -171,6 +172,7 @@ This package provides some demo applications for testing Mesa.
 %patch8 -p1
 %patch10 -p1 -b .misc-fixes
 %patch12 -p1 -b .intel-nowarn
+%patch13 -p1 -b .r500
 
 # WARNING: The following files are copyright "Mark J. Kilgard" under the GLUT
 # license and are not open source/free software, so we remove them.
@@ -419,6 +421,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Wed May 28 2008 Dave Airlie <airlied@redhat.com> 7.1-0.33
+- Add initial r500 3D driver
+
 * Tue May 13 2008 Adam Jackson <ajax@redhat.com> 7.1-0.32
 - Update dri2proto requirement.  (#446166)
 
