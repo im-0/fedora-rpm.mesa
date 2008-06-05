@@ -15,7 +15,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.33%{?dist}
+Release: 0.34%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -421,6 +421,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Wed Jun 04 2008 Adam Jackson <ajax@redhat.com> 7.1-0.34
+- Link libdricore with gcc instead of ld, so we automagically pick up the
+  ld --build-id flags.
+
 * Wed May 28 2008 Dave Airlie <airlied@redhat.com> 7.1-0.33
 - Add initial r500 3D driver
 

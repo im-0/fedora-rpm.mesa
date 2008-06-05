@@ -48,7 +48,7 @@ diff -up mesa-20080331/src/mesa/drivers/dri/Makefile.jx mesa-20080331/src/mesa/d
  	-mkdir $(TOP)/$(LIB_DIR)
  
 +libdricore.so:
-+	ld -shared -o libdricore.so --whole-archive ../../libmesa.a --no-whole-archive -lm -lpthread -lc
++	gcc -shared -o libdricore.so -Wl,--whole-archive ../../libmesa.a -Wl,--no-whole-archive -lm -lpthread -lc
 +
 +$(TOP)/$(LIB_DIR)/libdricore.so: $(TOP)/$(LIB_DIR) libdricore.so
 +	$(INSTALL) libdricore.so $(TOP)/$(LIB_DIR) 
