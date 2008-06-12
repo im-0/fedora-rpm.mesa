@@ -10,12 +10,12 @@
 %endif
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20080415
+%define gitdate 20080612
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.34%{?dist}
+Release: 0.35%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -29,18 +29,13 @@ Source3: make-git-snapshot.sh
 
 Patch0: mesa-7.1pre-osmesa-version.patch
 Patch2: mesa-7.1pre-nukeglthread-debug.patch
-Patch3: mesa-7.1-fda4895d-update.patch
 
 # This doesn't work, disable for now.
 Patch4: disable-tex-offset.patch
 
 Patch7: mesa-7.1-link-shared.patch
-# lets only build drivers on sparc that are remotely useful
-Patch8: mesa-7.1-sparc.patch
 
-Patch10: mesa-7.1-bag-of-fixes.patch
 Patch12: mesa-7.1-disable-intel-classic-warn.patch
-Patch13: mesa-r500-support.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
@@ -166,13 +161,9 @@ This package provides some demo applications for testing Mesa.
 %setup -q -n mesa-%{gitdate} -b2
 %patch0 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
-%patch3 -p1 -b .git-update-fix-intel
 %patch4 -p1 -b .disable-tex-offset
 %patch7 -p1 -b .dricore
-%patch8 -p1
-%patch10 -p1 -b .misc-fixes
 %patch12 -p1 -b .intel-nowarn
-%patch13 -p1 -b .r500
 
 # WARNING: The following files are copyright "Mark J. Kilgard" under the GLUT
 # license and are not open source/free software, so we remove them.
@@ -421,6 +412,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Thu Jun 12 2008 Dave Airlie <airlied@redhat.com> 7.1-0.35
+- Update mesa to latest git snapshot - drop patches merged upstream
+
 * Wed Jun 04 2008 Adam Jackson <ajax@redhat.com> 7.1-0.34
 - Link libdricore with gcc instead of ld, so we automagically pick up the
   ld --build-id flags.

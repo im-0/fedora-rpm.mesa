@@ -32,7 +32,7 @@ diff -up mesa-20080612/src/mesa/drivers/dri/Makefile.dricore mesa-20080612/src/m
  		fi \
  	done
 +	$(INSTALL) -d $(DESTDIR)$(DRI_DRIVER_INSTALL_DIR)
-+	$(INSTALL) -m 755 -d $(TOP)/$(LIB_DIR)/libdricore.so $(DESTDIR)$(DRI_DRIVER_INSTALL_DIR)
++	$(INSTALL) -m 755 $(TOP)/$(LIB_DIR)/libdricore.so $(DESTDIR)$(DRI_DRIVER_INSTALL_DIR)
  	$(INSTALL) -d $(DESTDIR)$(INSTALL_DIR)/include/GL/internal
  	$(INSTALL) -m 0644 $(TOP)/include/GL/internal/dri_interface.h $(DESTDIR)$(INSTALL_DIR)/include/GL/internal
  	$(INSTALL) -m 0644 $(TOP)/include/GL/internal/dri_sarea.h $(DESTDIR)$(INSTALL_DIR)/include/GL/internal
