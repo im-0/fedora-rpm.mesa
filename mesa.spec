@@ -15,7 +15,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.36%{?dist}
+Release: 0.37%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -140,15 +140,6 @@ Requires: mesa-libOSMesa = %{version}-%{release}
 
 %description libOSMesa-devel
 Mesa offscreen rendering development package
-
-
-%package source
-Summary: Mesa source code required to build X server
-Group: Development/Libraries
-
-%description source
-The mesa-source package provides the minimal source code needed to
-build DRI enabled X servers, etc.
 
 
 %package -n glx-utils
@@ -277,18 +268,6 @@ pushd ../%{manpages}
 make %{?_smp_mflags} install DESTDIR=$RPM_BUILD_ROOT
 popd
 
-# Install the source needed to build the X server.  The egreps are just
-# stripping out unnecessary dirs; only tricky bit is the [^c] to make sure
-# .../dri/common is included.
-%define mesasourcedir %{_datadir}/mesa/source
-mkdir -p $RPM_BUILD_ROOT/%{mesasourcedir}
-( find src -name \*.[ch] ; find include -name \*.h ) |
-    egrep -v '^src/(glu|glw)' |
-    egrep -v '^src/mesa/drivers/(directfb|dos|fbdev|glide|ggi|osmesa)' |
-    egrep -v '^src/mesa/drivers/(windows|dri/[^c])' |
-    xargs tar cf - --mode a=r |
-	(cd $RPM_BUILD_ROOT/%{mesasourcedir} && tar xf -)
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -358,11 +337,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa16.so
 %{_libdir}/libOSMesa32.so
 
-# We constructed this dir carefully, so just slurp in the whole thing.
-%files source
-%defattr(-,root,root,-)
-%{mesasourcedir}
-
 %files -n glx-utils
 %defattr(-,root,root,-)
 %{_bindir}/glxgears
@@ -425,6 +399,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Fri Jun 27 2008 Adam Jackson <ajax@redhat.com> 7.1-0.37
+- Drop mesa-source subpackage.  Man that feels good.
+
 * Fri Jun 27 2008 Adam Jackson <ajax@redhat.com> 7.1-0.36
 - Today's snapshot.
 - Package swrast_dri for the new X world order.
