@@ -10,12 +10,12 @@
 %endif
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20080612
+%define gitdate 20080627
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.35%{?dist}
+Release: 0.36%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -67,11 +67,22 @@ Obsoletes: Mesa XFree86-libs XFree86-Mesa-libGL xorg-x11-Mesa-libGL
 Obsoletes: xorg-x11-libs
 %if %{with_dri}
 Requires: libdrm >= 2.3.0
+Requires: mesa-dri-drivers = %{version}-%{release}
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
 
 %description libGL
-Mesa libGL runtime libraries and DRI drivers.
+Mesa libGL runtime library.
+
+
+%if %{with_dri}
+%package dri-drivers
+Summary: Mesa-based DRI drivers.
+Group: User Interface/X Hardware Support
+%description dri-drivers
+Mesa-based DRI drivers.
+%endif
+
 
 %package libGL-devel
 Summary: Mesa libGL development package
@@ -235,7 +246,7 @@ make install DESTDIR=$RPM_BUILD_ROOT DRI_DIRS=
 %if %{with_dri}
 install -d $RPM_BUILD_ROOT%{_libdir}/dri
 install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri %{_lib}/libdricore.so >& /dev/null
-for f in i810 i915 i965 mach64 mga r128 r200 r300 radeon savage sis tdfx unichrome; do
+for f in i810 i915 i965 mach64 mga r128 r200 r300 radeon savage sis swrast tdfx unichrome; do
     so=%{_lib}/${f}_dri.so
     test -e $so && echo $so
 done | xargs install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri >& /dev/null || :
@@ -294,7 +305,9 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_libdir}/libGL.so.1
 %{_libdir}/libGL.so.1.2
+
 %if %{with_dri}
+%files dri-drivers
 %dir %{_libdir}/dri
 %{_libdir}/dri/libdricore.so
 %{_libdir}/dri/*_dri.so
@@ -412,6 +425,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Fri Jun 27 2008 Adam Jackson <ajax@redhat.com> 7.1-0.36
+- Today's snapshot.
+- Package swrast_dri for the new X world order.
+- Split DRI drivers to their own subpackage.
+
 * Thu Jun 12 2008 Dave Airlie <airlied@redhat.com> 7.1-0.35
 - Update mesa to latest git snapshot - drop patches merged upstream
 
