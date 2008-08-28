@@ -15,20 +15,20 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.1
-Release: 0.37%{?dist}
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-#Source0: http://internap.dl.sourceforge.net/sourceforge/mesa3d/MesaLib-7.1pre.tar.bz2
-#Source1: http://internap.dl.sourceforge.net/sourceforge/mesa3d/MesaDemos-7.1pre.tar.bz2
-Source0: %{name}-%{gitdate}.tar.bz2
+Source0: http://downloads.sf.net/mesa3d/MesaLib-%{version}.tar.bz2
+Source1: http://downloads.sf.net/mesa3d/MesaDemos-%{version}.tar.bz2
+#Source0: %{name}-%{gitdate}.tar.bz2
 Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
 
-Patch0: mesa-7.1pre-osmesa-version.patch
-Patch2: mesa-7.1pre-nukeglthread-debug.patch
+Patch0: mesa-7.1-osmesa-version.patch
+Patch2: mesa-7.1-nukeglthread-debug.patch
 
 # This doesn't work, disable for now.
 Patch4: disable-tex-offset.patch
@@ -159,8 +159,8 @@ This package provides some demo applications for testing Mesa.
 
 
 %prep
-#%setup -q -n Mesa-%{version}pre -b1 -b2
-%setup -q -n mesa-%{gitdate} -b2
+%setup -q -n Mesa-%{version} -b1 -b2
+#setup -q -n mesa-%{gitdate} -b2
 %patch0 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
 %patch4 -p1 -b .disable-tex-offset
@@ -245,7 +245,7 @@ done | xargs install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri >& /dev/null || :
 
 # strip out undesirable headers
 pushd $RPM_BUILD_ROOT%{_includedir}/GL 
-rm [a-fh-np-wyz]*.h gg*.h glf*.h glut*.h
+rm -f [a-fh-np-wyz]*.h gg*.h glf*.h glut*.h
 popd
 
 # XXX demos, since they don't install automatically.  should fix that.
@@ -307,6 +307,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/internal/dri_interface.h
 %{_includedir}/GL/internal/dri_sarea.h
 %{_libdir}/libGL.so
+%{_libdir}/pkgconfig/dri.pc
 %{_libdir}/pkgconfig/gl.pc
 %{_datadir}/man/man3/gl[^uX]*.3gl*
 %{_datadir}/man/man3/glX*.3gl*
@@ -353,6 +354,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/cubemap
 %{_bindir}/drawpix
 %{_bindir}/engine
+%{_bindir}/fbo_firecube
 %{_bindir}/fire
 %{_bindir}/fogcoord
 %{_bindir}/fplight
@@ -399,6 +401,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Thu Aug 28 2008 Adam Jackson <ajax@redhat.com> 7.1-1
+- Mesa 7.1.
+
 * Fri Jun 27 2008 Adam Jackson <ajax@redhat.com> 7.1-0.37
 - Drop mesa-source subpackage.  Man that feels good.
 
