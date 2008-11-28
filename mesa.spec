@@ -18,7 +18,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.2
-Release: 0.13%{?dist}
+Release: 0.14%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -43,6 +43,7 @@ Patch7: mesa-7.1-link-shared.patch
 Patch9: intel-revert-vbl.patch
 
 Patch12: mesa-7.1-disable-intel-classic-warn.patch
+Patch13: mesa-7.1-fix-i8xx-vbos.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
@@ -178,6 +179,7 @@ This package provides some demo applications for testing Mesa.
 %patch7 -p1 -b .dricore
 %patch9 -p1 -b .intel-vbl
 %patch12 -p1 -b .intel-nowarn
+%patch13 -p1 -b .intel-8xx-vbo
 
 # WARNING: The following files are copyright "Mark J. Kilgard" under the GLUT
 # license and are not open source/free software, so we remove them.
@@ -429,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Fri Nov 28 2008 Dave Airlie <airlied@redhat.com> 7.2-0.14
+- mesa-7.1-fix-i8xx-vbos.patch: fix i8xx hw rendering
+
 * Thu Oct 23 2008 Dave Airlie <airlied@redhat.com> 7.2-0.13
 - r300-bufmgr.patch - fix aperture sizing issues - should make compiz work better
 
