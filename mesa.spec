@@ -18,7 +18,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.2
-Release: 0.14%{?dist}
+Release: 0.15%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -38,6 +38,7 @@ Patch3: mesa-no-mach64.patch
 Patch4: depth-override-fix.patch
 
 Patch5: r300-bufmgr.patch
+Patch6: r300-dont-fail-on-fog.patch
 
 Patch7: mesa-7.1-link-shared.patch
 Patch9: intel-revert-vbl.patch
@@ -176,6 +177,7 @@ This package provides some demo applications for testing Mesa.
 %patch3 -p0 -b .no-mach64
 %patch4 -p1 -b .depth-override-fix
 %patch5 -p1 -b .r300-bufmgr
+%patch6 -p1 -b .r300-fog-fail
 %patch7 -p1 -b .dricore
 %patch9 -p1 -b .intel-vbl
 %patch12 -p1 -b .intel-nowarn
@@ -431,6 +433,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Thu Dec 04 2008 Dave Airlie <airlied@redhat.com> 7.2-0.15
+- r300-dont-fail-on-fog.patch: dirty workaround hope it works
+
 * Fri Nov 28 2008 Dave Airlie <airlied@redhat.com> 7.2-0.14
 - mesa-7.1-fix-i8xx-vbos.patch: fix i8xx hw rendering
 

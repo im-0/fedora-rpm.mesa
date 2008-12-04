@@ -1,0 +1,15 @@
+diff --git a/src/mesa/drivers/dri/r300/radeon_program_pair.c b/src/mesa/drivers/dri/r300/radeon_program_pair.c
+index 5ad50d2..99b9d45 100644
+--- a/src/mesa/drivers/dri/r300/radeon_program_pair.c
++++ b/src/mesa/drivers/dri/r300/radeon_program_pair.c
+@@ -474,8 +474,8 @@ static void allocate_input_registers(struct pair_state *s)
+ 	InputsRead &= ~FRAG_BIT_COL1;
+ 
+ 	/* Anything else */
+-	if (InputsRead)
+-		error("Don't know how to handle inputs 0x%x\n", InputsRead);
++	//if (InputsRead)
++	//	error("Don't know how to handle inputs 0x%x\n", InputsRead);
+ }
+ 
+ 
