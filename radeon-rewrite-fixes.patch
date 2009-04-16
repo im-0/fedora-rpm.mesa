@@ -1,0 +1,187 @@
+diff -up mesa-20090322/src/mesa/drivers/dri/common/dri_util.c.dave mesa-20090322/src/mesa/drivers/dri/common/dri_util.c
+--- mesa-20090322/src/mesa/drivers/dri/common/dri_util.c.dave	2009-03-21 21:26:15.000000000 +1000
++++ mesa-20090322/src/mesa/drivers/dri/common/dri_util.c	2009-04-16 18:59:17.000000000 +1000
+@@ -37,6 +37,9 @@
+ typedef GLboolean ( * PFNGLXGETMSCRATEOMLPROC) (__DRIdrawable *drawable, int32_t *numerator, int32_t *denominator);
+ #endif
+ 
++static void dri_get_drawable(__DRIdrawable *pdp);
++static void dri_put_drawable(__DRIdrawable *pdp);
++
+ /**
+  * This is just a token extension used to signal that the driver
+  * supports setting a read drawable.
+@@ -127,7 +130,7 @@ static int driUnbindContext(__DRIcontext
+ 	return GL_FALSE;
+     }
+ 
+-    pdp->refcount--;
++    dri_put_drawable(pdp);
+ 
+     if (prp != pdp) {
+         if (prp->refcount == 0) {
+@@ -135,7 +138,7 @@ static int driUnbindContext(__DRIcontext
+ 	    return GL_FALSE;
+ 	}
+ 
+-	prp->refcount--;
++    	dri_put_drawable(prp);
+     }
+ 
+ 
+@@ -175,9 +178,9 @@ static int driBindContext(__DRIcontext *
+     pcp->driDrawablePriv = pdp;
+     pcp->driReadablePriv = prp;
+     pdp->driContextPriv = pcp;
+-    pdp->refcount++;
++    dri_get_drawable(pdp);
+     if ( pdp != prp ) {
+-	prp->refcount++;
++        dri_get_drawable(prp);
+     }
+ 
+     /*
+@@ -435,7 +438,7 @@ driCreateNewDrawable(__DRIscreen *psp, c
+ 
+     pdp->loaderPrivate = data;
+     pdp->hHWDrawable = hwDrawable;
+-    pdp->refcount = 0;
++    pdp->refcount = 1;
+     pdp->pStamp = NULL;
+     pdp->lastStamp = 0;
+     pdp->index = 0;
+@@ -488,12 +491,19 @@ dri2CreateNewDrawable(__DRIscreen *scree
+     return pdraw;
+ }
+ 
+-
+-static void
+-driDestroyDrawable(__DRIdrawable *pdp)
++static void dri_get_drawable(__DRIdrawable *pdp)
++{
++    pdp->refcount++;
++}
++	
++static void dri_put_drawable(__DRIdrawable *pdp)
+ {
+     __DRIscreenPrivate *psp;
+ 
++    pdp->refcount--;
++    if (pdp->refcount)
++	return;
++
+     if (pdp) {
+ 	psp = pdp->driScreenPriv;
+         (*psp->DriverAPI.DestroyBuffer)(pdp);
+@@ -509,6 +519,12 @@ driDestroyDrawable(__DRIdrawable *pdp)
+     }
+ }
+ 
++static void
++driDestroyDrawable(__DRIdrawable *pdp)
++{
++    dri_put_drawable(pdp);
++}
++
+ /*@}*/
+ 
+ 
+diff -up mesa-20090322/src/mesa/drivers/dri/r200/r200_cmdbuf.c.dave mesa-20090322/src/mesa/drivers/dri/r200/r200_cmdbuf.c
+--- mesa-20090322/src/mesa/drivers/dri/r200/r200_cmdbuf.c.dave	2009-04-16 18:58:14.000000000 +1000
++++ mesa-20090322/src/mesa/drivers/dri/r200/r200_cmdbuf.c	2009-04-16 18:58:32.000000000 +1000
+@@ -209,6 +209,11 @@ GLushort *r200AllocEltsOpenEnded( r200Co
+    rmesa->radeon.tcl.elt_dma_offset = 0;
+    rmesa->tcl.elt_used = min_nr * 2;
+ 
++   radeon_validate_bo(&rmesa->radeon, rmesa->radeon.tcl.elt_dma_bo,
++                      RADEON_GEM_DOMAIN_GTT, 0);
++   if (radeon_revalidate_bos(rmesa->radeon.glCtx) == GL_FALSE)
++      fprintf(stderr,"failure to revalidate BOs - badness\n");
++
+    radeon_bo_map(rmesa->radeon.tcl.elt_dma_bo, 1);
+    retval = rmesa->radeon.tcl.elt_dma_bo->ptr + rmesa->radeon.tcl.elt_dma_offset;
+    
+diff -up mesa-20090322/src/mesa/drivers/dri/r200/r200_texstate.c.dave mesa-20090322/src/mesa/drivers/dri/r200/r200_texstate.c
+--- mesa-20090322/src/mesa/drivers/dri/r200/r200_texstate.c.dave	2009-04-16 18:58:14.000000000 +1000
++++ mesa-20090322/src/mesa/drivers/dri/r200/r200_texstate.c	2009-04-16 18:58:32.000000000 +1000
+@@ -1422,8 +1422,8 @@ void set_re_cntl_d3d( GLcontext *ctx, in
+  */
+ static void setup_hardware_state(r200ContextPtr rmesa, radeonTexObj *t)
+ {
+-   const struct gl_texture_image *firstImage =
+-      t->base.Image[0][t->mt->firstLevel];
++   int firstlevel = t->mt ? t->mt->firstLevel : 0;
++   const struct gl_texture_image *firstImage = t->base.Image[0][firstlevel];
+    GLint log2Width, log2Height, log2Depth, texelBytes;
+    
+    if ( t->bo ) {
+diff -up mesa-20090322/src/mesa/drivers/dri/r300/r300_cmdbuf.c.dave mesa-20090322/src/mesa/drivers/dri/r300/r300_cmdbuf.c
+--- mesa-20090322/src/mesa/drivers/dri/r300/r300_cmdbuf.c.dave	2009-04-16 18:58:14.000000000 +1000
++++ mesa-20090322/src/mesa/drivers/dri/r300/r300_cmdbuf.c	2009-04-16 18:58:32.000000000 +1000
+@@ -214,6 +214,7 @@ static void emit_cb_offset(GLcontext *ct
+ 	struct radeon_renderbuffer *rrb;
+ 	uint32_t cbpitch;
+ 	uint32_t offset = r300->radeon.state.color.draw_offset;
++	uint32_t dw = 6;
+ 
+ 	rrb = radeon_get_colorbuffer(&r300->radeon);
+ 	if (!rrb || !rrb->bo) {
+@@ -230,11 +231,16 @@ static void emit_cb_offset(GLcontext *ct
+ 	if (rrb->bo->flags & RADEON_BO_FLAGS_MACRO_TILE)
+ 		cbpitch |= R300_COLOR_TILE_ENABLE;
+ 
+-	BEGIN_BATCH_NO_AUTOSTATE(8);
++    	if (r300->radeon.radeonScreen->kernel_mm)
++		dw += 2;
++	BEGIN_BATCH_NO_AUTOSTATE(dw);
+ 	OUT_BATCH_REGSEQ(R300_RB3D_COLOROFFSET0, 1);
+ 	OUT_BATCH_RELOC(offset, rrb->bo, offset, 0, RADEON_GEM_DOMAIN_VRAM, 0);
+ 	OUT_BATCH_REGSEQ(R300_RB3D_COLORPITCH0, 1);
+-	OUT_BATCH_RELOC(cbpitch, rrb->bo, cbpitch, 0, RADEON_GEM_DOMAIN_VRAM, 0);
++    	if (!r300->radeon.radeonScreen->kernel_mm)
++		OUT_BATCH(cbpitch);
++	else
++		OUT_BATCH_RELOC(cbpitch, rrb->bo, cbpitch, 0, RADEON_GEM_DOMAIN_VRAM, 0);
+ 	END_BATCH();
+     if (r300->radeon.radeonScreen->driScreen->dri2.enabled) {
+         if (r300->radeon.radeonScreen->chip_family >= CHIP_FAMILY_RV515) {
+diff -up mesa-20090322/src/mesa/drivers/dri/radeon/radeon_common.c.dave mesa-20090322/src/mesa/drivers/dri/radeon/radeon_common.c
+--- mesa-20090322/src/mesa/drivers/dri/radeon/radeon_common.c.dave	2009-04-16 18:58:14.000000000 +1000
++++ mesa-20090322/src/mesa/drivers/dri/radeon/radeon_common.c	2009-04-16 18:58:32.000000000 +1000
+@@ -928,6 +928,7 @@ void radeon_validate_reset_bos(radeonCon
+ 	int i;
+ 
+ 	for (i = 0; i < radeon->state.validated_bo_count; i++) {
++		radeon_bo_unref(radeon->state.bos[i].bo);
+ 		radeon->state.bos[i].bo = NULL;
+ 		radeon->state.bos[i].read_domains = 0;
+ 		radeon->state.bos[i].write_domain = 0;
+@@ -938,6 +939,7 @@ void radeon_validate_reset_bos(radeonCon
+ 
+ void radeon_validate_bo(radeonContextPtr radeon, struct radeon_bo *bo, uint32_t read_domains, uint32_t write_domain)
+ {
++	radeon_bo_ref(bo);
+ 	radeon->state.bos[radeon->state.validated_bo_count].bo = bo;
+ 	radeon->state.bos[radeon->state.validated_bo_count].read_domains = read_domains;
+ 	radeon->state.bos[radeon->state.validated_bo_count].write_domain = write_domain;
+diff -up mesa-20090322/src/mesa/drivers/dri/radeon/radeon_state_init.c.dave mesa-20090322/src/mesa/drivers/dri/radeon/radeon_state_init.c
+--- mesa-20090322/src/mesa/drivers/dri/radeon/radeon_state_init.c.dave	2009-04-16 18:58:14.000000000 +1000
++++ mesa-20090322/src/mesa/drivers/dri/radeon/radeon_state_init.c	2009-04-16 18:58:32.000000000 +1000
+@@ -448,6 +448,17 @@ static void ctx_emit_cs(GLcontext *ctx, 
+    // }
+ 
+    END_BATCH();
++   BEGIN_BATCH_NO_AUTOSTATE(4);
++   OUT_BATCH(CP_PACKET0(RADEON_RE_TOP_LEFT, 0));
++   OUT_BATCH(0);
++   OUT_BATCH(CP_PACKET0(RADEON_RE_WIDTH_HEIGHT, 0));
++   if (rrb) {
++       OUT_BATCH(((rrb->width - 1) << RADEON_RE_WIDTH_SHIFT) |
++                 ((rrb->height - 1) << RADEON_RE_HEIGHT_SHIFT));
++   } else {
++       OUT_BATCH(0);
++   }
++   END_BATCH();
+ }
+ 
+ static void cube_emit(GLcontext *ctx, struct radeon_state_atom *atom)
