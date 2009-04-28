@@ -14,13 +14,13 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.2
-%define gitdate 20090322
+%define gitdate 20090428
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.5
-Release: 0.11%{?dist}
+Release: 0.12%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -47,9 +47,6 @@ Patch9: intel-revert-vbl.patch
 
 Patch12: mesa-7.1-disable-intel-classic-warn.patch
 Patch13: mesa-7.5-sparc64.patch
-
-Patch20: mesa-7.5-get-driver-name.patch
-Patch21: radeon-rewrite-fixes.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
@@ -178,8 +175,6 @@ This package provides some demo applications for testing Mesa.
 %patch9 -p1 -b .intel-vbl
 %patch12 -p1 -b .intel-nowarn
 %patch13 -p1 -b .sparc64
-%patch20 -p1 -b .get-driver-name
-%patch21 -p1 -b .radfixes
 
 # Hack the demos to use installed data files
 sed -i 's,../images,%{_libdir}/mesa-demos-data,' progs/demos/*.c
@@ -436,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Tue Apr 28 2009 Dave Airlie <airlied@redhat.com> 7.5-0.12
+- rebase to upstream snapshot + radeon-rewrite
+
 * Thu Apr 16 2009 Dave Airlie <airlied@redhat.com> 7.5-0.11
 - radeon-rewrite-fixes.patch: fix context crash in compiz + r200 fixes
 
