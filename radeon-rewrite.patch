@@ -32673,7 +32673,7 @@ index 1ec06bc..f30eb1c 100644
  				  drm_clip_rect_t *boxes );
  
 diff --git a/src/mesa/drivers/dri/radeon/radeon_screen.c b/src/mesa/drivers/dri/radeon/radeon_screen.c
-index 8828533..544ab74 100644
+index 8828533..9ce950a 100644
 --- a/src/mesa/drivers/dri/radeon/radeon_screen.c
 +++ b/src/mesa/drivers/dri/radeon/radeon_screen.c
 @@ -35,6 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -33164,26 +33164,19 @@ index 8828533..544ab74 100644
         if (ret) {
  	   fprintf(stderr, "Unable to get num_pipes, need newer drm\n");
  	   switch (screen->chip_family) {
-@@ -961,21 +1010,149 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
- #endif
+@@ -962,7 +1011,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  
  #if RADEON_COMMON && defined(RADEON_COMMON_FOR_R200)
-+        if (IS_R200_CLASS(screen))
-+            screen->extensions[i++] = &r200AllocateExtension.base;
-+
-+        screen->extensions[i++] = &r200texOffsetExtension.base;
-+#endif
-+
-+#if RADEON_COMMON && defined(RADEON_COMMON_FOR_R300)
-+        screen->extensions[i++] = &r300texOffsetExtension.base;
-+#endif
-+   }
-+
-+   screen->extensions[i++] = NULL;
-+   sPriv->extensions = screen->extensions;
-+
-+   screen->driScreen = sPriv;
-+   screen->sarea_priv_offset = dri_priv->sarea_priv_offset;
+    if (IS_R200_CLASS(screen))
+-       screen->extensions[i++] = &r200AllocateExtension.base;
++      screen->extensions[i++] = &r200AllocateExtension.base;
+ 
+    screen->extensions[i++] = &r200texOffsetExtension.base;
+ #endif
+@@ -976,6 +1025,133 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+ 
+    screen->driScreen = sPriv;
+    screen->sarea_priv_offset = dri_priv->sarea_priv_offset;
 +   screen->sarea = (drm_radeon_sarea_t *) ((GLubyte *) sPriv->pSAREA +
 +					       screen->sarea_priv_offset);
 +
@@ -33292,23 +33285,20 @@ index 8828533..544ab74 100644
 +#endif
 +
 +#if RADEON_COMMON && defined(RADEON_COMMON_FOR_R200)
-    if (IS_R200_CLASS(screen))
-        screen->extensions[i++] = &r200AllocateExtension.base;
- 
--   screen->extensions[i++] = &r200texOffsetExtension.base;
++   if (IS_R200_CLASS(screen))
++       screen->extensions[i++] = &r200AllocateExtension.base;
++
 +   screen->extensions[i++] = &r200TexBufferExtension.base;
- #endif
- 
- #if RADEON_COMMON && defined(RADEON_COMMON_FOR_R300)
--   screen->extensions[i++] = &r300texOffsetExtension.base;
++#endif
++
++#if RADEON_COMMON && defined(RADEON_COMMON_FOR_R300)
 +   screen->extensions[i++] = &r300TexBufferExtension.base;
- #endif
- 
-    screen->extensions[i++] = NULL;
-    sPriv->extensions = screen->extensions;
- 
-    screen->driScreen = sPriv;
--   screen->sarea_priv_offset = dri_priv->sarea_priv_offset;
++#endif
++
++   screen->extensions[i++] = NULL;
++   sPriv->extensions = screen->extensions;
++
++   screen->driScreen = sPriv;
 +   screen->bom = radeon_bo_manager_gem_ctor(sPriv->fd);
 +   if (screen->bom == NULL) {
 +       free(screen);
@@ -33317,7 +33307,7 @@ index 8828533..544ab74 100644
     return screen;
  }
  
-@@ -984,23 +1161,32 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -984,23 +1160,32 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  static void
  radeonDestroyScreen( __DRIscreenPrivate *sPriv )
  {
@@ -33363,7 +33353,7 @@ index 8828533..544ab74 100644
  }
  
  
-@@ -1009,16 +1195,21 @@ radeonDestroyScreen( __DRIscreenPrivate *sPriv )
+@@ -1009,16 +1194,21 @@ radeonDestroyScreen( __DRIscreenPrivate *sPriv )
  static GLboolean
  radeonInitDriver( __DRIscreenPrivate *sPriv )
  {
@@ -33391,7 +33381,7 @@ index 8828533..544ab74 100644
  /**
   * Create the Mesa framebuffer and renderbuffers for a given window/drawable.
   *
-@@ -1031,101 +1222,111 @@ radeonCreateBuffer( __DRIscreenPrivate *driScrnPriv,
+@@ -1031,101 +1221,111 @@ radeonCreateBuffer( __DRIscreenPrivate *driScrnPriv,
                      const __GLcontextModes *mesaVis,
                      GLboolean isPixmap )
  {
@@ -33583,7 +33573,7 @@ index 8828533..544ab74 100644
  /**
   * Choose the appropriate CreateContext function based on the chipset.
   * Eventually, all drivers will go through this process.
-@@ -1136,25 +1337,21 @@ static GLboolean radeonCreateContext(const __GLcontextModes * glVisual,
+@@ -1136,25 +1336,21 @@ static GLboolean radeonCreateContext(const __GLcontextModes * glVisual,
  {
  	__DRIscreenPrivate *sPriv = driContextPriv->driScreenPriv;
  	radeonScreenPtr screen = (radeonScreenPtr) (sPriv->private);
@@ -33619,7 +33609,7 @@ index 8828533..544ab74 100644
  
  
  /**
-@@ -1216,13 +1413,103 @@ radeonInitScreen(__DRIscreenPrivate *psp)
+@@ -1216,13 +1412,103 @@ radeonInitScreen(__DRIscreenPrivate *psp)
     if (!radeonInitDriver(psp))
         return NULL;
  
@@ -33725,7 +33715,7 @@ index 8828533..544ab74 100644
  
  /**
   * Get information about previous buffer swaps.
-@@ -1230,31 +1517,26 @@ radeonInitScreen(__DRIscreenPrivate *psp)
+@@ -1230,31 +1516,26 @@ radeonInitScreen(__DRIscreenPrivate *psp)
  static int
  getSwapInfo( __DRIdrawablePrivate *dPriv, __DRIswapInfo * sInfo )
  {
@@ -33767,7 +33757,7 @@ index 8828533..544ab74 100644
  const struct __DriverAPIRec driDriverAPI = {
     .InitScreen      = radeonInitScreen,
     .DestroyScreen   = radeonDestroyScreen,
-@@ -1271,23 +1553,7 @@ const struct __DriverAPIRec driDriverAPI = {
+@@ -1271,23 +1552,7 @@ const struct __DriverAPIRec driDriverAPI = {
     .WaitForSBC      = NULL,
     .SwapBuffersMSC  = NULL,
     .CopySubBuffer   = radeonCopySubBuffer,
