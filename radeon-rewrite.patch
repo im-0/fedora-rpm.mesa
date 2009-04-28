@@ -8450,7 +8450,7 @@ index 3b81ac0..0000000
 -   return 0;
 -}
 diff --git a/src/mesa/drivers/dri/r200/r200_texstate.c b/src/mesa/drivers/dri/r200/r200_texstate.c
-index 0ad5651..15758d7 100644
+index 0ad5651..eee54cd 100644
 --- a/src/mesa/drivers/dri/r200/r200_texstate.c
 +++ b/src/mesa/drivers/dri/r200/r200_texstate.c
 @@ -37,9 +37,12 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -8749,7 +8749,7 @@ index 0ad5651..15758d7 100644
  	t->pp_txpitch = pitch - 32;
  
  	switch (depth) {
-@@ -1014,6 +765,123 @@ void r200SetTexOffset(__DRIcontext * pDRICtx, GLint texname,
+@@ -1014,6 +765,122 @@ void r200SetTexOffset(__DRIcontext * pDRICtx, GLint texname,
  	}
  }
  
@@ -8821,7 +8821,6 @@ index 0ad5651..15758d7 100644
 +		radeon_miptree_unreference(rImage->mt);
 +		rImage->mt = NULL;
 +	}
-+	fprintf(stderr,"settexbuf %d %dx%d@%d\n", rb->pitch, rb->width, rb->height, rb->cpp);
 +	_mesa_init_teximage_fields(radeon->glCtx, target, texImage,
 +				   rb->width, rb->height, 1, 0, rb->cpp);
 +	texImage->RowStride = rb->pitch / rb->cpp;
@@ -8873,7 +8872,7 @@ index 0ad5651..15758d7 100644
  #define REF_COLOR 1
  #define REF_ALPHA 2
  
-@@ -1207,12 +1075,41 @@ static GLboolean r200UpdateAllTexEnv( GLcontext *ctx )
+@@ -1207,12 +1074,41 @@ static GLboolean r200UpdateAllTexEnv( GLcontext *ctx )
                                  R200_VOLUME_FILTER_MASK)
  
  
@@ -8917,7 +8916,7 @@ index 0ad5651..15758d7 100644
  
     R200_STATECHANGE( rmesa, tex[unit] );
  
-@@ -1225,36 +1122,21 @@ static void import_tex_obj_state( r200ContextPtr rmesa,
+@@ -1225,36 +1121,21 @@ static void import_tex_obj_state( r200ContextPtr rmesa,
     cmd[TEX_PP_TXSIZE] = texobj->pp_txsize; /* NPOT only! */
     cmd[TEX_PP_TXPITCH] = texobj->pp_txpitch; /* NPOT only! */
     cmd[TEX_PP_BORDER_COLOR] = texobj->pp_border_color;
@@ -8957,7 +8956,7 @@ index 0ad5651..15758d7 100644
  static void set_texgen_matrix( r200ContextPtr rmesa, 
  			       GLuint unit,
  			       const GLfloat *s_plane,
-@@ -1377,7 +1259,6 @@ static GLboolean r200_validate_texgen( GLcontext *ctx, GLuint unit )
+@@ -1377,7 +1258,6 @@ static GLboolean r200_validate_texgen( GLcontext *ctx, GLuint unit )
     } else {
        tgcm |= R200_TEXGEN_COMP_T << (unit * 4);
     }
@@ -8965,7 +8964,7 @@ index 0ad5651..15758d7 100644
     if (texUnit->TexGenEnabled & R_BIT) {
        if (texUnit->GenR.Mode != mode)
  	 mixed_fallback = GL_TRUE;
-@@ -1517,52 +1398,6 @@ static GLboolean r200_validate_texgen( GLcontext *ctx, GLuint unit )
+@@ -1517,52 +1397,6 @@ static GLboolean r200_validate_texgen( GLcontext *ctx, GLuint unit )
     return GL_TRUE;
  }
  
@@ -9018,7 +9017,7 @@ index 0ad5651..15758d7 100644
  void set_re_cntl_d3d( GLcontext *ctx, int unit, GLboolean use_d3d )
  {
     r200ContextPtr rmesa = R200_CONTEXT(ctx);
-@@ -1579,237 +1414,169 @@ void set_re_cntl_d3d( GLcontext *ctx, int unit, GLboolean use_d3d )
+@@ -1579,237 +1413,169 @@ void set_re_cntl_d3d( GLcontext *ctx, int unit, GLboolean use_d3d )
     }
  }
  
@@ -9380,7 +9379,7 @@ index 0ad5651..15758d7 100644
  }
  
  
-@@ -1850,11 +1617,11 @@ void r200UpdateTextureState( GLcontext *ctx )
+@@ -1850,11 +1616,11 @@ void r200UpdateTextureState( GLcontext *ctx )
  
     FALLBACK( rmesa, R200_FALLBACK_TEXTURE, !ok );
  
@@ -9394,7 +9393,7 @@ index 0ad5651..15758d7 100644
  
        /*
         * T0 hang workaround -------------
-@@ -1867,7 +1634,7 @@ void r200UpdateTextureState( GLcontext *ctx )
+@@ -1867,7 +1633,7 @@ void r200UpdateTextureState( GLcontext *ctx )
  	 R200_STATECHANGE(rmesa, tex[1]);
  	 rmesa->hw.ctx.cmd[CTX_PP_CNTL] |= R200_TEX_1_ENABLE;
  	 if (!(rmesa->hw.cst.cmd[CST_PP_CNTL_X] & R200_PPX_TEX_1_ENABLE))
@@ -19221,7 +19220,7 @@ index 0fe51b0..0000000
 -	return 0;
 -}
 diff --git a/src/mesa/drivers/dri/r300/r300_texstate.c b/src/mesa/drivers/dri/r300/r300_texstate.c
-index cadec7f..cf4cad7 100644
+index cadec7f..2d7ad55 100644
 --- a/src/mesa/drivers/dri/r300/r300_texstate.c
 +++ b/src/mesa/drivers/dri/r300/r300_texstate.c
 @@ -47,7 +47,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -19745,7 +19744,7 @@ index cadec7f..cf4cad7 100644
  }
  
  void r300SetTexOffset(__DRIcontext * pDRICtx, GLint texname,
-@@ -591,78 +325,164 @@ void r300SetTexOffset(__DRIcontext * pDRICtx, GLint texname,
+@@ -591,78 +325,163 @@ void r300SetTexOffset(__DRIcontext * pDRICtx, GLint texname,
  	r300ContextPtr rmesa = pDRICtx->driverPrivate;
  	struct gl_texture_object *tObj =
  	    _mesa_lookup_texture(rmesa->radeon.glCtx, texname);
@@ -19886,7 +19885,6 @@ index cadec7f..cf4cad7 100644
 +		radeon_miptree_unreference(rImage->mt);
 +		rImage->mt = NULL;
 +	}
-+	fprintf(stderr,"settexbuf %dx%d@%d %d targ %x format %x\n", rb->width, rb->height, rb->cpp, rb->pitch, target, format);
 +	_mesa_init_teximage_fields(radeon->glCtx, target, texImage,
 +				   rb->width, rb->height, 1, 0, rb->cpp);
 +	texImage->RowStride = rb->pitch / rb->cpp;
@@ -32675,7 +32673,7 @@ index 1ec06bc..f30eb1c 100644
  				  drm_clip_rect_t *boxes );
  
 diff --git a/src/mesa/drivers/dri/radeon/radeon_screen.c b/src/mesa/drivers/dri/radeon/radeon_screen.c
-index 8828533..1541412 100644
+index 8828533..544ab74 100644
 --- a/src/mesa/drivers/dri/radeon/radeon_screen.c
 +++ b/src/mesa/drivers/dri/radeon/radeon_screen.c
 @@ -35,6 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -32858,7 +32856,7 @@ index 8828533..1541412 100644
     r300SetTexOffset,
  };
 -#endif
- 
+-
 -/* Create the device specific screen private data struct.
 - */
 -static radeonScreenPtr
@@ -32870,7 +32868,7 @@ index 8828533..1541412 100644
 -   int i;
 -   int ret;
 -   uint32_t temp = 0;
--
+ 
 -   if (sPriv->devPrivSize != sizeof(RADEONDRIRec)) {
 -      fprintf(stderr,"\nERROR!  sizeof(RADEONDRIRec) does not match passed size from device driver\n");
 -      return GL_FALSE;
@@ -32999,7 +32997,7 @@ index 8828533..1541412 100644
     case PCI_CHIP_RADEON_LY:
     case PCI_CHIP_RADEON_LZ:
     case PCI_CHIP_RADEON_QY:
-@@ -824,9 +739,161 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -824,9 +739,145 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  
     default:
        fprintf(stderr, "unknown chip id 0x%x, can't guess.\n",
@@ -33052,19 +33050,6 @@ index 8828533..1541412 100644
 +   {
 +      int ret;
 +
-+#ifdef RADEON_PARAM_KERNEL_MM
-+     ret = radeonGetParam(sPriv, RADEON_PARAM_KERNEL_MM, &screen->kernel_mm);
-+
-+      if (ret && ret != -EINVAL) {
-+         FREE( screen );
-+         fprintf(stderr, "drm_radeon_getparam_t (RADEON_OFFSET): %d\n", ret);
-+         return NULL;
-+      }
-+
-+      if (ret == -EINVAL)
-+          screen->kernel_mm = 0;
-+#endif
-+
 +      ret = radeonGetParam(sPriv, RADEON_PARAM_GART_BUFFER_OFFSET,
 +			    &screen->gart_buffer_offset);
 +
@@ -33098,62 +33083,59 @@ index 8828533..1541412 100644
 +      screen->drmSupportsVertexProgram = (sPriv->drm_version.minor >= 25);
 +   }
 +
-+   if (!screen->kernel_mm) {
-+     screen->mmio.handle = dri_priv->registerHandle;
-+     screen->mmio.size   = dri_priv->registerSize;
++   screen->mmio.handle = dri_priv->registerHandle;
++   screen->mmio.size   = dri_priv->registerSize;
++   if ( drmMap( sPriv->fd,
++		screen->mmio.handle,
++		screen->mmio.size,
++		&screen->mmio.map ) ) {
++     FREE( screen );
++     __driUtilMessage("%s: drmMap failed\n", __FUNCTION__ );
++     return NULL;
++   }
++
++   RADEONMMIO = screen->mmio.map;
++
++   screen->status.handle = dri_priv->statusHandle;
++   screen->status.size   = dri_priv->statusSize;
++   if ( drmMap( sPriv->fd,
++		screen->status.handle,
++		screen->status.size,
++		&screen->status.map ) ) {
++     drmUnmap( screen->mmio.map, screen->mmio.size );
++     FREE( screen );
++     __driUtilMessage("%s: drmMap (2) failed\n", __FUNCTION__ );
++     return NULL;
++   }
++   screen->scratch = (__volatile__ uint32_t *)
++     ((GLubyte *)screen->status.map + RADEON_SCRATCH_REG_OFFSET);
++
++   screen->buffers = drmMapBufs( sPriv->fd );
++   if ( !screen->buffers ) {
++     drmUnmap( screen->status.map, screen->status.size );
++     drmUnmap( screen->mmio.map, screen->mmio.size );
++     FREE( screen );
++     __driUtilMessage("%s: drmMapBufs failed\n", __FUNCTION__ );
++     return NULL;
++   }
++
++   if ( dri_priv->gartTexHandle && dri_priv->gartTexMapSize ) {
++     screen->gartTextures.handle = dri_priv->gartTexHandle;
++     screen->gartTextures.size   = dri_priv->gartTexMapSize;
 +     if ( drmMap( sPriv->fd,
-+		  screen->mmio.handle,
-+		  screen->mmio.size,
-+		  &screen->mmio.map ) ) {
-+       FREE( screen );
-+       __driUtilMessage("%s: drmMap failed\n", __FUNCTION__ );
-+       return NULL;
-+     }
-+
-+     RADEONMMIO = screen->mmio.map;
-+
-+     screen->status.handle = dri_priv->statusHandle;
-+     screen->status.size   = dri_priv->statusSize;
-+     if ( drmMap( sPriv->fd,
-+		  screen->status.handle,
-+		  screen->status.size,
-+		  &screen->status.map ) ) {
-+       drmUnmap( screen->mmio.map, screen->mmio.size );
-+       FREE( screen );
-+       __driUtilMessage("%s: drmMap (2) failed\n", __FUNCTION__ );
-+       return NULL;
-+     }
-+     screen->scratch = (__volatile__ uint32_t *)
-+       ((GLubyte *)screen->status.map + RADEON_SCRATCH_REG_OFFSET);
-+
-+     screen->buffers = drmMapBufs( sPriv->fd );
-+     if ( !screen->buffers ) {
++		  screen->gartTextures.handle,
++		  screen->gartTextures.size,
++		  (drmAddressPtr)&screen->gartTextures.map ) ) {
++       drmUnmapBufs( screen->buffers );
 +       drmUnmap( screen->status.map, screen->status.size );
 +       drmUnmap( screen->mmio.map, screen->mmio.size );
 +       FREE( screen );
-+       __driUtilMessage("%s: drmMapBufs failed\n", __FUNCTION__ );
++       __driUtilMessage("%s: drmMap failed for GART texture area\n", __FUNCTION__);
 +       return NULL;
-+     }
++    }
 +
-+     if ( dri_priv->gartTexHandle && dri_priv->gartTexMapSize ) {
-+       screen->gartTextures.handle = dri_priv->gartTexHandle;
-+       screen->gartTextures.size   = dri_priv->gartTexMapSize;
-+       if ( drmMap( sPriv->fd,
-+		    screen->gartTextures.handle,
-+		    screen->gartTextures.size,
-+		    (drmAddressPtr)&screen->gartTextures.map ) ) {
-+	 drmUnmapBufs( screen->buffers );
-+	 drmUnmap( screen->status.map, screen->status.size );
-+	 drmUnmap( screen->mmio.map, screen->mmio.size );
-+	 FREE( screen );
-+	 __driUtilMessage("%s: drmMap failed for GART texture area\n", __FUNCTION__);
-+	 return NULL;
-+       }
-+
-+       screen->gart_texture_offset = dri_priv->gartTexOffset + screen->gart_base;
-+     }
++     screen->gart_texture_offset = dri_priv->gartTexOffset + screen->gart_base;
 +   }
-+
 +
 +   ret = radeon_set_screen_flags(screen, dri_priv->deviceID);
 +   if (ret == -1)
@@ -33162,7 +33144,7 @@ index 8828533..1541412 100644
     if ((screen->chip_family == CHIP_FAMILY_R350 || screen->chip_family == CHIP_FAMILY_R300) &&
         sPriv->ddx_version.minor < 2) {
        fprintf(stderr, "xf86-video-ati-6.6.2 or newer needed for Radeon 9500/9700/9800 cards.\n");
-@@ -851,10 +918,9 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -851,8 +902,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
     screen->cpp = dri_priv->bpp / 8;
     screen->AGPMode = dri_priv->AGPMode;
  
@@ -33170,12 +33152,9 @@ index 8828533..1541412 100644
 -                         &temp);
 +   ret = radeonGetParam(sPriv, RADEON_PARAM_FB_LOCATION, &temp);
     if (ret) {
--       if (screen->chip_family < CHIP_FAMILY_RS600)
-+       if (screen->chip_family < CHIP_FAMILY_RS600 && !screen->kernel_mm)
+        if (screen->chip_family < CHIP_FAMILY_RS600)
  	   screen->fbLocation      = ( INREG( RADEON_MC_FB_LOCATION ) & 0xffff) << 16;
-        else {
-            FREE( screen );
-@@ -866,8 +932,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -866,8 +916,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
     }
  
     if (screen->chip_family >= CHIP_FAMILY_R300) {
@@ -33185,17 +33164,10 @@ index 8828533..1541412 100644
         if (ret) {
  	   fprintf(stderr, "Unable to get num_pipes, need newer drm\n");
  	   switch (screen->chip_family) {
-@@ -956,26 +1021,158 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
-        screen->extensions[i++] = &driMediaStreamCounterExtension.base;
-    }
+@@ -961,21 +1010,149 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+ #endif
  
-+   if (!screen->kernel_mm) {
- #if !RADEON_COMMON
--   screen->extensions[i++] = &radeonTexOffsetExtension.base;
-+   	screen->extensions[i++] = &radeonTexOffsetExtension.base;
-+#endif
-+
-+#if RADEON_COMMON && defined(RADEON_COMMON_FOR_R200)
+ #if RADEON_COMMON && defined(RADEON_COMMON_FOR_R200)
 +        if (IS_R200_CLASS(screen))
 +            screen->extensions[i++] = &r200AllocateExtension.base;
 +
@@ -33215,10 +33187,7 @@ index 8828533..1541412 100644
 +   screen->sarea = (drm_radeon_sarea_t *) ((GLubyte *) sPriv->pSAREA +
 +					       screen->sarea_priv_offset);
 +
-+   if (screen->kernel_mm)
-+     screen->bom = radeon_bo_manager_gem_ctor(sPriv->fd);
-+   else
-+     screen->bom = radeon_bo_manager_legacy_ctor(screen);
++   screen->bom = radeon_bo_manager_legacy_ctor(screen);
 +   if (screen->bom == NULL) {
 +     free(screen);
 +     return NULL;
@@ -33320,9 +33289,9 @@ index 8828533..1541412 100644
 +
 +#if !RADEON_COMMON
 +   screen->extensions[i++] = &radeonTexBufferExtension.base;
- #endif
- 
- #if RADEON_COMMON && defined(RADEON_COMMON_FOR_R200)
++#endif
++
++#if RADEON_COMMON && defined(RADEON_COMMON_FOR_R200)
     if (IS_R200_CLASS(screen))
         screen->extensions[i++] = &r200AllocateExtension.base;
  
@@ -33348,7 +33317,7 @@ index 8828533..1541412 100644
     return screen;
  }
  
-@@ -984,23 +1181,32 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -984,23 +1161,32 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  static void
  radeonDestroyScreen( __DRIscreenPrivate *sPriv )
  {
@@ -33394,7 +33363,7 @@ index 8828533..1541412 100644
  }
  
  
-@@ -1009,16 +1215,21 @@ radeonDestroyScreen( __DRIscreenPrivate *sPriv )
+@@ -1009,16 +1195,21 @@ radeonDestroyScreen( __DRIscreenPrivate *sPriv )
  static GLboolean
  radeonInitDriver( __DRIscreenPrivate *sPriv )
  {
@@ -33422,13 +33391,14 @@ index 8828533..1541412 100644
  /**
   * Create the Mesa framebuffer and renderbuffers for a given window/drawable.
   *
-@@ -1031,101 +1242,111 @@ radeonCreateBuffer( __DRIscreenPrivate *driScrnPriv,
+@@ -1031,101 +1222,111 @@ radeonCreateBuffer( __DRIscreenPrivate *driScrnPriv,
                      const __GLcontextModes *mesaVis,
                      GLboolean isPixmap )
  {
 -   radeonScreenPtr screen = (radeonScreenPtr) driScrnPriv->private;
 +    radeonScreenPtr screen = (radeonScreenPtr) driScrnPriv->private;
-+
+ 
+-   if (isPixmap) {
 +    const GLboolean swDepth = GL_FALSE;
 +    const GLboolean swAlpha = GL_FALSE;
 +    const GLboolean swAccum = mesaVis->accumRedBits > 0;
@@ -33436,8 +33406,7 @@ index 8828533..1541412 100644
 +	mesaVis->depthBits != 24;
 +    GLenum rgbFormat;
 +    struct radeon_framebuffer *rfb;
- 
--   if (isPixmap) {
++
 +    if (isPixmap)
        return GL_FALSE; /* not implemented */
 -   }
@@ -33614,7 +33583,7 @@ index 8828533..1541412 100644
  /**
   * Choose the appropriate CreateContext function based on the chipset.
   * Eventually, all drivers will go through this process.
-@@ -1136,25 +1357,21 @@ static GLboolean radeonCreateContext(const __GLcontextModes * glVisual,
+@@ -1136,25 +1337,21 @@ static GLboolean radeonCreateContext(const __GLcontextModes * glVisual,
  {
  	__DRIscreenPrivate *sPriv = driContextPriv->driScreenPriv;
  	radeonScreenPtr screen = (radeonScreenPtr) (sPriv->private);
@@ -33650,7 +33619,7 @@ index 8828533..1541412 100644
  
  
  /**
-@@ -1216,13 +1433,103 @@ radeonInitScreen(__DRIscreenPrivate *psp)
+@@ -1216,13 +1413,103 @@ radeonInitScreen(__DRIscreenPrivate *psp)
     if (!radeonInitDriver(psp))
         return NULL;
  
@@ -33663,7 +33632,7 @@ index 8828533..1541412 100644
 +			     (dri_priv->bpp == 16) ? 0  : 8, 1);
  }
 +#define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
-+
+ 
 +/**
 + * This is the driver specific part of the createNewScreen entry point.
 + * Called when using DRI2.
@@ -33704,7 +33673,7 @@ index 8828533..1541412 100644
 +   driInitSingleExtension( NULL, ATI_fs_extension );
 +   driInitExtensions( NULL, point_extensions, GL_FALSE );
 +#endif
- 
++
 +   if (!radeonInitDriver(psp)) {
 +       return NULL;
 +    }
@@ -33756,7 +33725,7 @@ index 8828533..1541412 100644
  
  /**
   * Get information about previous buffer swaps.
-@@ -1230,31 +1537,26 @@ radeonInitScreen(__DRIscreenPrivate *psp)
+@@ -1230,31 +1517,26 @@ radeonInitScreen(__DRIscreenPrivate *psp)
  static int
  getSwapInfo( __DRIdrawablePrivate *dPriv, __DRIswapInfo * sInfo )
  {
@@ -33798,7 +33767,7 @@ index 8828533..1541412 100644
  const struct __DriverAPIRec driDriverAPI = {
     .InitScreen      = radeonInitScreen,
     .DestroyScreen   = radeonDestroyScreen,
-@@ -1271,23 +1573,7 @@ const struct __DriverAPIRec driDriverAPI = {
+@@ -1271,23 +1553,7 @@ const struct __DriverAPIRec driDriverAPI = {
     .WaitForSBC      = NULL,
     .SwapBuffersMSC  = NULL,
     .CopySubBuffer   = radeonCopySubBuffer,
