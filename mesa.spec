@@ -381,9 +381,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/clearspd
 %{_bindir}/copypix
 %{_bindir}/cubemap
+%{_bindir}/dinoshade
 %{_bindir}/drawpix
 %{_bindir}/engine
 %{_bindir}/fbo_firecube
+%{_bindir}/fbotexture
 %{_bindir}/fire
 %{_bindir}/fogcoord
 %{_bindir}/fplight
@@ -402,6 +404,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/multiarb
 %{_bindir}/paltex
 %{_bindir}/pointblast
+%{_bindir}/projtex
 %{_bindir}/mesa-rain
 %{_bindir}/ray
 %{_bindir}/readpix
