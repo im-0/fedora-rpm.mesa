@@ -394,9 +394,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/geartrain
 %{_bindir}/glinfo
 %{_bindir}/gloss
-%{_bindir}/glslnoise
 %{_bindir}/gltestperf
-%{_bindir}/glutfx
 %{_bindir}/ipers
 %{_bindir}/isosurf
 %{_bindir}/lodbias
@@ -414,14 +412,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/spectex
 %{_bindir}/spriteblast
 %{_bindir}/stex3d
-%{_bindir}/streaming_rect
 %{_bindir}/teapot
 %{_bindir}/terrain
 %{_bindir}/tessdemo
 %{_bindir}/texcyl
-%{_bindir}/texdown
 %{_bindir}/texenv
-%{_bindir}/texobj
 %{_bindir}/textures
 %{_bindir}/trispd
 %{_bindir}/tunnel
