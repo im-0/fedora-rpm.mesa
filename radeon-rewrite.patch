@@ -10636,7 +10636,7 @@ index a8eaa58..3786813 100644
  
  #endif				/* __R300_CMDBUF_H__ */
 diff --git a/src/mesa/drivers/dri/r300/r300_context.c b/src/mesa/drivers/dri/r300/r300_context.c
-index 12bee1a..4d1f10b 100644
+index 12bee1a..70c7730 100644
 --- a/src/mesa/drivers/dri/r300/r300_context.c
 +++ b/src/mesa/drivers/dri/r300/r300_context.c
 @@ -44,6 +44,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -11023,7 +11023,7 @@ index 12bee1a..4d1f10b 100644
  
  	/* Configure swrast and TNL to match hardware characteristics:
  	 */
-@@ -351,59 +400,33 @@ GLboolean r300CreateContext(const __GLcontextModes * glVisual,
+@@ -351,59 +400,38 @@ GLboolean r300CreateContext(const __GLcontextModes * glVisual,
  	_tnl_allow_pixel_fog(ctx, GL_FALSE);
  	_tnl_allow_vertex_fog(ctx, GL_TRUE);
  
@@ -11064,11 +11064,16 @@ index 12bee1a..4d1f10b 100644
 +	if (r300->radeon.radeonScreen->kernel_mm)
 +	  driInitExtensions(ctx, mm_extensions, GL_FALSE);
 +
-+	r300->radeon.initialMaxAnisotropy = driQueryOptionf(&r300->radeon.optionCache,
-+						     "def_max_anisotropy");
++	if (screen->chip_family == CHIP_FAMILY_RS600 ||	screen->chip_family == CHIP_FAMILY_RS690 ||
++		screen->chip_family == CHIP_FAMILY_RS740) {
++		r300->radeon.texture_row_align = 64;
++	}
  
 -	if (driQueryOptionb
 -	    (&r300->radeon.optionCache, "disable_stencil_two_side"))
++	r300->radeon.initialMaxAnisotropy = driQueryOptionf(&r300->radeon.optionCache,
++						     "def_max_anisotropy");
++
 +	if (driQueryOptionb(&r300->radeon.optionCache, "disable_stencil_two_side"))
  		_mesa_disable_extension(ctx, "GL_EXT_stencil_two_side");
  
@@ -11099,7 +11104,7 @@ index 12bee1a..4d1f10b 100644
  
  	tcl_mode = driQueryOptioni(&r300->radeon.optionCache, "tcl_mode");
  	if (driQueryOptionb(&r300->radeon.optionCache, "no_rast")) {
-@@ -426,145 +449,3 @@ GLboolean r300CreateContext(const __GLcontextModes * glVisual,
+@@ -426,145 +454,3 @@ GLboolean r300CreateContext(const __GLcontextModes * glVisual,
  	return GL_TRUE;
  }
  
@@ -25187,10 +25192,10 @@ index 0000000..c2fbb09
 +#endif
 diff --git a/src/mesa/drivers/dri/radeon/radeon_common_context.c b/src/mesa/drivers/dri/radeon/radeon_common_context.c
 new file mode 100644
-index 0000000..ba74c97
+index 0000000..3e71362
 --- /dev/null
 +++ b/src/mesa/drivers/dri/radeon/radeon_common_context.c
-@@ -0,0 +1,623 @@
+@@ -0,0 +1,625 @@
 +/**************************************************************************
 +
 +Copyright 2000, 2001 ATI Technologies Inc., Ontario, Canada, and
@@ -25369,6 +25374,8 @@ index 0000000..ba74c97
 +        if (radeon->texture_depth == DRI_CONF_TEXTURE_DEPTH_FB)
 +                radeon->texture_depth = ( glVisual->rgbBits > 16 ) ?
 +	        DRI_CONF_TEXTURE_DEPTH_32 : DRI_CONF_TEXTURE_DEPTH_16;
++
++	radeon->texture_row_align = 32;
 +
 +	return GL_TRUE;
 +}
@@ -25816,10 +25823,10 @@ index 0000000..ba74c97
 +
 diff --git a/src/mesa/drivers/dri/radeon/radeon_common_context.h b/src/mesa/drivers/dri/radeon/radeon_common_context.h
 new file mode 100644
-index 0000000..d32e5af
+index 0000000..181688c
 --- /dev/null
 +++ b/src/mesa/drivers/dri/radeon/radeon_common_context.h
-@@ -0,0 +1,563 @@
+@@ -0,0 +1,564 @@
 +
 +#ifndef COMMON_CONTEXT_H
 +#define COMMON_CONTEXT_H
@@ -26243,6 +26250,7 @@ index 0000000..d32e5af
 +    */
 +   int                   texture_depth;
 +   float                 initialMaxAnisotropy;
++   uint32_t              texture_row_align;
 +
 +  struct radeon_dma dma;
 +  struct radeon_hw_state hw;
@@ -32152,10 +32160,10 @@ index 126d072..78ec119 100644
 -}
 diff --git a/src/mesa/drivers/dri/radeon/radeon_mipmap_tree.c b/src/mesa/drivers/dri/radeon/radeon_mipmap_tree.c
 new file mode 100644
-index 0000000..34d6261
+index 0000000..51538e3
 --- /dev/null
 +++ b/src/mesa/drivers/dri/radeon/radeon_mipmap_tree.c
-@@ -0,0 +1,386 @@
+@@ -0,0 +1,387 @@
 +/*
 + * Copyright (C) 2008 Nicolai Haehnle.
 + *
@@ -32244,10 +32252,11 @@ index 0000000..34d6261
 + * \param curOffset points to the offset at which the image is to be stored
 + * and is updated by this function according to the size of the image.
 + */
-+static void compute_tex_image_offset(radeon_mipmap_tree *mt,
++static void compute_tex_image_offset(radeonContextPtr rmesa, radeon_mipmap_tree *mt,
 +	GLuint face, GLuint level, GLuint* curOffset)
 +{
 +	radeon_mipmap_level *lvl = &mt->levels[level];
++	uint32_t row_align = rmesa->texture_row_align - 1;
 +
 +	/* Find image size in bytes */
 +	if (mt->compressed) {
@@ -32265,7 +32274,7 @@ index 0000000..34d6261
 +		lvl->rowstride = (lvl->width * mt->bpp * 2 + 31) & ~31;
 +		lvl->size = lvl->rowstride * ((lvl->height + 1) / 2) * lvl->depth;
 +	} else {
-+		lvl->rowstride = (lvl->width * mt->bpp + 31) & ~31;
++		lvl->rowstride = (lvl->width * mt->bpp + row_align) & ~row_align;
 +		lvl->size = lvl->rowstride * lvl->height * lvl->depth;
 +	}
 +	assert(lvl->size > 0);
@@ -32289,7 +32298,7 @@ index 0000000..34d6261
 +	return size;
 +}
 +
-+static void calculate_miptree_layout(radeon_mipmap_tree *mt)
++static void calculate_miptree_layout(radeonContextPtr rmesa, radeon_mipmap_tree *mt)
 +{
 +	GLuint curOffset;
 +	GLuint numLevels;
@@ -32307,7 +32316,7 @@ index 0000000..34d6261
 +		mt->levels[i].depth = minify(mt->depth0, i);
 +
 +		for(face = 0; face < mt->faces; face++)
-+			compute_tex_image_offset(mt, face, i, &curOffset);
++			compute_tex_image_offset(rmesa, mt, face, i, &curOffset);
 +	}
 +
 +	/* Note the required size in memory */
@@ -32339,7 +32348,7 @@ index 0000000..34d6261
 +	mt->tilebits = tilebits;
 +	mt->compressed = compressed;
 +
-+	calculate_miptree_layout(mt);
++	calculate_miptree_layout(rmesa, mt);
 +
 +	mt->bo = radeon_bo_open(rmesa->radeonScreen->bom,
 +                            0, mt->totalsize, 1024,
@@ -32673,7 +32682,7 @@ index 1ec06bc..f30eb1c 100644
  				  drm_clip_rect_t *boxes );
  
 diff --git a/src/mesa/drivers/dri/radeon/radeon_screen.c b/src/mesa/drivers/dri/radeon/radeon_screen.c
-index 8828533..9ce950a 100644
+index 8828533..56dbe74 100644
 --- a/src/mesa/drivers/dri/radeon/radeon_screen.c
 +++ b/src/mesa/drivers/dri/radeon/radeon_screen.c
 @@ -35,6 +35,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
@@ -32856,7 +32865,7 @@ index 8828533..9ce950a 100644
     r300SetTexOffset,
  };
 -#endif
--
+ 
 -/* Create the device specific screen private data struct.
 - */
 -static radeonScreenPtr
@@ -32868,7 +32877,7 @@ index 8828533..9ce950a 100644
 -   int i;
 -   int ret;
 -   uint32_t temp = 0;
- 
+-
 -   if (sPriv->devPrivSize != sizeof(RADEONDRIRec)) {
 -      fprintf(stderr,"\nERROR!  sizeof(RADEONDRIRec) does not match passed size from device driver\n");
 -      return GL_FALSE;
@@ -32997,7 +33006,19 @@ index 8828533..9ce950a 100644
     case PCI_CHIP_RADEON_LY:
     case PCI_CHIP_RADEON_LZ:
     case PCI_CHIP_RADEON_QY:
-@@ -824,9 +739,145 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -561,11 +476,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+       screen->chip_family = CHIP_FAMILY_RS300;
+       break;
+ 
+-      /* 9500 with 1 pipe verified by: Reid Linnemann <lreid@cs.okstate.edu> */
+    case PCI_CHIP_R300_AD:
+-      screen->chip_family = CHIP_FAMILY_RV350;
+-      screen->chip_flags = RADEON_CHIPSET_TCL;
+-      break;
+    case PCI_CHIP_R300_AE:
+    case PCI_CHIP_R300_AF:
+    case PCI_CHIP_R300_AG:
+@@ -824,9 +735,145 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  
     default:
        fprintf(stderr, "unknown chip id 0x%x, can't guess.\n",
@@ -33144,7 +33165,7 @@ index 8828533..9ce950a 100644
     if ((screen->chip_family == CHIP_FAMILY_R350 || screen->chip_family == CHIP_FAMILY_R300) &&
         sPriv->ddx_version.minor < 2) {
        fprintf(stderr, "xf86-video-ati-6.6.2 or newer needed for Radeon 9500/9700/9800 cards.\n");
-@@ -851,8 +902,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -851,8 +898,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
     screen->cpp = dri_priv->bpp / 8;
     screen->AGPMode = dri_priv->AGPMode;
  
@@ -33154,7 +33175,7 @@ index 8828533..9ce950a 100644
     if (ret) {
         if (screen->chip_family < CHIP_FAMILY_RS600)
  	   screen->fbLocation      = ( INREG( RADEON_MC_FB_LOCATION ) & 0xffff) << 16;
-@@ -866,8 +916,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -866,8 +912,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
     }
  
     if (screen->chip_family >= CHIP_FAMILY_R300) {
@@ -33164,7 +33185,25 @@ index 8828533..9ce950a 100644
         if (ret) {
  	   fprintf(stderr, "Unable to get num_pipes, need newer drm\n");
  	   switch (screen->chip_family) {
-@@ -962,7 +1011,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -893,6 +938,17 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+        } else {
+ 	   screen->num_gb_pipes = temp;
+        }
++
++       /* pipe overrides */
++       switch (dri_priv->deviceID) {
++       case PCI_CHIP_R300_AD: /* 9500 with 1 quadpipe verified by: Reid Linnemann <lreid@cs.okstate.edu> */
++       case PCI_CHIP_RV410_5E4C: /* RV410 SE only have 1 quadpipe */
++       case PCI_CHIP_RV410_5E4F: /* RV410 SE only have 1 quadpipe */
++	   screen->num_gb_pipes = 1;
++	   break;
++       default:
++	   break;
++       }
+    }
+ 
+    if ( sPriv->drm_version.minor >= 10 ) {
+@@ -962,7 +1018,7 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  
  #if RADEON_COMMON && defined(RADEON_COMMON_FOR_R200)
     if (IS_R200_CLASS(screen))
@@ -33173,7 +33212,7 @@ index 8828533..9ce950a 100644
  
     screen->extensions[i++] = &r200texOffsetExtension.base;
  #endif
-@@ -976,6 +1025,133 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -976,6 +1032,154 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  
     screen->driScreen = sPriv;
     screen->sarea_priv_offset = dri_priv->sarea_priv_offset;
@@ -33218,6 +33257,15 @@ index 8828533..9ce950a 100644
 +   screen->kernel_mm = 1;
 +   screen->chip_flags = 0;
 +
++   /* if we have kms we can support all of these */
++   screen->drmSupportsCubeMapsR200 = 1;
++   screen->drmSupportsBlendColor = 1;
++   screen->drmSupportsTriPerf = 1;
++   screen->drmSupportsFragShader = 1;
++   screen->drmSupportsPointSprites = 1;
++   screen->drmSupportsCubeMapsR100 = 1;
++   screen->drmSupportsVertexProgram = 1;
++
 +   ret = radeonGetParam(sPriv, RADEON_PARAM_IRQ_NR, &screen->irq);
 +
 +   ret = radeonGetParam(sPriv, RADEON_PARAM_DEVICE_ID, &device_id);
@@ -33258,6 +33306,18 @@ index 8828533..9ce950a 100644
 +       } else {
 +	   screen->num_gb_pipes = temp;
 +       }
++
++       /* pipe overrides */
++       switch (device_id) {
++       case PCI_CHIP_R300_AD: /* 9500 with 1 quadpipe verified by: Reid Linnemann <lreid@cs.okstate.edu> */
++       case PCI_CHIP_RV410_5E4C: /* RV410 SE only have 1 quadpipe */
++       case PCI_CHIP_RV410_5E4F: /* RV410 SE only have 1 quadpipe */
++	   screen->num_gb_pipes = 1;
++	   break;
++       default:
++	   break;
++       }
++
 +   }
 +
 +   if (screen->chip_family <= CHIP_FAMILY_RS200)
@@ -33307,7 +33367,7 @@ index 8828533..9ce950a 100644
     return screen;
  }
  
-@@ -984,23 +1160,32 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
+@@ -984,23 +1188,32 @@ radeonCreateScreen( __DRIscreenPrivate *sPriv )
  static void
  radeonDestroyScreen( __DRIscreenPrivate *sPriv )
  {
@@ -33353,7 +33413,7 @@ index 8828533..9ce950a 100644
  }
  
  
-@@ -1009,16 +1194,21 @@ radeonDestroyScreen( __DRIscreenPrivate *sPriv )
+@@ -1009,16 +1222,21 @@ radeonDestroyScreen( __DRIscreenPrivate *sPriv )
  static GLboolean
  radeonInitDriver( __DRIscreenPrivate *sPriv )
  {
@@ -33381,14 +33441,13 @@ index 8828533..9ce950a 100644
  /**
   * Create the Mesa framebuffer and renderbuffers for a given window/drawable.
   *
-@@ -1031,101 +1221,111 @@ radeonCreateBuffer( __DRIscreenPrivate *driScrnPriv,
+@@ -1031,101 +1249,111 @@ radeonCreateBuffer( __DRIscreenPrivate *driScrnPriv,
                      const __GLcontextModes *mesaVis,
                      GLboolean isPixmap )
  {
 -   radeonScreenPtr screen = (radeonScreenPtr) driScrnPriv->private;
 +    radeonScreenPtr screen = (radeonScreenPtr) driScrnPriv->private;
- 
--   if (isPixmap) {
++
 +    const GLboolean swDepth = GL_FALSE;
 +    const GLboolean swAlpha = GL_FALSE;
 +    const GLboolean swAccum = mesaVis->accumRedBits > 0;
@@ -33396,7 +33455,8 @@ index 8828533..9ce950a 100644
 +	mesaVis->depthBits != 24;
 +    GLenum rgbFormat;
 +    struct radeon_framebuffer *rfb;
-+
+ 
+-   if (isPixmap) {
 +    if (isPixmap)
        return GL_FALSE; /* not implemented */
 -   }
@@ -33573,7 +33633,7 @@ index 8828533..9ce950a 100644
  /**
   * Choose the appropriate CreateContext function based on the chipset.
   * Eventually, all drivers will go through this process.
-@@ -1136,25 +1336,21 @@ static GLboolean radeonCreateContext(const __GLcontextModes * glVisual,
+@@ -1136,25 +1364,21 @@ static GLboolean radeonCreateContext(const __GLcontextModes * glVisual,
  {
  	__DRIscreenPrivate *sPriv = driContextPriv->driScreenPriv;
  	radeonScreenPtr screen = (radeonScreenPtr) (sPriv->private);
@@ -33609,7 +33669,7 @@ index 8828533..9ce950a 100644
  
  
  /**
-@@ -1216,13 +1412,103 @@ radeonInitScreen(__DRIscreenPrivate *psp)
+@@ -1216,13 +1440,103 @@ radeonInitScreen(__DRIscreenPrivate *psp)
     if (!radeonInitDriver(psp))
         return NULL;
  
@@ -33622,7 +33682,7 @@ index 8828533..9ce950a 100644
 +			     (dri_priv->bpp == 16) ? 0  : 8, 1);
  }
 +#define ARRAY_SIZE(a) (sizeof (a) / sizeof ((a)[0]))
- 
++
 +/**
 + * This is the driver specific part of the createNewScreen entry point.
 + * Called when using DRI2.
@@ -33703,7 +33763,7 @@ index 8828533..9ce950a 100644
 +      else
 +	 configs = driConcatConfigs(configs, new_configs);
 +   }
-+
+ 
 +   if (configs == NULL) {
 +      fprintf(stderr, "[%s:%u] Error creating FBConfig!\n", __func__,
 +              __LINE__);
@@ -33715,7 +33775,7 @@ index 8828533..9ce950a 100644
  
  /**
   * Get information about previous buffer swaps.
-@@ -1230,31 +1516,26 @@ radeonInitScreen(__DRIscreenPrivate *psp)
+@@ -1230,31 +1544,26 @@ radeonInitScreen(__DRIscreenPrivate *psp)
  static int
  getSwapInfo( __DRIdrawablePrivate *dPriv, __DRIswapInfo * sInfo )
  {
@@ -33757,7 +33817,7 @@ index 8828533..9ce950a 100644
  const struct __DriverAPIRec driDriverAPI = {
     .InitScreen      = radeonInitScreen,
     .DestroyScreen   = radeonDestroyScreen,
-@@ -1271,23 +1552,7 @@ const struct __DriverAPIRec driDriverAPI = {
+@@ -1271,23 +1580,7 @@ const struct __DriverAPIRec driDriverAPI = {
     .WaitForSBC      = NULL,
     .SwapBuffersMSC  = NULL,
     .CopySubBuffer   = radeonCopySubBuffer,
