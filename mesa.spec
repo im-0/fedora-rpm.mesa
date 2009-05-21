@@ -20,7 +20,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.5
-Release: 0.14%{?dist}
+Release: 0.15%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -49,6 +49,7 @@ Patch12: mesa-7.1-disable-intel-classic-warn.patch
 Patch13: mesa-7.5-sparc64.patch
 
 Patch15: radeon-rewrite-emit1clip.patch
+Patch16: mesa-7.5-r300-batch-accounting.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
@@ -178,6 +179,7 @@ This package provides some demo applications for testing Mesa.
 %patch12 -p1 -b .intel-nowarn
 %patch13 -p1 -b .sparc64
 %patch15 -p1 -b .fix-clip
+%patch16 -p1 -b .r300-accounting
 
 # Hack the demos to use installed data files
 sed -i 's,../images,%{_libdir}/mesa-demos-data,' progs/demos/*.c
@@ -432,6 +434,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/mesa-demos-data
 
 %changelog
+* Thu May 21 2009 Adam Jackson <ajax@redhat.com> 7.5-0.15
+- mesa-7.5-r300-batch-accounting.patch: Fix cmdbuf sizing (#501312)
+
 * Tue May 05 2009 Dave Airlie <airlied@redhat.com> 7.5-0.14
 - radeon-rewrite.patch: fixes from upstream for rs690 + r200
 
