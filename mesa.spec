@@ -17,10 +17,12 @@
 %define gitdate 20090428
 #% define snapshot 
 
+%define demodir %{_libdir}/mesa
+
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.5
-Release: 0.15%{?dist}
+Release: 0.16%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -168,7 +170,7 @@ This package provides some demo applications for testing Mesa.
 
 
 %prep
-#%setup -q -n mesa-%{version}%{?snapshot} -b0 -b2 -b5
+#setup -q -n mesa-%{version}%{?snapshot} -b0 -b2 -b5
 %setup -q -n mesa-%{gitdate} -b2 -b5
 %patch1 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
@@ -182,10 +184,10 @@ This package provides some demo applications for testing Mesa.
 %patch16 -p1 -b .r300-accounting
 
 # Hack the demos to use installed data files
-sed -i 's,../images,%{_libdir}/mesa-demos-data,' progs/demos/*.c
-sed -i 's,geartrain.dat,%{_libdir}/mesa-demos-data/&,' progs/demos/geartrain.c
-sed -i 's,isosurf.dat,%{_libdir}/mesa-demos-data/&,' progs/demos/isosurf.c
-sed -i 's,terrain.dat,%{_libdir}/mesa-demos-data/&,' progs/demos/terrain.c
+sed -i 's,../images,%{_libdir}/mesa,' progs/demos/*.c
+sed -i 's,geartrain.dat,%{_libdir}/mesa/&,' progs/demos/geartrain.c
+sed -i 's,isosurf.dat,%{_libdir}/mesa/&,' progs/demos/isosurf.c
+sed -i 's,terrain.dat,%{_libdir}/mesa/&,' progs/demos/terrain.c
 
 %build
 
@@ -275,13 +277,11 @@ popd
 install -d $RPM_BUILD_ROOT%{_bindir}
 install -m 0755 progs/xdemos/glxgears $RPM_BUILD_ROOT%{_bindir}
 install -m 0755 progs/xdemos/glxinfo $RPM_BUILD_ROOT%{_bindir}
+install -d $RPM_BUILD_ROOT%{demodir}
 find progs/demos/ -type f -perm /0111 |
-    xargs install -m 0755 -t $RPM_BUILD_ROOT/%{_bindir}
-# bah, name conflicts
-mv $RPM_BUILD_ROOT/%{_bindir}/{rain,mesa-rain}
-install -d $RPM_BUILD_ROOT/%{_libdir}/mesa-demos-data
-install -m 0644 progs/images/*.rgb $RPM_BUILD_ROOT/%{_libdir}/mesa-demos-data
-install -m 0644 progs/demos/*.dat $RPM_BUILD_ROOT/%{_libdir}/mesa-demos-data
+    xargs install -m 0755 -t $RPM_BUILD_ROOT/%{demodir}
+install -m 0644 progs/images/*.rgb $RPM_BUILD_ROOT/%{demodir}
+install -m 0644 progs/demos/*.dat $RPM_BUILD_ROOT/%{demodir}
 
 # and osmesa
 mv osmesa*/* $RPM_BUILD_ROOT%{_libdir}
@@ -379,61 +379,12 @@ rm -rf $RPM_BUILD_ROOT
 
 %files demos
 %defattr(-,root,root,-)
-%{_bindir}/arbfplight
-%{_bindir}/arbfslight
-%{_bindir}/arbocclude
-%{_bindir}/bounce
-%{_bindir}/clearspd
-%{_bindir}/copypix
-%{_bindir}/cubemap
-%{_bindir}/dinoshade
-%{_bindir}/drawpix
-%{_bindir}/engine
-%{_bindir}/fbo_firecube
-%{_bindir}/fbotexture
-%{_bindir}/fire
-%{_bindir}/fogcoord
-%{_bindir}/fplight
-%{_bindir}/fslight
-%{_bindir}/gamma
-%{_bindir}/gearbox
-%{_bindir}/gears
-%{_bindir}/geartrain
-%{_bindir}/glinfo
-%{_bindir}/gloss
-%{_bindir}/gltestperf
-%{_bindir}/ipers
-%{_bindir}/isosurf
-%{_bindir}/lodbias
-%{_bindir}/morph3d
-%{_bindir}/multiarb
-%{_bindir}/paltex
-%{_bindir}/pointblast
-%{_bindir}/projtex
-%{_bindir}/mesa-rain
-%{_bindir}/ray
-%{_bindir}/readpix
-%{_bindir}/reflect
-%{_bindir}/renormal
-%{_bindir}/shadowtex
-%{_bindir}/singlebuffer
-%{_bindir}/spectex
-%{_bindir}/spriteblast
-%{_bindir}/stex3d
-%{_bindir}/teapot
-%{_bindir}/terrain
-%{_bindir}/tessdemo
-%{_bindir}/texcyl
-%{_bindir}/texenv
-%{_bindir}/textures
-%{_bindir}/trispd
-%{_bindir}/tunnel
-%{_bindir}/tunnel2
-%{_bindir}/vao_demo
-%{_bindir}/winpos
-%{_libdir}/mesa-demos-data
+%{demodir}
 
 %changelog
+* Thu Jun 11 2009 Adam Jackson <ajax@redhat.com> 7.5-0.16
+- Install demos to %%{_libdir}/mesa
+
 * Thu May 21 2009 Adam Jackson <ajax@redhat.com> 7.5-0.15
 - mesa-7.5-r300-batch-accounting.patch: Fix cmdbuf sizing (#501312)
 
