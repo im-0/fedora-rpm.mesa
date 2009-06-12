@@ -262,7 +262,7 @@ rm [a-fh-np-wyz]*.h gg*.h glf*.h glew.h glut*.h glxew.h
 popd
 
 pushd $RPM_BUILD_ROOT%{_libdir}
-rm libEGL* demodriver.so
+rm -f libEGL*
 popd
 
 # XXX demos, since they don't install automatically.  should fix that.
