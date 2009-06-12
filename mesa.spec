@@ -14,15 +14,15 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.2
-%define gitdate 20090428
+%define gitdate 20090612
 #% define snapshot 
 
 %define demodir %{_libdir}/mesa
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 7.5
-Release: 0.16%{?dist}
+Version: 7.6
+Release: 0.1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -42,16 +42,11 @@ Patch1: mesa-7.1-osmesa-version.patch
 Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
 
-Patch6: radeon-rewrite.patch
-
 Patch7: mesa-7.1-link-shared.patch
 Patch9: intel-revert-vbl.patch
 
 Patch12: mesa-7.1-disable-intel-classic-warn.patch
 Patch13: mesa-7.5-sparc64.patch
-
-Patch15: radeon-rewrite-emit1clip.patch
-Patch16: mesa-7.5-r300-batch-accounting.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_dri}
@@ -175,13 +170,10 @@ This package provides some demo applications for testing Mesa.
 %patch1 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
 %patch3 -p0 -b .no-mach64
-%patch6 -p1 -b .radeon-rewrite
 %patch7 -p1 -b .dricore
 %patch9 -p1 -b .intel-vbl
 %patch12 -p1 -b .intel-nowarn
 %patch13 -p1 -b .sparc64
-%patch15 -p1 -b .fix-clip
-%patch16 -p1 -b .r300-accounting
 
 # Hack the demos to use installed data files
 sed -i 's,../images,%{_libdir}/mesa,' progs/demos/*.c
@@ -382,6 +374,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Fri Jun 12 2009 Dave Airlie <airlied@redhat.com> 7.6-0.1
+- rebase mesa to latest git snapshot - fixes a lot of radeon issues
+
 * Thu Jun 11 2009 Adam Jackson <ajax@redhat.com> 7.5-0.16
 - Install demos to %%{_libdir}/mesa
 
