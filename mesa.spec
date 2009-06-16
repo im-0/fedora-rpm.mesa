@@ -1,13 +1,12 @@
 
 # When bootstrapping an arch, omit the -demos subpackage.
 
-# S390 doesn't have video cards, so it's not much use building DRI there.
+# S390 doesn't have video cards, but we need swrast for xserver's GLX
 %ifarch s390 s390x
-%define with_dri 0
-%define driver xlib
+%define with_hardware 0
+%define dri_drivers --with-dri-drivers=swrast
 %else
-%define with_dri 1
-%define driver dri
+%define with_hardware 1
 %endif
 
 %define _default_patch_fuzz 2
@@ -22,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.6
-Release: 0.1%{?dist}
+Release: 0.2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -49,7 +48,7 @@ Patch12: mesa-7.1-disable-intel-classic-warn.patch
 Patch13: mesa-7.5-sparc64.patch
 
 BuildRequires: pkgconfig autoconf automake
-%if %{with_dri}
+%if %{with_hardware}
 BuildRequires: libdrm-devel >= 2.4.5-1
 BuildRequires: kernel-headers >= 2.6.27-0.305.rc5.git6
 %endif
@@ -75,9 +74,9 @@ Group: System Environment/Libraries
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Provides: libGL
-%if %{with_dri}
-Requires: libdrm >= 2.4.5-1
 Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
+%if %{with_hardware}
+Requires: libdrm >= 2.4.5-1
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
 
@@ -85,13 +84,11 @@ Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 Mesa libGL runtime library.
 
 
-%if %{with_dri}
 %package dri-drivers
 Summary: Mesa-based DRI drivers
 Group: User Interface/X Hardware Support
 %description dri-drivers
 Mesa-based DRI drivers.
-%endif
 
 
 %package libGL-devel
@@ -222,8 +219,9 @@ export CXXFLAGS="$RPM_OPT_FLAGS -Os"
     --disable-glut \
     --disable-gallium \
     --disable-gl-osmesa \
-    --with-driver=%{driver} \
-    --with-dri-driverdir=%{_libdir}/dri
+    --with-driver=dri \
+    --with-dri-driverdir=%{_libdir}/dri \
+    %{dri_drivers}
 
 make #{?_smp_mflags}
 
@@ -247,14 +245,12 @@ rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT DRI_DIRS=
 
 # just the DRI drivers that are sane
-%if %{with_dri}
 install -d $RPM_BUILD_ROOT%{_libdir}/dri
 install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri %{_lib}/libdricore.so >& /dev/null
 for f in i810 i915 i965 mach64 mga r128 r200 r300 radeon savage sis swrast tdfx unichrome; do
     so=%{_lib}/${f}_dri.so
     test -e $so && echo $so
 done | xargs install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri >& /dev/null || :
-%endif
 
 # strip out undesirable headers
 pushd $RPM_BUILD_ROOT%{_includedir}/GL 
@@ -310,13 +306,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libGL.so.1
 %{_libdir}/libGL.so.1.*
 
-%if %{with_dri}
 %files dri-drivers
 %defattr(-,root,root,-)
 %dir %{_libdir}/dri
 %{_libdir}/dri/libdricore.so
 %{_libdir}/dri/*_dri.so
-%endif
 
 %files libGL-devel
 %defattr(-,root,root,-)
@@ -326,9 +320,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glx_mangle.h
 %{_includedir}/GL/glxext.h
-%if %{with_dri}
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
+%if %{with_hardware}
 %{_libdir}/pkgconfig/dri.pc
 %endif
 %{_libdir}/libGL.so
@@ -374,6 +368,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Jun 16 2009 Adam Jackson <ajax@redhat.com> 7.6-0.2
+- Rework the DRI driver support for s390 and friends.
+
 * Fri Jun 12 2009 Dave Airlie <airlied@redhat.com> 7.6-0.1
 - rebase mesa to latest git snapshot - fixes a lot of radeon issues
 
