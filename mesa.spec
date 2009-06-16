@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.6
-Release: 0.2%{?dist}
+Release: 0.3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -49,9 +49,9 @@ Patch13: mesa-7.5-sparc64.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
-BuildRequires: libdrm-devel >= 2.4.5-1
 BuildRequires: kernel-headers >= 2.6.27-0.305.rc5.git6
 %endif
+BuildRequires: libdrm-devel >= 2.4.5-1
 BuildRequires: libXxf86vm-devel
 BuildRequires: expat-devel >= 2.0
 BuildRequires: xorg-x11-proto-devel >= 7.1-10
@@ -75,8 +75,8 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Provides: libGL
 Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
-%if %{with_hardware}
 Requires: libdrm >= 2.4.5-1
+%if %{with_hardware}
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
 
@@ -322,9 +322,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glxext.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
-%if %{with_hardware}
 %{_libdir}/pkgconfig/dri.pc
-%endif
 %{_libdir}/libGL.so
 %{_libdir}/pkgconfig/gl.pc
 %{_datadir}/man/man3/gl[^uX]*.3gl*
@@ -368,6 +366,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Jun 16 2009 Karsten Hopp <karsten@redhat.com> 7.6-0.3
+- some more fixes for s390(x)
+
 * Tue Jun 16 2009 Adam Jackson <ajax@redhat.com> 7.6-0.2
 - Rework the DRI driver support for s390 and friends.
 
