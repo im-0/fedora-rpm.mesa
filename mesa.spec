@@ -13,7 +13,7 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.2
-%define gitdate 20090921
+%define gitdate 20091030
 #% define snapshot 
 
 %define demodir %{_libdir}/mesa
@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.6
-Release: 0.13%{?dist}
+Release: 0.14%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -387,6 +387,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Thu Nov 05 2009 Dave Airlie <airlied@redhat.com> 7.6-0.14
+- update to git snapshot - makes gnome-shell on r600 work better
+
 * Mon Sep 21 2009 Adam Jackson <ajax@redhat.com> 7.6-0.13
 - Today's git snap.  Fixes picking in clutter apps on Intel chips (#524338)
 
