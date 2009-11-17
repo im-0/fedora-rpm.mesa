@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.6
-Release: 0.14%{?dist}
+Release: 0.15%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -48,6 +48,7 @@ Patch10: r600-fix-tfp.patch
 Patch13: mesa-7.5-sparc64.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
+Patch31: mesa-7.6-glx13-app-warning.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
@@ -181,6 +182,7 @@ This package provides some demo applications for testing Mesa.
 %patch10 -p1 -b .r600_tfp
 %patch13 -p1 -b .sparc64
 %patch30 -p1 -b .vblank-warning
+%patch31 -p1 -b .glx13-warning
 
 # Hack the demos to use installed data files
 sed -i 's,../images,%{_libdir}/mesa,' progs/demos/*.c
@@ -387,6 +389,10 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Nov 17 2009 Adam Jackson <ajax@redhat.com> 7.6-0.15
+- mesa-7.6-glx13-app-warning.patch: Make the glXCreatePixmap warning a bit
+  more useful. (#529769)
+
 * Thu Nov 05 2009 Dave Airlie <airlied@redhat.com> 7.6-0.14
 - update to git snapshot - makes gnome-shell on r600 work better
 
