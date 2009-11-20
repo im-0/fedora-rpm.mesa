@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.6
-Release: 0.15%{?dist}
+Release: 0.16%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -44,6 +44,7 @@ Patch3: mesa-no-mach64.patch
 Patch7: mesa-7.1-link-shared.patch
 Patch9: intel-revert-vbl.patch
 Patch10: r600-fix-tfp.patch
+Patch11: r100-fix-compiz.patch
 
 Patch13: mesa-7.5-sparc64.patch
 
@@ -180,6 +181,7 @@ This package provides some demo applications for testing Mesa.
 %patch7 -p1 -b .dricore
 %patch9 -p1 -b .intel-vbl
 %patch10 -p1 -b .r600_tfp
+%patch11 -p1 -b .r100_tfp
 %patch13 -p1 -b .sparc64
 %patch30 -p1 -b .vblank-warning
 %patch31 -p1 -b .glx13-warning
@@ -389,6 +391,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Fri Nov 20 2009 Dave Airlie <airlied@redhat.com> 7.6-0.16
+- r100 compiz failure on kms (#522399)
+
 * Tue Nov 17 2009 Adam Jackson <ajax@redhat.com> 7.6-0.15
 - mesa-7.6-glx13-app-warning.patch: Make the glXCreatePixmap warning a bit
   more useful. (#529769)
