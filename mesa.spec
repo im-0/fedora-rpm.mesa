@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.6
-Release: 0.16%{?dist}
+Release: 0.17%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -79,8 +79,8 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Provides: libGL
 Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
-Requires: libdrm >= 2.4.5-1
 %if %{with_hardware}
+Requires: libdrm >= 2.4.5-1
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
 
@@ -95,11 +95,13 @@ Group: User Interface/X Hardware Support
 Mesa-based DRI drivers.
 
 
+%if %{with_hardware}
 %package dri-drivers-experimental
 Summary: Mesa-based DRI drivers (experimental)
 Group: User Interface/X Hardware Support
 %description dri-drivers-experimental
 Mesa-based DRI drivers (experimental).
+%endif
 
 
 %package libGL-devel
@@ -333,9 +335,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/dri/*_dri.so
 %exclude %{_libdir}/dri/r600_dri.so
 
+%if %{with_hardware}
 %files dri-drivers-experimental
 %defattr(-,root,root,-)
 %{_libdir}/dri/r600_dri.so
+%endif
 
 %files libGL-devel
 %defattr(-,root,root,-)
@@ -391,6 +395,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Mon Nov 23 2009 Adam Jackson <ajax@redhat.com> 7.6-0.17
+- Fix s390 packaging
+
 * Fri Nov 20 2009 Dave Airlie <airlied@redhat.com> 7.6-0.16
 - r100 compiz failure on kms (#522399)
 
