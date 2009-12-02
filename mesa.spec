@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.6
-Release: 0.17%{?dist}
+Release: 0.18%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -333,7 +333,9 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/dri
 %{_libdir}/dri/libdricore.so
 %{_libdir}/dri/*_dri.so
+%if %{with_hardware}
 %exclude %{_libdir}/dri/r600_dri.so
+%endif
 
 %if %{with_hardware}
 %files dri-drivers-experimental
@@ -395,6 +397,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Wed Dec 02 2009 Adam Jackson <ajax@redhat.com> 7.6-0.18
+- Fix s390 packaging even harder
+
 * Mon Nov 23 2009 Adam Jackson <ajax@redhat.com> 7.6-0.17
 - Fix s390 packaging
 
