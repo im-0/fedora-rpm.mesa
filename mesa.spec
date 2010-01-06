@@ -20,18 +20,18 @@
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 7.6
-Release: 0.18%{?dist}
+Version: 7.7
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-#Source0: http://downloads.sf.net/mesa3d/MesaLib-%{version}.tar.bz2
+Source0: ftp://ftp.freedesktop.org/pub/mesa/%{version}%{?snapshot}/MesaLib-%{version}%{?snapshot}.tar.bz2
 #Source0: http://www.mesa3d.org/beta/MesaLib-%{version}%{?snapshot}.tar.bz2
 #Source1: http://www.mesa3d.org/beta/MesaDemos-%{version}%{?snapshot}.tar.bz2
-Source0: %{name}-%{gitdate}.tar.bz2
-#Source1: http://downloads.sf.net/mesa3d/MesaDemos-%{version}.tar.bz2
+#Source0: %{name}-%{gitdate}.tar.bz2
+Source1: ftp://ftp.freedesktop.org/pub/mesa/%{version}${?snapshot}/MesaDemos-%{version}%{?snapshot}.tar.bz2
 Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
 
@@ -43,10 +43,7 @@ Patch3: mesa-no-mach64.patch
 
 Patch7: mesa-7.1-link-shared.patch
 Patch9: intel-revert-vbl.patch
-Patch10: r600-fix-tfp.patch
-Patch11: r100-fix-compiz.patch
 
-Patch13: mesa-7.5-sparc64.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.6-glx13-app-warning.patch
@@ -55,7 +52,7 @@ BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
 BuildRequires: kernel-headers >= 2.6.27-0.305.rc5.git6
 %endif
-BuildRequires: libdrm-devel >= 2.4.5-1
+BuildRequires: libdrm-devel >= 2.4.17-1
 BuildRequires: libXxf86vm-devel
 BuildRequires: expat-devel >= 2.0
 BuildRequires: xorg-x11-proto-devel >= 7.1-10
@@ -80,7 +77,7 @@ Requires(postun): /sbin/ldconfig
 Provides: libGL
 Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
 %if %{with_hardware}
-Requires: libdrm >= 2.4.5-1
+Requires: libdrm >= 2.4.17-1
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
 
@@ -175,16 +172,13 @@ This package provides some demo applications for testing Mesa.
 
 
 %prep
-#setup -q -n mesa-%{version}%{?snapshot} -b0 -b2 -b5
-%setup -q -n mesa-%{gitdate} -b2 -b5
+%setup -q -n Mesa-%{version}%{?snapshot} -b0 -b1 -b2 -b5
+#setup -q -n mesa-%{gitdate} -b2 -b5
 %patch1 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
 %patch7 -p1 -b .dricore
 %patch9 -p1 -b .intel-vbl
-%patch10 -p1 -b .r600_tfp
-%patch11 -p1 -b .r100_tfp
-%patch13 -p1 -b .sparc64
 %patch30 -p1 -b .vblank-warning
 %patch31 -p1 -b .glx13-warning
 
@@ -276,7 +270,7 @@ done | xargs install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri >& /dev/null || :
 
 # strip out undesirable headers
 pushd $RPM_BUILD_ROOT%{_includedir}/GL 
-rm [a-fh-np-wyz]*.h gg*.h glf*.h glew.h glut*.h glxew.h
+rm -f [a-fh-np-wyz]*.h gg*.h glf*.h glew.h glut*.h glxew.h
 popd
 
 pushd $RPM_BUILD_ROOT%{_libdir}
@@ -397,6 +391,10 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Jan 05 2010 Dave Airlie <airlied@redhat.com> 7.7-1
+- rebase to 7.7 release - the best base to move forward at this point in time.
+- bump libdrm requires
+
 * Wed Dec 02 2009 Adam Jackson <ajax@redhat.com> 7.6-0.18
 - Fix s390 packaging even harder
 
