@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.7
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -393,6 +393,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Wed Jan 27 2010 Dave Airlie <airlied@redhat.com> 7.7-3
+- update 7.7 branch stable fixes (r100 colors for sure).
+
 * Mon Jan 11 2010 Dave Airlie <airlied@redhat.com> 7.7-2
 - add fixes from mesa 7.7 branch (fix r100 colors hopefully)
 
