@@ -233,6 +233,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS -Os"
 
 # now build the rest of mesa
 %configure %{common_flags} \
+    --disable-egl \
     --disable-glw \
     --disable-glut \
     --disable-gl-osmesa \
@@ -282,9 +283,10 @@ pushd $RPM_BUILD_ROOT%{_includedir}/
 rm -rf EGL KHR
 popd
 
-pushd $RPM_BUILD_ROOT%{_libdir}
-rm -f libEGL* dri/EGL* egl/egl_glx* egl/egl_dri2* xorg/modules/drivers/modesetting_drv.so
-popd
+# delete me if i'm not needed, kthnx
+#pushd $RPM_BUILD_ROOT%{_libdir}
+#rm -f libEGL* dri/EGL* egl/egl_glx* egl/egl_dri2* xorg/modules/drivers/modesetting_drv.so
+#popd
 
 # XXX demos, since they don't install automatically.  should fix that.
 install -d $RPM_BUILD_ROOT%{_bindir}
@@ -407,6 +409,7 @@ rm -rf $RPM_BUILD_ROOT
 * Wed Feb 17 2010 Adam Jackson <ajax@redhat.com> 7.8-0.18
 - Enable legacy nouveau build on ppc too, on the off chance that it works
   (#564346)
+- --disable-egl
 
 * Wed Feb 17 2010 Ben Skeggs <bskeggs@redhat.com> 7.8-0.17
 - rebase + rebuild for nouveau interface changes
