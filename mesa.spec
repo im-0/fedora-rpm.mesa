@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8
-Release: 0.17%{?dist}
+Release: 0.18%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -404,6 +404,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 
 %changelog
+* Wed Feb 17 2010 Adam Jackson <ajax@redhat.com> 7.8-0.18
+- Enable legacy nouveau build on ppc too, on the off chance that it works
+  (#564346)
+
 * Wed Feb 17 2010 Ben Skeggs <bskeggs@redhat.com> 7.8-0.17
 - rebase + rebuild for nouveau interface changes
 
