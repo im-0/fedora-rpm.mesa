@@ -13,7 +13,7 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.3
-%define gitdate 20100208
+%define gitdate 20100217
 #% define snapshot 
 
 %define demodir %{_libdir}/mesa
@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8
-Release: 0.16%{?dist}
+Release: 0.17%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -50,7 +50,7 @@ BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
 BuildRequires: kernel-headers >= 2.6.27-0.305.rc5.git6
 %endif
-BuildRequires: libdrm-devel >= 2.4.17-2
+BuildRequires: libdrm-devel >= 2.4.18-0.1
 BuildRequires: libXxf86vm-devel
 BuildRequires: expat-devel >= 2.0
 BuildRequires: xorg-x11-proto-devel >= 7.4-35
@@ -76,7 +76,7 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Provides: libGL
 Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
-Requires: libdrm >= 2.4.17-0.1
+Requires: libdrm >= 2.4.18-0.1
 %if %{with_hardware}
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
@@ -404,6 +404,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 
 %changelog
+* Wed Feb 17 2010 Ben Skeggs <bskeggs@redhat.com> 7.8-0.17
+- rebase + rebuild for nouveau interface changes
+
 * Mon Feb 08 2010 Ben Skeggs <bskeggs@redhat.com> 7.8-0.16
 - patch mesa to enable legacy nouveau driver build on i386
 
