@@ -13,7 +13,7 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.3
-%define gitdate 20100217
+%define gitdate 20100325
 #% define snapshot 
 
 %define demodir %{_libdir}/mesa
@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8
-Release: 0.18%{?dist}
+Release: 0.19%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -30,7 +30,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 #Source0: http://downloads.sf.net/mesa3d/MesaLib-%{version}.tar.bz2
 #Source0: http://www.mesa3d.org/beta/MesaLib-%{version}%{?snapshot}.tar.bz2
 #Source1: http://www.mesa3d.org/beta/MesaDemos-%{version}%{?snapshot}.tar.bz2
-Source0: %{name}-%{gitdate}.tar.bz2
+Source0: %{name}-7.8-%{gitdate}.tar.bz2
 #Source1: http://downloads.sf.net/mesa3d/MesaDemos-%{version}.tar.bz2
 Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
@@ -406,6 +406,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 
 %changelog
+* Thu Mar 25 2010 Dave Airlie <airlied@redhat.com> 7.8-0.19
+- rebase for latest 7.8 upstream release
+
 * Wed Feb 17 2010 Adam Jackson <ajax@redhat.com> 7.8-0.18
 - Enable legacy nouveau build on ppc too, on the off chance that it works
   (#564346)
