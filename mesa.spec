@@ -21,16 +21,15 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8
-Release: 0.19%{?dist}
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-#Source0: http://downloads.sf.net/mesa3d/MesaLib-%{version}.tar.bz2
-#Source0: http://www.mesa3d.org/beta/MesaLib-%{version}%{?snapshot}.tar.bz2
-#Source1: http://www.mesa3d.org/beta/MesaDemos-%{version}%{?snapshot}.tar.bz2
-Source0: %{name}-7.8-%{gitdate}.tar.bz2
+Source0: ftp://ftp.freedesktop.org/pub/mesa/%{version}/MesaLib-%{version}.tar.bz2
+Source1: ftp://ftp.freedesktop.org/pub/mesa/%{version}/MesaDemos-%{version}%{?snapshot}.tar.bz2
+#Source0: %{name}-7.8-%{gitdate}.tar.bz2
 #Source1: http://downloads.sf.net/mesa3d/MesaDemos-%{version}.tar.bz2
 Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
@@ -176,8 +175,7 @@ Group: User Interface/X Hardware Support
 2D driver for VMware SVGA vGPU
 
 %prep
-#setup -q -n mesa-%{version}%{?snapshot} -b0 -b2 -b5
-%setup -q -n mesa-%{gitdate} -b2 -b5
+%setup -q -n Mesa-%{version}%{?snapshot} -b1 -b2 -b5
 %patch1 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
@@ -406,6 +404,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 
 %changelog
+* Thu Apr 01 2010 Dave Airlie <airlied@redhat.com> 7.8-1
+- Upstream mesa 7.8 release
+
 * Thu Mar 25 2010 Dave Airlie <airlied@redhat.com> 7.8-0.19
 - rebase for latest 7.8 upstream release
 
