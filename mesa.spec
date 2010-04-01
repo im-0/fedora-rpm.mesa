@@ -238,7 +238,6 @@ export CXXFLAGS="$RPM_OPT_FLAGS -Os"
     --with-driver=dri \
     --with-dri-driverdir=%{_libdir}/dri \
     --with-state-trackers=dri,xorg,glx \
-    --enable-gallium-svga \
     --enable-gallium-nouveau \
     %{?dri_drivers}
 
@@ -267,7 +266,7 @@ make install DESTDIR=$RPM_BUILD_ROOT DRI_DIRS=
 # just the DRI drivers that are sane
 install -d $RPM_BUILD_ROOT%{_libdir}/dri
 #install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri %{_lib}/libdricore.so >& /dev/null
-for f in i810 i915 i965 mach64 mga r128 r200 r300 r600 radeon savage sis swrast tdfx unichrome nouveau_vieux gallium/vmwgfx; do
+for f in i810 i915 i965 mach64 mga r128 r200 r300 r600 radeon savage sis swrast tdfx unichrome nouveau_vieux; do
     so=%{_lib}/${f}_dri.so
     test -e $so && echo $so
 done | xargs install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri >& /dev/null || :
@@ -336,13 +335,11 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libdir}/dri
 #%{_libdir}/dri/libdricore.so
 %{_libdir}/dri/*_dri.so
-%exclude %{_libdir}/dri/vmwgfx_dri.so
 %exclude %{_libdir}/dri/nouveau_dri.so
 %exclude %{_libdir}/dri/nouveau_vieux_dri.so
 
 %files dri-drivers-experimental
 %defattr(-,root,root,-)
-%{_libdir}/dri/vmwgfx_dri.so
 %{_libdir}/dri/nouveau_dri.so
 %{_libdir}/dri/nouveau_vieux_dri.so
 
@@ -398,10 +395,6 @@ rm -rf $RPM_BUILD_ROOT
 %files demos
 %defattr(-,root,root,-)
 %{demodir}
-
-%files -n xorg-x11-drv-vmwgfx
-%defattr(-,root,root,-)
-%{_libdir}/xorg/modules/drivers/vmwgfx_drv.so
 
 %changelog
 * Thu Apr 01 2010 Dave Airlie <airlied@redhat.com> 7.8-1
