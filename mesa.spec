@@ -237,7 +237,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS -Os"
     --disable-gl-osmesa \
     --with-driver=dri \
     --with-dri-driverdir=%{_libdir}/dri \
-    --with-state-trackers=dri,xorg,glx \
+    --with-state-trackers=dri,glx \
     --enable-gallium-nouveau \
     %{?dri_drivers}
 
