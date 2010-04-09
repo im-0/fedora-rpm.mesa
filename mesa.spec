@@ -40,6 +40,7 @@ Patch1: mesa-7.1-osmesa-version.patch
 Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
 Patch4: nouveau-legacy-enable.patch
+Patch5: nouveau-legacy-update.patch
 
 #Patch7: mesa-7.1-link-shared.patch
 
@@ -180,6 +181,7 @@ Group: User Interface/X Hardware Support
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
 %patch4 -p1 -b .nouveau-legacy
+%patch5 -p1 -b .nouveau-legacy-update
 #%patch7 -p1 -b .dricore
 %patch30 -p1 -b .vblank-warning
 
@@ -273,7 +275,7 @@ done | xargs install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri >& /dev/null || :
 
 # strip out undesirable headers
 pushd $RPM_BUILD_ROOT%{_includedir}/GL 
-rm [a-fh-np-wyz]*.h gg*.h glf*.h glew.h glut*.h glxew.h 
+rm [a-fh-np-wyz]*.h glf*.h glew.h glxew.h 
 popd
 
 pushd $RPM_BUILD_ROOT%{_includedir}/
