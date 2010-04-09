@@ -20,7 +20,7 @@
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 7.8
+Version: 7.8.1
 Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
