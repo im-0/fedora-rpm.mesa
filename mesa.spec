@@ -14,14 +14,14 @@
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.2
 %define gitdate 20091030
-#% define snapshot 
+%define snapshot .1
 
 %define demodir %{_libdir}/mesa
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.7
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -31,13 +31,12 @@ Source0: ftp://ftp.freedesktop.org/pub/mesa/%{version}%{?snapshot}/MesaLib-%{ver
 #Source0: http://www.mesa3d.org/beta/MesaLib-%{version}%{?snapshot}.tar.bz2
 #Source1: http://www.mesa3d.org/beta/MesaDemos-%{version}%{?snapshot}.tar.bz2
 #Source0: %{name}-%{gitdate}.tar.bz2
-Source1: ftp://ftp.freedesktop.org/pub/mesa/%{version}${?snapshot}/MesaDemos-%{version}%{?snapshot}.tar.bz2
+Source1: ftp://ftp.freedesktop.org/pub/mesa/%{version}%{?snapshot}/MesaDemos-%{version}%{?snapshot}.tar.bz2
 Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
 
 Source5: http://www.x.org/pub/individual/app/%{xdriinfo}.tar.bz2
 
-Patch0: mesa-7.7.1-fixes.patch
 Patch1: mesa-7.1-osmesa-version.patch
 Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
@@ -175,7 +174,6 @@ This package provides some demo applications for testing Mesa.
 %prep
 %setup -q -n Mesa-%{version}%{?snapshot} -b1 -b2 -b5
 #setup -q -n mesa-%{gitdate} -b2 -b5
-%patch0 -p1 -b .mesa771
 %patch1 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
@@ -393,6 +391,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Mon Apr 12 2010 Dave Airlie <airlied@redhat.com> 7.7-5
+- update to mesa 7.7.1 release
+
 * Tue Mar 02 2010 Dave Airlie <airlied@redhat.com> 7.7-4
 - update to latest 7.7 branch - r600 fixes for blender
 
