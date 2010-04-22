@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -45,6 +45,7 @@ Patch5: nouveau-legacy-update.patch
 #Patch7: mesa-7.1-link-shared.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
+Patch31: mesa-7.8.1-intel-dri2-damage.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
@@ -184,7 +185,8 @@ Group: User Interface/X Hardware Support
 %patch5 -p1 -b .nouveau-legacy-update
 #%patch7 -p1 -b .dricore
 %patch30 -p1 -b .vblank-warning
-
+#Fix #RH 577142 (compiz redrawing issues)
+%patch31 -p1 -b .intel-dri2-damage
 # Hack the demos to use installed data files
 sed -i 's,../images,%{_libdir}/mesa,' progs/demos/*.c
 sed -i 's,geartrain.dat,%{_libdir}/mesa/&,' progs/demos/geartrain.c
@@ -399,6 +401,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Thu Apr 22 2010 Adel Gadllah <adel.gadllah@gmail.com> 7.8.1-2
+- Add patch to fix RH #577142
+
 * Thu Apr 01 2010 Dave Airlie <airlied@redhat.com> 7.8-1
 - Upstream mesa 7.8 release
 
