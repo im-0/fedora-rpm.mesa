@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -36,6 +36,7 @@ Source3: make-git-snapshot.sh
 
 Source5: http://www.x.org/pub/individual/app/%{xdriinfo}.tar.bz2
 
+Patch0: mesa-7.8-git-fixes.patch
 Patch1: mesa-7.1-osmesa-version.patch
 Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
@@ -178,6 +179,7 @@ Group: User Interface/X Hardware Support
 
 %prep
 %setup -q -n Mesa-%{version}%{?snapshot} -b1 -b2 -b5
+%patch0 -p1 -b .git
 %patch1 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
@@ -401,6 +403,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Fri Apr 30 2010 Dave Airlie <airlied@redhat.com> 7.8.1-3
+- rebase with latest git fixes
+
 * Thu Apr 22 2010 Adel Gadllah <adel.gadllah@gmail.com> 7.8.1-2
 - Add patch to fix RH #577142
 
