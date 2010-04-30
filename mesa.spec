@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -47,6 +47,7 @@ Patch5: nouveau-legacy-update.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.8.1-intel-dri2-damage.patch
+Patch32: radeon-fix-glCopyTex-Sub-Image-if-user-FBO-is-bound.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
@@ -189,7 +190,13 @@ Group: User Interface/X Hardware Support
 %patch30 -p1 -b .vblank-warning
 #Fix #RH 577142 (compiz redrawing issues)
 %patch31 -p1 -b .intel-dri2-damage
+# Fix for glCopyTexSubImage from master. Needed to fix corruption
+# issues with Clutter's texture atlases
+%patch32 -p1 -b .fbo-copy-tex-image
+
+
 # Hack the demos to use installed data files
+
 sed -i 's,../images,%{_libdir}/mesa,' progs/demos/*.c
 sed -i 's,geartrain.dat,%{_libdir}/mesa/&,' progs/demos/geartrain.c
 sed -i 's,isosurf.dat,%{_libdir}/mesa/&,' progs/demos/isosurf.c
@@ -403,6 +410,10 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Thu Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 7.8.1-4
+- Backport fix for glCopyTexSubImage from master. Needed to fix corruption
+  issues with Clutter's texture atlases
+
 * Fri Apr 30 2010 Dave Airlie <airlied@redhat.com> 7.8.1-3
 - rebase with latest git fixes
 
