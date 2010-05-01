@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -48,6 +48,7 @@ Patch5: nouveau-legacy-update.patch
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.8.1-intel-dri2-damage.patch
 Patch32: radeon-fix-glCopyTex-Sub-Image-if-user-FBO-is-bound.patch
+Patch33: Mark-MESA_swap_control-and-SGI_video_sync-as-not-dir.patch
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
@@ -193,6 +194,9 @@ Group: User Interface/X Hardware Support
 # Fix for glCopyTexSubImage from master. Needed to fix corruption
 # issues with Clutter's texture atlases
 %patch32 -p1 -b .fbo-copy-tex-image
+# MESA_swap_control and SGI_video_sync shouldn't be direct_only
+# http://lists.freedesktop.org/archives/mesa-dev/2010-April/000389.html
+%patch33 -p1 -b .direct-only-extensions
 
 
 # Hack the demos to use installed data files
@@ -410,6 +414,10 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Fri Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 7.8.1-6
+- Add a patch that fixes SGI_video_sync being reported as an extension
+  on Radeon but doing nothing
+
 * Thu Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 7.8.1-4
 - Backport fix for glCopyTexSubImage from master. Needed to fix corruption
   issues with Clutter's texture atlases
