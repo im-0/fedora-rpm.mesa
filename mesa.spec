@@ -53,6 +53,7 @@ Patch33: Mark-MESA_swap_control-and-SGI_video_sync-as-not-dir.patch
 BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
 BuildRequires: kernel-headers >= 2.6.27-0.305.rc5.git6
+BuildRequires: xorg-x11-server-devel
 %endif
 BuildRequires: libdrm-devel >= 2.4.18-0.1
 BuildRequires: libXxf86vm-devel
@@ -68,7 +69,6 @@ BuildRequires: libXi-devel
 BuildRequires: libXmu-devel
 BuildRequires: elfutils
 BuildRequires: python
-BuildRequires: xorg-x11-server-devel
 
 %description
 Mesa
