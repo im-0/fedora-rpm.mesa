@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8.1
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -42,6 +42,7 @@ Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
 Patch4: nouveau-legacy-enable.patch
 Patch5: nouveau-legacy-update.patch
+Patch6: nouveau-class-header.patch
 
 #Patch7: mesa-7.1-link-shared.patch
 
@@ -187,6 +188,7 @@ Group: User Interface/X Hardware Support
 %patch3 -p1 -b .no-mach64
 %patch4 -p1 -b .nouveau-legacy
 %patch5 -p1 -b .nouveau-legacy-update
+%patch6 -p1 -b .nouveau-class
 #%patch7 -p1 -b .dricore
 %patch30 -p1 -b .vblank-warning
 #Fix #RH 577142 (compiz redrawing issues)
@@ -414,6 +416,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Aug 03 2010 Ben Skeggs <bskeggs@redhat.com> - 7.8.1-7
+- fix nouveau build with newer libdrm
+
 * Fri Apr 30 2010 Owen Taylor <otaylor@redhat.com> - 7.8.1-6
 - Add a patch that fixes SGI_video_sync being reported as an extension
   on Radeon but doing nothing

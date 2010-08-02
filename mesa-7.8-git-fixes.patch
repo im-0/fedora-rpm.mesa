@@ -260,7 +260,7 @@ index 473b22a..73b1481 100644
  */
  
  /* Header file version number, required by OpenGL ABI for Linux */
--/* glext.h last updated $Date: 2010/04/29 20:46:43 $ */
+-/* glext.h last updated $Date: 2009-09-24 13:55:03 -0700 (Thu, 24 Sep 2009) $ */
 +/* glext.h last updated $Date: 2010/04/29 20:46:43 $ */
  /* Current version at http://www.opengl.org/registry/ */
 -#define GL_GLEXT_VERSION 56
