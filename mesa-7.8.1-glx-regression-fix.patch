@@ -1,0 +1,12 @@
+--- Mesa-7.8.1.orig/src/glx/glxext.c	2010-06-08 23:39:29.844249035 +0200
++++ Mesa-7.8.1.orig/src/glx/glxext.c	2010-06-08 23:40:41.186564816 +0200
+@@ -582,6 +582,9 @@ __glXInitializeVisualConfigFromTags(__GL
+          config->yInverted = *bp++;
+          break;
+ #endif
++      case GLX_USE_GL:
++         if (fbconfig_style_tags) *bp++;
++         break;
+       case None:
+          i = count;
+          break;

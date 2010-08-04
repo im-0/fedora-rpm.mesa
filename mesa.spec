@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8.1
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -45,6 +45,7 @@ Patch5: nouveau-legacy-update.patch
 Patch6: nouveau-class-header.patch
 
 #Patch7: mesa-7.1-link-shared.patch
+Patch8: mesa-7.8.1-glx-regression-fix.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.8.1-intel-dri2-damage.patch
@@ -190,6 +191,7 @@ Group: User Interface/X Hardware Support
 %patch5 -p1 -b .nouveau-legacy-update
 %patch6 -p1 -b .nouveau-class
 #%patch7 -p1 -b .dricore
+%patch8 -p1 -b .glx-regression
 %patch30 -p1 -b .vblank-warning
 #Fix #RH 577142 (compiz redrawing issues)
 %patch31 -p1 -b .intel-dri2-damage
@@ -416,6 +418,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Thu Aug 05 2010 Ben Skeggs <bskeggs@redhat.com> - 7.8.1-8
+- glx regression fix from upstream (rhbz#601631)
+
 * Tue Aug 03 2010 Ben Skeggs <bskeggs@redhat.com> - 7.8.1-7
 - fix nouveau build with newer libdrm
 
