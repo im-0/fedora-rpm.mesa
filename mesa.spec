@@ -72,6 +72,7 @@ BuildRequires: glew-devel
 BuildRequires: elfutils
 BuildRequires: python
 BuildRequires: libxml2-python
+BuildRequires: libtalloc-devel
 
 %description
 Mesa
@@ -95,6 +96,7 @@ Mesa libGL runtime library.
 %package dri-drivers
 Summary: Mesa-based DRI drivers
 Group: User Interface/X Hardware Support
+Requires: libtalloc
 %description dri-drivers
 Mesa-based DRI drivers.
 
