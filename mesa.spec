@@ -23,7 +23,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.9
-Release: 0.7%{?dist}
+Release: 0.8%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -292,7 +292,7 @@ make install DESTDIR=$RPM_BUILD_ROOT DRI_DIRS=
 install -d $RPM_BUILD_ROOT%{_libdir}/dri
 #install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri %{_lib}/libdricore.so >& /dev/null
 # use gallium r300 driver iff built
-[ -f %{_lib}/gallium/radeong_dri.so ] && cp %{_lib}/gallium/radeong_dri.so %{_lib}/r300_dri.so
+[ -f %{_lib}/gallium/r300_dri.so ] && cp %{_lib}/gallium/r300_dri.so %{_lib}/r300_dri.so
 for f in i810 i915 i965 mach64 mga r128 r200 r300 r600 radeon savage sis swrast tdfx unichrome nouveau_vieux gallium/vmwgfx; do
     so=%{_lib}/${f}_dri.so
     test -e $so && echo $so
@@ -431,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Thu Sep 23 2010 Dave Airlie <airlied@redhat.com> 7.9-0.8
+- fixup selecting r300 gallium driver (thanks to Nicolas PENINGUY)
+
 * Wed Sep 22 2010 Dave Airlie <airlied@redhat.com> 7.9-0.7
 - update to latest 7.9 prelease snapshot
 
