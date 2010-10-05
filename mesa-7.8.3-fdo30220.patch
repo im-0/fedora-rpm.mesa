@@ -1,0 +1,11 @@
+--- Mesa-7.8.3-rc1.old/src/glx/glxcmds.c	2010-09-16 03:14:45.074000414 -0400
++++ Mesa-7.8.3-rc1.new/src/glx/glxcmds.c	2010-09-17 05:39:19.715000033 -0400
+@@ -103,7 +103,7 @@
+    if (__glxHashFirst(sc->drawHash, &draw, (void *) &pdraw) == 1) {
+       do {
+          windowExistsFlag = GL_TRUE;
+-         XGetWindowAttributes(dpy, draw, &xwa); /* dummy request */
++         XGetWindowAttributes(dpy, pdraw->xDrawable, &xwa); /* dummy request */
+          if (!windowExistsFlag) {
+             /* Destroy the local drawable data, if the drawable no
+                longer exists in the Xserver */

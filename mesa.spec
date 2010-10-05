@@ -21,7 +21,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.8.1
-Release: 8%{?dist}
+Release: 9%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -51,6 +51,10 @@ Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.8.1-intel-dri2-damage.patch
 Patch32: radeon-fix-glCopyTex-Sub-Image-if-user-FBO-is-bound.patch
 Patch33: Mark-MESA_swap_control-and-SGI_video_sync-as-not-dir.patch
+
+# "Change windowExistsErrorHandler to drawableExistsErrorHandler in glxcmds.c"
+# https://bugs.freedesktop.org/show_bug.cgi?id=30220
+Patch50: mesa-7.8.3-fdo30220.patch 
 
 BuildRequires: pkgconfig autoconf automake
 %if %{with_hardware}
@@ -202,6 +206,7 @@ Group: User Interface/X Hardware Support
 # http://lists.freedesktop.org/archives/mesa-dev/2010-April/000389.html
 %patch33 -p1 -b .direct-only-extensions
 
+%patch50 -p1 -b .fdo30220
 
 # Hack the demos to use installed data files
 
@@ -418,6 +423,10 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Mon Oct 04 2010 Rex Dieter <rdieter@fedoraproject.org> - 7.8.1-9
+- Change windowExistsErrorHandler to drawableExistsErrorHandler in glxcmds.c (#30220)
+- kwin freezes when changing related settings in systemsettings while compositing is active (#625894)
+
 * Thu Aug 05 2010 Ben Skeggs <bskeggs@redhat.com> - 7.8.1-8
 - glx regression fix from upstream (rhbz#601631)
 
