@@ -23,7 +23,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.9
-Release: 0.8%{?dist}
+Release: 0.8%{?dist}.1
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -431,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Oct 05 2010 jkeating - 7.9-0.8.1
+- Rebuilt for gcc bug 634757
+
 * Thu Sep 23 2010 Dave Airlie <airlied@redhat.com> 7.9-0.8
 - fixup selecting r300 gallium driver (thanks to Nicolas PENINGUY)
 
