@@ -13,7 +13,7 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.3
-%define gitdate 20100922
+%define gitdate 20101014
 %define demosgitdate 20100529
 #% define snapshot 
 
@@ -23,7 +23,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.9
-Release: 0.8%{?dist}.1
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -431,6 +431,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Thu Oct 14 2010 Dave Airlie <airlied@redhat.com> 7.9-1
+- 7.9 branch post release + fixes
+
 * Tue Oct 05 2010 jkeating - 7.9-0.8.1
 - Rebuilt for gcc bug 634757
 
