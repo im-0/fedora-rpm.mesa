@@ -20,8 +20,8 @@
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 7.8.1
-Release: 9%{?dist}
+Version: 7.8.2
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -36,7 +36,6 @@ Source3: make-git-snapshot.sh
 
 Source5: http://www.x.org/pub/individual/app/%{xdriinfo}.tar.bz2
 
-Patch0: mesa-7.8-git-fixes.patch
 Patch1: mesa-7.1-osmesa-version.patch
 Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
@@ -45,7 +44,6 @@ Patch5: nouveau-legacy-update.patch
 Patch6: nouveau-class-header.patch
 
 #Patch7: mesa-7.1-link-shared.patch
-Patch8: mesa-7.8.1-glx-regression-fix.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.8.1-intel-dri2-damage.patch
@@ -187,7 +185,6 @@ Group: User Interface/X Hardware Support
 
 %prep
 %setup -q -n Mesa-%{version}%{?snapshot} -b1 -b2 -b5
-%patch0 -p1 -b .git
 %patch1 -p1 -b .osmesa
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
@@ -195,7 +192,6 @@ Group: User Interface/X Hardware Support
 %patch5 -p1 -b .nouveau-legacy-update
 %patch6 -p1 -b .nouveau-class
 #%patch7 -p1 -b .dricore
-%patch8 -p1 -b .glx-regression
 %patch30 -p1 -b .vblank-warning
 #Fix #RH 577142 (compiz redrawing issues)
 %patch31 -p1 -b .intel-dri2-damage
@@ -423,6 +419,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Mon Nov 01 2010 Adam Jackson <ajax@redhat.com> 7.8.2-1
+- Mesa 7.8.2 (#617929)
+
 * Mon Oct 04 2010 Rex Dieter <rdieter@fedoraproject.org> - 7.8.1-9
 - Change windowExistsErrorHandler to drawableExistsErrorHandler in glxcmds.c (#30220)
 - kwin freezes when changing related settings in systemsettings while compositing is active (#625894)
