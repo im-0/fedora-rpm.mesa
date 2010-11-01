@@ -23,7 +23,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.9
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -50,6 +50,7 @@ Patch5: mesa-demos-fix-add-needed.patch
 #Patch7: mesa-7.1-link-shared.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
+Patch31: mesa-7.9-i915-no-gen3-arbfs.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -196,6 +197,7 @@ Group: User Interface/X Hardware Support
 %patch4 -p1 -b .nouveau
 #%patch7 -p1 -b .dricore
 %patch30 -p1 -b .vblank-warning
+%patch31 -p1 -b .arbfs
 
 # Hack the demos to use installed data files
 cd ../%{demopkg}
@@ -431,6 +433,10 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Mon Nov 01 2010 Adam Jackson <ajax@redhat.com> 7.9-2
+- mesa-7.9-i915-no-gen3-arbfs.patch: Disable ARB_fragment_shader on intel
+  gen3 by default for now (#640375)
+
 * Thu Oct 14 2010 Dave Airlie <airlied@redhat.com> 7.9-1
 - 7.9 branch post release + fixes
 
