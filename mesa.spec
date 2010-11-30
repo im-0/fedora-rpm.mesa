@@ -13,7 +13,7 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.3
-%define gitdate 20101014
+%define gitdate 20101130
 %define demosgitdate 20100529
 #% define snapshot 
 
@@ -23,7 +23,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.9
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -433,6 +433,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Nov 30 2010 Dave Airlie <airlied@redhat.com> 7.9-3
+- 7.9 branch fixes
+
 * Mon Nov 01 2010 Adam Jackson <ajax@redhat.com> 7.9-2
 - mesa-7.9-i915-no-gen3-arbfs.patch: Disable ARB_fragment_shader on intel
   gen3 by default for now (#640375)
