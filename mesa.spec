@@ -13,7 +13,7 @@
 
 %define manpages gl-manpages-1.0.1
 %define xdriinfo xdriinfo-1.0.3
-%define gitdate 20101130
+%define gitdate 20101207
 %define demosgitdate 20100529
 #% define snapshot 
 
@@ -23,7 +23,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.9
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -433,6 +433,9 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Tue Dec 07 2010 Dave Airlie <airlied@redhat.com> 7.9-4
+- fix r300 not working on certain cards (#651972)
+
 * Tue Nov 30 2010 Dave Airlie <airlied@redhat.com> 7.9-3
 - 7.9 branch fixes
 
