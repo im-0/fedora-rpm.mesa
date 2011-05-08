@@ -12,13 +12,13 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20110506
+%define gitdate 20110509
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.8.%{gitdate}.0%{?dist}
+Release: 0.9.%{gitdate}.0%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -486,6 +486,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
+* Mon May 09 2011 Dave Airlie <airlied@redhat.com> 7.11-0.9.20110509.0
+- fix rv6xx regression in last set of changes (#702872)
+
 * Fri May 06 2011 Dave Airlie <airlied@redhat.com> 7.11-0.8.20110506.0
 - rebase for better nvc0 driver + radeon rv6xx flushing fixes.
 
