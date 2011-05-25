@@ -12,13 +12,13 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20110509
+%define gitdate 20110525
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.10.%{gitdate}.0%{?dist}
+Release: 0.11.%{gitdate}.0%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -488,6 +488,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
+* Wed May 25 2011 Dave Airlie <airlied@redhat.com> 7.11-0.11.20110525.0
+- rebase to latest upstream for llvm fix + r600g cayman/eg support
+
 * Tue May 10 2011 Dan Horák <dan[at]danny.cz> 7.11-0.10.20110509.0
 - r300 needs to be explicitely disabled when with_hardware == 0
 
