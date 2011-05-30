@@ -18,7 +18,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.11.%{gitdate}.0%{?dist}
+Release: 0.12.%{gitdate}.0%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -40,6 +40,9 @@ Patch8: mesa-7.10-llvmcore.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.10-swrastg.patch
+
+# build fix
+Patch40: mesa-20110525-gallium-config.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -224,6 +227,8 @@ Requires: Xorg %(xserver-sdk-abi-requires ansic) %(xserver-sdk-abi-requires vide
 %if %{with_llvmcore}
 %patch8 -p1 -b .llvmcore
 %endif
+
+%patch40 -p1 -b .header-order
 
 %build
 
@@ -488,6 +493,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
+* Mon May 30 2011 Dan Horák <dan[at]danny.cz> 7.11-0.12.20110525.0
+- fix the gallium p_config header for non-x86 arches (Dave Airlie)
+
 * Wed May 25 2011 Dave Airlie <airlied@redhat.com> 7.11-0.11.20110525.0
 - rebase to latest upstream for llvm fix + r600g cayman/eg support
 
