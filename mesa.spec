@@ -44,6 +44,9 @@ Patch31: mesa-7.10-swrastg.patch
 # build fix
 Patch40: mesa-20110525-gallium-config.patch
 
+# fix gnome-shell on pre-nv30 chipsets
+Patch41: mesa-7.11-nouveau-old-gs.patch
+
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
 BuildRequires: kernel-headers >= 2.6.27-0.305.rc5.git6
@@ -229,6 +232,8 @@ Requires: Xorg %(xserver-sdk-abi-requires ansic) %(xserver-sdk-abi-requires vide
 %endif
 
 %patch40 -p1 -b .header-order
+
+%patch41 -p1 -b .vieux-gs
 
 %build
 
@@ -493,6 +498,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
+* Mon Jul 06 2011 Ben Skeggs <bskeggs@redhat.com> 7.11-0.13.20110525.0
+- nouveau: fix shell segfault on pre-gallium drivers (#708004)
+
 * Mon May 30 2011 Dan Horák <dan[at]danny.cz> 7.11-0.12.20110525.0
 - fix the gallium p_config header for non-x86 arches (Dave Airlie)
 
