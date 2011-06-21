@@ -272,7 +272,7 @@ mv libllvmcore*.so %{_lib}
     --with-gallium-drivers=r300,r600,nouveau,swrast \
 %else
     --disable-gallium-llvm \
-    --with-gallium-drivers="" \
+    --with-gallium-drivers=swrast \
 %endif
     %{?dri_drivers}
 
