@@ -237,7 +237,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS"
 %else
 %define common_flags --enable-selinux --enable-pic
 %endif
-%define osmesa_flags --with-driver=osmesa %{common_flags} --disable-gallium --with-dri-drivers="" --disable-glu --disable-egl
+%define osmesa_flags --with-driver=osmesa %{common_flags} --disable-gallium --with-dri-drivers="" --disable-glu --disable-egl --with-gallium-drivers=""
 
 # first, build osmesa.
 
