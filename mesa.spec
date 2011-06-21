@@ -233,9 +233,9 @@ export CFLAGS="$RPM_OPT_FLAGS"
 export CXXFLAGS="$RPM_OPT_FLAGS"
 %ifarch %{ix86}
 # i do not have words for how much the assembly dispatch code infuriates me
-%define common_flags --enable-selinux --enable-pic --enable-udev --disable-asm
+%define common_flags --enable-selinux --enable-pic --disable-asm
 %else
-%define common_flags --enable-selinux --enable-pic --enable-udev
+%define common_flags --enable-selinux --enable-pic
 %endif
 %define osmesa_flags --with-driver=osmesa %{common_flags} --disable-gallium --with-dri-drivers="" --disable-glu --disable-egl
 
@@ -263,25 +263,16 @@ mv libllvmcore*.so %{_lib}
     --disable-gl-osmesa \
     --with-driver=dri \
     --with-dri-driverdir=%{_libdir}/dri \
-    --with-state-trackers=dri,glx \
     --enable-egl \
     --enable-gles1 \
     --enable-gles2 \
-    --disable-gallium-intel \
-    --disable-gallium-svga \
     --disable-gallium-egl \
 %if %{with_hardware}
     --enable-gallium-llvm \
-    --enable-gallium-radeon \
-    --enable-gallium-r300 \
-    --enable-gallium-r600 \
-    --enable-gallium-nouveau \
+    --with-gallium-drivers=r300,r600,nouveau,swrast \
 %else
     --disable-gallium-llvm \
-    --disable-gallium-radeon \
-    --disable-gallium-r300 \
-    --disable-gallium-r600 \
-    --disable-gallium-nouveau \
+    --with-gallium-drivers="" \
 %endif
     %{?dri_drivers}
 
