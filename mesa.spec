@@ -12,13 +12,13 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20110525
+%define gitdate 20110621
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.13.%{gitdate}.0%{?dist}
+Release: 0.14.%{gitdate}.0%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -40,12 +40,6 @@ Patch8: mesa-7.10-llvmcore.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.10-swrastg.patch
-
-# build fix
-Patch40: mesa-20110525-gallium-config.patch
-
-# fix gnome-shell on pre-nv30 chipsets
-Patch41: mesa-7.11-nouveau-old-gs.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -230,10 +224,6 @@ Requires: Xorg %(xserver-sdk-abi-requires ansic) %(xserver-sdk-abi-requires vide
 %if %{with_llvmcore}
 %patch8 -p1 -b .llvmcore
 %endif
-
-%patch40 -p1 -b .header-order
-
-%patch41 -p1 -b .vieux-gs
 
 %build
 
@@ -498,7 +488,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
-* Mon Jul 06 2011 Ben Skeggs <bskeggs@redhat.com> 7.11-0.13.20110525.0
+* Tue Jun 21 2011 Dave Airlie <airlied@redhat.com> 7.11-0.14.20110621.0
+- update to latest mesa 7.11 with nvfx g-s fix.
+
+* Mon Jun 06 2011 Ben Skeggs <bskeggs@redhat.com> 7.11-0.13.20110525.0
 - nouveau: fix shell segfault on pre-gallium drivers (#708004)
 
 * Mon May 30 2011 Dan Horák <dan[at]danny.cz> 7.11-0.12.20110525.0
