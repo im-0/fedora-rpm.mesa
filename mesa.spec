@@ -12,13 +12,13 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20110621
+%define gitdate 20110626
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.14.%{gitdate}.0%{?dist}
+Release: 0.15.%{gitdate}.0%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -479,6 +479,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
+* Sun Jun 26 2011 Dave Airlie <airlied@redhat.com> 7.11-0.15.20110626.0
+- update to latest mesa 7.11 with intel gen5 fix
+
 * Tue Jun 21 2011 Dave Airlie <airlied@redhat.com> 7.11-0.14.20110621.0
 - update to latest mesa 7.11 with nvfx g-s fix.
 
