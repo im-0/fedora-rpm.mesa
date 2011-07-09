@@ -1,0 +1,88 @@
+                                                                                                                                                                                                                                                               
+Delivered-To: airlied@gmail.com
+Received: by 10.216.48.73 with SMTP id u51cs50311web;
+        Fri, 8 Jul 2011 16:20:21 -0700 (PDT)
+Received: by 10.68.55.225 with SMTP id v1mr3424881pbp.15.1310166457511;
+        Fri, 08 Jul 2011 16:07:37 -0700 (PDT)
+Return-Path: <mesa-dev-bounces+airlied=gmail.com@lists.freedesktop.org>
+Received: from gabe.freedesktop.org (gabe.freedesktop.org [131.252.210.177])
+        by mx.google.com with ESMTP id u20si57111251wfu.81.2011.07.08.16.07.36;
+        Fri, 08 Jul 2011 16:07:37 -0700 (PDT)
+Received-SPF: pass (google.com: domain of mesa-dev-bounces+airlied=gmail.com@lists.freedesktop.org designates 131.252.210.177 as permitted sender) client-ip=131.252.210.177;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of mesa-dev-bounces+airlied=gmail.com@lists.freedesktop.org designates 131.252.210.177 as permitted sender) smtp.mail=mesa-dev-bounces+airlied=gmail.com@lists.freedesktop.org
+Received: from gabe.freedesktop.org (localhost [127.0.0.1])
+	by gabe.freedesktop.org (Postfix) with ESMTP id A8EE4A089E
+	for <airlied@gmail.com>; Fri,  8 Jul 2011 16:07:36 -0700 (PDT)
+X-Original-To: mesa-dev@lists.freedesktop.org
+Delivered-To: mesa-dev@lists.freedesktop.org
+Received: from annarchy.freedesktop.org (annarchy.freedesktop.org
+	[131.252.210.176])
+	by gabe.freedesktop.org (Postfix) with ESMTP id 8392F9E9F7;
+	Fri,  8 Jul 2011 15:48:17 -0700 (PDT)
+Received: from pollan.anholt.net (annarchy.freedesktop.org [127.0.0.1])
+	by annarchy.freedesktop.org (Postfix) with ESMTP id 76A46130125;
+	Fri,  8 Jul 2011 15:48:17 -0700 (PDT)
+Received: by pollan.anholt.net (Postfix, from userid 1000)
+	id 59AF4C0410C; Fri,  8 Jul 2011 15:48:16 -0700 (PDT)
+From: Eric Anholt <eric@anholt.net>
+To: mesa-dev@lists.freedesktop.org
+Date: Fri,  8 Jul 2011 15:48:16 -0700
+Message-Id: <1310165296-29051-1-git-send-email-eric@anholt.net>
+X-Mailer: git-send-email 1.7.5.4
+Subject: [Mesa-dev] [PATCH] i965/gen4: Fix GPU hangs since the program
+	streaming change.
+X-BeenThere: mesa-dev@lists.freedesktop.org
+X-Mailman-Version: 2.1.11
+Precedence: list
+List-Id: "For discussion about development of the Mesa code."
+	<mesa-dev.lists.freedesktop.org>
+List-Unsubscribe: <http://lists.freedesktop.org/mailman/options/mesa-dev>,
+	<mailto:mesa-dev-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <http://lists.freedesktop.org/archives/mesa-dev>
+List-Post: <mailto:mesa-dev@lists.freedesktop.org>
+List-Help: <mailto:mesa-dev-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <http://lists.freedesktop.org/mailman/listinfo/mesa-dev>,
+	<mailto:mesa-dev-request@lists.freedesktop.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+Sender: mesa-dev-bounces+airlied=gmail.com@lists.freedesktop.org
+Errors-To: mesa-dev-bounces+airlied=gmail.com@lists.freedesktop.org
+
+This was tricky.  We were doing a use-before-initialize of
+grf_reg_count, but the value usually got overwritten anyway -- when we
+didn't have to do a relocation (typical), or on gen5 when we didn't
+have relocations at all.
+
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=38771
+---
+ src/mesa/drivers/dri/i965/brw_vs_state.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/src/mesa/drivers/dri/i965/brw_vs_state.c b/src/mesa/drivers/dri/i965/brw_vs_state.c
+index f171a8a..fc4373a 100644
+--- a/src/mesa/drivers/dri/i965/brw_vs_state.c
++++ b/src/mesa/drivers/dri/i965/brw_vs_state.c
+@@ -48,6 +48,7 @@ brw_prepare_vs_unit(struct brw_context *brw)
+    memset(vs, 0, sizeof(*vs));
+ 
+    /* BRW_NEW_PROGRAM_CACHE | CACHE_NEW_VS_PROG */
++   vs->thread0.grf_reg_count = ALIGN(brw->vs.prog_data->total_grf, 16) / 16 - 1;
+    vs->thread0.kernel_start_pointer =
+       brw_program_reloc(brw,
+ 			brw->vs.state_offset +
+@@ -55,7 +56,6 @@ brw_prepare_vs_unit(struct brw_context *brw)
+ 			brw->vs.prog_offset +
+ 			(vs->thread0.grf_reg_count << 1)) >> 6;
+ 
+-   vs->thread0.grf_reg_count = ALIGN(brw->vs.prog_data->total_grf, 16) / 16 - 1;
+    vs->thread1.floating_point_mode = BRW_FLOATING_POINT_NON_IEEE_754;
+    /* Choosing multiple program flow means that we may get 2-vertex threads,
+     * which will have the channel mask for dwords 4-7 enabled in the thread,
+-- 
+1.7.5.4
+
+_______________________________________________
+mesa-dev mailing list
+mesa-dev@lists.freedesktop.org
+http://lists.freedesktop.org/mailman/listinfo/mesa-dev
