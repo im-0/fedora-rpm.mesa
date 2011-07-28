@@ -12,13 +12,13 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20110709
+%define gitdate 20110729
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.16.%{gitdate}.0%{?dist}
+Release: 0.17.%{gitdate}.0%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -40,7 +40,6 @@ Patch8: mesa-7.10-llvmcore.patch
 
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.10-swrastg.patch
-Patch32: mesa-7.11-gm45-fix.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -221,7 +220,6 @@ Requires: Xorg %(xserver-sdk-abi-requires ansic) %(xserver-sdk-abi-requires vide
 #patch7 -p1 -b .dricore
 %patch30 -p1 -b .vblank-warning
 #patch31 -p1 -b .swrastg
-%patch32 -p1 -b .gm45
 
 %if %{with_llvmcore}
 %patch8 -p1 -b .llvmcore
@@ -481,6 +479,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
+* Fri Jul 29 2011 Dave Airlie <airlied@redhat.com> 7.11-0.17.20110729.0
+- latest mesa snapshot of 7.11 branch
+
 * Sat Jul 09 2011 Dave Airlie <airlied@redhat.com> 7.11-0.16.20110709.0
 - update to latest 7.11 with additional gm45 regression fix
 
