@@ -12,13 +12,13 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20110412
+%define gitdate 20110730
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.7.%{gitdate}.0%{?dist}
+Release: 0.18.%{gitdate}.0%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -31,7 +31,6 @@ Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
 Source4: llvmcore.mk
 
-Patch1: mesa-nouveau-fix-build.patch
 Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
 Patch4: legacy-drivers.patch
@@ -215,7 +214,6 @@ Requires: Xorg %(xserver-sdk-abi-requires ansic) %(xserver-sdk-abi-requires vide
 %prep
 #setup -q -n Mesa-%{version}%{?snapshot} -b0 -b2
 %setup -q -n mesa-%{gitdate} -b2
-%patch1 -p1 -b .nv-fix
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
 %patch4 -p1 -b .classic
@@ -235,11 +233,11 @@ export CFLAGS="$RPM_OPT_FLAGS"
 export CXXFLAGS="$RPM_OPT_FLAGS"
 %ifarch %{ix86}
 # i do not have words for how much the assembly dispatch code infuriates me
-%define common_flags --enable-selinux --enable-pic --enable-udev --disable-asm
+%define common_flags --enable-selinux --enable-pic --disable-asm
 %else
-%define common_flags --enable-selinux --enable-pic --enable-udev
+%define common_flags --enable-selinux --enable-pic
 %endif
-%define osmesa_flags --with-driver=osmesa %{common_flags} --disable-gallium --with-dri-drivers="" --disable-glu --disable-egl
+%define osmesa_flags --with-driver=osmesa %{common_flags} --disable-gallium --with-dri-drivers="" --disable-glu --disable-egl --with-gallium-drivers=""
 
 # first, build osmesa.
 
@@ -265,23 +263,16 @@ mv libllvmcore*.so %{_lib}
     --disable-gl-osmesa \
     --with-driver=dri \
     --with-dri-driverdir=%{_libdir}/dri \
-    --with-state-trackers=dri,glx \
     --enable-egl \
     --enable-gles1 \
     --enable-gles2 \
-    --disable-gallium-intel \
-    --disable-gallium-svga \
     --disable-gallium-egl \
 %if %{with_hardware}
     --enable-gallium-llvm \
-    --enable-gallium-radeon \
-    --enable-gallium-r600 \
-    --enable-gallium-nouveau \
+    --with-gallium-drivers=r300,r600,nouveau,swrast \
 %else
     --disable-gallium-llvm \
-    --disable-gallium-radeon \
-    --disable-gallium-r600 \
-    --disable-gallium-nouveau \
+    --with-gallium-drivers=swrast \
 %endif
     %{?dri_drivers}
 
@@ -488,6 +479,39 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libOSMesa.so
 
 %changelog
+* Sat Jul 30 2011 Dave Airlie <airlied@redhat.com> 7.11-0.18.20110730.0
+- latest 7.11-rc4
+
+* Fri Jul 29 2011 Dave Airlie <airlied@redhat.com> 7.11-0.17.20110729.0
+- latest mesa snapshot of 7.11 branch
+
+* Sat Jul 09 2011 Dave Airlie <airlied@redhat.com> 7.11-0.16.20110709.0
+- update to latest 7.11 with additional gm45 regression fix
+
+* Sun Jun 26 2011 Dave Airlie <airlied@redhat.com> 7.11-0.15.20110626.0
+- update to latest mesa 7.11 with intel gen5 fix
+
+* Tue Jun 21 2011 Dave Airlie <airlied@redhat.com> 7.11-0.14.20110621.0
+- update to latest mesa 7.11 with nvfx g-s fix.
+
+* Mon Jun 06 2011 Ben Skeggs <bskeggs@redhat.com> 7.11-0.13.20110525.0
+- nouveau: fix shell segfault on pre-gallium drivers (#708004)
+
+* Mon May 30 2011 Dan Horák <dan[at]danny.cz> 7.11-0.12.20110525.0
+- fix the gallium p_config header for non-x86 arches (Dave Airlie)
+
+* Wed May 25 2011 Dave Airlie <airlied@redhat.com> 7.11-0.11.20110525.0
+- rebase to latest upstream for llvm fix + r600g cayman/eg support
+
+* Tue May 10 2011 Dan Horák <dan[at]danny.cz> 7.11-0.10.20110509.0
+- r300 needs to be explicitely disabled when with_hardware == 0
+
+* Mon May 09 2011 Dave Airlie <airlied@redhat.com> 7.11-0.9.20110509.0
+- fix rv6xx regression in last set of changes (#702872)
+
+* Fri May 06 2011 Dave Airlie <airlied@redhat.com> 7.11-0.8.20110506.0
+- rebase for better nvc0 driver + radeon rv6xx flushing fixes.
+
 * Mon Apr 18 2011 Adam Jackson <ajax@redhat.com> 7.11-0.7.20110412.0
 - Fix intel driver exclusion to be better arched (#697555)
 
