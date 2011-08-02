@@ -4,32 +4,39 @@
 %define dri_drivers --with-dri-drivers=swrast
 %else
 %define with_hardware 1
+%define base_drivers mga,nouveau,r128,radeon,r200,savage,tdfx
+%ifarch %{ix86}
+%define ix86_drivers ,i810,i915,i965,sis,unichrome
 %endif
-
-# broken atm, sorry.  fix before any f15 merge.
-%define with_llvmcore 1
+%ifarch x86_64
+%define amd64_drivers ,i915,i965,unichrome
+%endif
+%ifarch ia64
+%define ia64_drivers ,i915
+%endif
+%define dri_drivers --with-dri-drivers=%{base_drivers}%{?ix86_drivers}%{?amd64_drivers}%{?ia64_drivers}
+%endif
 
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20110730
+#define gitdate 20110730
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11
-Release: 0.18.%{gitdate}.0%{?dist}
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 
 #Source0: http://downloads.sf.net/mesa3d/MesaLib-%{version}.tar.bz2
 #Source0: http://www.mesa3d.org/beta/MesaLib-%{version}%{?snapshot}.tar.bz2
-#Source0: ftp://ftp.freedesktop.org/pub/%{name}/%{version}/MesaLib-%{version}.tar.bz2
-Source0: %{name}-%{gitdate}.tar.xz
+Source0: ftp://ftp.freedesktop.org/pub/%{name}/%{version}/MesaLib-%{version}.tar.bz2
+#Source0: %{name}-%{gitdate}.tar.xz
 Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
-Source4: llvmcore.mk
 
 Patch2: mesa-7.1-nukeglthread-debug.patch
 Patch3: mesa-no-mach64.patch
@@ -74,7 +81,7 @@ Group: System Environment/Libraries
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Provides: libGL
-Requires: libdrm >= 2.4.23-1
+Requires: libdrm%{?isa} >= 2.4.23-1
 %if %{with_hardware}
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
@@ -88,7 +95,7 @@ Group: System Environment/Libraries
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
-Requires: libdrm >= 2.4.23-1
+Requires: libdrm%{?isa} >= 2.4.23-1
 
 %description libEGL
 Mesa libEGL runtime libraries
@@ -99,7 +106,7 @@ Group: System Environment/Libraries
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
-Requires: libdrm >= 2.4.23-1
+Requires: libdrm%{?isa} >= 2.4.23-1
 
 %description libGLES
 Mesa GLES runtime libraries
@@ -110,22 +117,12 @@ Group: User Interface/X Hardware Support
 %description dri-filesystem
 Mesa DRI driver filesystem
 
-%if %{with_llvmcore}
-%package dri-llvmcore
-Summary: Mesa common LLVM support
-Group: User Interface/X Hardware Support
-Requires: mesa-dri-filesystem%{?_isa}
-%description dri-llvmcore
-Common DSO for LLVM support for gallium-based DRI drivers.  This package
-exists solely as a disk space hack for Mesa.  Do not link against this
-library if you are not Mesa.  You have been warned.
-%endif
-
 %package dri-drivers
 Summary: Mesa-based DRI drivers
 Group: User Interface/X Hardware Support
 Requires: mesa-dri-filesystem%{?_isa}
 Obsoletes: mesa-dri-drivers-experimental < 0:7.10-0.24
+Obsoletes: mesa-dri-llvmcore <= 7.11-0.8
 %description dri-drivers
 Mesa-based DRI drivers.
 
@@ -203,27 +200,16 @@ Requires: mesa-libOSMesa = %{version}-%{release}
 Mesa offscreen rendering development package
 
 
-%package -n xorg-x11-drv-vmwgfx
-Summary: VMware GFX DDX driver
-Group: User Interface/X Hardware Support
-Requires: Xorg %(xserver-sdk-abi-requires ansic) %(xserver-sdk-abi-requires videodrv)
-
-%description -n xorg-x11-drv-vmwgfx
-2D driver for VMware SVGA vGPU
-
 %prep
-#setup -q -n Mesa-%{version}%{?snapshot} -b0 -b2
-%setup -q -n mesa-%{gitdate} -b2
+%setup -q -n Mesa-%{version}%{?snapshot} -b0 -b2
+#setup -q -n mesa-%{gitdate} -b2
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
 %patch4 -p1 -b .classic
 #patch7 -p1 -b .dricore
+%patch8 -p1 -b .llvmcore
 %patch30 -p1 -b .vblank-warning
 #patch31 -p1 -b .swrastg
-
-%if %{with_llvmcore}
-%patch8 -p1 -b .llvmcore
-%endif
 
 %build
 
@@ -237,39 +223,21 @@ export CXXFLAGS="$RPM_OPT_FLAGS"
 %else
 %define common_flags --enable-selinux --enable-pic
 %endif
-%define osmesa_flags --with-driver=osmesa %{common_flags} --disable-gallium --with-dri-drivers="" --disable-glu --disable-egl --with-gallium-drivers=""
 
-# first, build osmesa.
-
-%configure %{osmesa_flags} --with-osmesa-bits=8
-make %{_smp_mflags}
-mv %{_lib} osmesa8
-make clean
-
-# just to be sure...
-[ `find . -name \*.o | wc -l` -eq 0 ] || exit 1
-
-# build llvmcore
-%if %{with_llvmcore}
-TOP=`pwd` make -f %{SOURCE4} llvmcore
-mkdir -p %{_lib}
-mv libllvmcore*.so %{_lib}
-%endif
-
-# now build the rest of mesa
 %configure %{common_flags} \
     --disable-glw \
     --disable-glut \
-    --disable-gl-osmesa \
+    --enable-gl-osmesa \
     --with-driver=dri \
+    --with-osmesa-bits=8 \
     --with-dri-driverdir=%{_libdir}/dri \
     --enable-egl \
     --enable-gles1 \
     --enable-gles2 \
     --disable-gallium-egl \
 %if %{with_hardware}
-    --enable-gallium-llvm \
     --with-gallium-drivers=r300,r600,nouveau,swrast \
+    --enable-gallium-llvm \
 %else
     --disable-gallium-llvm \
     --with-gallium-drivers=swrast \
@@ -292,9 +260,6 @@ make install DESTDIR=$RPM_BUILD_ROOT DRI_DIRS=
 
 # just the DRI drivers that are sane
 install -d $RPM_BUILD_ROOT%{_libdir}/dri
-%if %{with_llvmcore}
-install -m 0755 -t $RPM_BUILD_ROOT%{_libdir}/dri %{_lib}/libllvmcore-2*.so >& /dev/null
-%endif
 # use gallium driver iff built
 [ -f %{_lib}/gallium/r300_dri.so ] && cp %{_lib}/gallium/r300_dri.so %{_lib}/r300_dri.so
 [ -f %{_lib}/gallium/r600_dri.so ] && cp %{_lib}/gallium/r600_dri.so %{_lib}/r600_dri.so
@@ -313,9 +278,6 @@ popd
 pushd $RPM_BUILD_ROOT%{_libdir}
 rm -f xorg/modules/drivers/modesetting_drv.so
 popd
-
-# and osmesa
-mv osmesa*/libOS* $RPM_BUILD_ROOT%{_libdir}
 
 # man pages
 pushd ../%{manpages}
@@ -372,12 +334,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/COPYING
 %dir %{_libdir}/dri
 
-%if %{with_llvmcore}
-%files dri-llvmcore
-%defattr(-,root,root,-)
-%{_libdir}/dri/libllvmcore-2.*.so
-%endif
-
 %files dri-drivers
 %defattr(-,root,root,-)
 %if %{with_hardware}
@@ -401,18 +357,17 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc docs/COPYING
 %if %{with_hardware}
+%ifarch %{ix86} x86_64
+%{_libdir}/dri/unichrome_dri.so
 %ifarch %{ix86}
 %{_libdir}/dri/i810_dri.so
 %{_libdir}/dri/sis_dri.so
 %endif
+%endif
 %{_libdir}/dri/r128_dri.so
-%ifnarch %{sparc}
-# we no much hardware....
 %{_libdir}/dri/mga_dri.so
 %{_libdir}/dri/savage_dri.so
 %{_libdir}/dri/tdfx_dri.so
-%{_libdir}/dri/unichrome_dri.so
-%endif
 %endif
 
 %files libGL-devel
@@ -433,19 +388,23 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libEGL-devel
 %defattr(-,root,root,-)
+%dir %{_includedir}/EGL
 %{_includedir}/EGL/eglext.h
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglplatform.h
+%dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %{_libdir}/pkgconfig/egl.pc
 %{_libdir}/libEGL.so
 
 %files libGLES-devel
 %defattr(-,root,root,-)
+%dir %{_includedir}/GLES
 %{_includedir}/GLES/egl.h
 %{_includedir}/GLES/gl.h
 %{_includedir}/GLES/glext.h
 %{_includedir}/GLES/glplatform.h
+%dir %{_includedir}/GLES2
 %{_includedir}/GLES2/gl2platform.h
 %{_includedir}/GLES2/gl2.h
 %{_includedir}/GLES2/gl2ext.h
@@ -475,10 +434,18 @@ rm -rf $RPM_BUILD_ROOT
 
 %files libOSMesa-devel
 %defattr(-,root,root,-)
+%dir %{_includedir}/GL
 %{_includedir}/GL/osmesa.h
 %{_libdir}/libOSMesa.so
+%{_libdir}/pkgconfig/osmesa.pc
 
 %changelog
+* Tue Aug 02 2011 Adam Jackson <ajax@redhat.com> 7.11-1
+- Mesa 7.11
+- Redo the driver arch exclusion, yet again.  Dear secondary arches: unless
+  it's an on-motherboard driver like i915, all PCI drivers are to be built
+  for all PCI arches.
+
 * Sat Jul 30 2011 Dave Airlie <airlied@redhat.com> 7.11-0.18.20110730.0
 - latest 7.11-rc4
 

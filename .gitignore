@@ -22,6 +22,7 @@ mesa-20100720.tar.bz2
 /mesa-20110330.tar.xz
 /mesa-20110401.tar.xz
 /mesa-20110412.tar.xz
+<<<<<<< HEAD
 /mesa-20110506.tar.xz
 /mesa-20110509.tar.xz
 /mesa-20110525.tar.xz
@@ -30,3 +31,8 @@ mesa-20100720.tar.bz2
 /mesa-20110709.tar.xz
 /mesa-20110729.tar.xz
 /mesa-20110730.tar.xz
+=======
+/mesa-20110620.tar.xz
+/mesa-20110730.tar.xz
+/MesaLib-7.11.tar.bz2
+>>>>>>> f16
