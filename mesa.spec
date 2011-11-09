@@ -23,7 +23,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.9
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -52,6 +52,7 @@ Patch5: mesa-demos-fix-add-needed.patch
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.9-i915-no-gen3-arbfs.patch
 Patch32: mesa-7.11-generic-wmb.patch
+Patch33: mesa-7.9-i965-fp-crash.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -200,6 +201,7 @@ Group: User Interface/X Hardware Support
 %patch30 -p1 -b .vblank-warning
 %patch31 -p1 -b .arbfs
 %patch32 -p1 -b .wmb
+%patch33 -p1 -b .fpcrash
 
 # Hack the demos to use installed data files
 cd ../%{demopkg}
@@ -435,6 +437,10 @@ rm -rf $RPM_BUILD_ROOT
 %{demodir}
 
 %changelog
+* Wed Nov 09 2011 Adam Jackson <ajax@redhat.com> 7.9-7
+- mesa-7.9-i965-fp-crash.patch: Fix crash in i965's fragment program
+  compiler (#726496)
+
 * Thu Sep 15 2011 Adam Jackson <ajax@redhat.com> 7.9-6
 - mesa-7.11-generic-wmb.patch: Add generic write memory barrier macro for
   non-PC arches.

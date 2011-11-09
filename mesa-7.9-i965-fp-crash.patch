@@ -1,0 +1,26 @@
+--- a/src/mesa/drivers/dri/i965/brw_wm_glsl.c.orig	2011-07-28 20:09:34.533951464 +0100
++++ a/src/mesa/drivers/dri/i965/brw_wm_glsl.c	2011-07-28 20:10:57.856027779 +0100
+@@ -237,11 +237,12 @@ 
+  * This is called if we run out of GRF registers.  Examine the live intervals
+  * of temp regs in the program and free those which won't be used again.
+  */
++#define REG_ALLOCATE_MAX_PROGRAM_TEMPS ((1<<INST_INDEX_BITS)-1)
+ static void
+ reclaim_temps(struct brw_wm_compile *c)
+ {
+-   GLint intBegin[MAX_PROGRAM_TEMPS];
+-   GLint intEnd[MAX_PROGRAM_TEMPS];
++   GLint intBegin[REG_ALLOCATE_MAX_PROGRAM_TEMPS];
++   GLint intEnd[REG_ALLOCATE_MAX_PROGRAM_TEMPS];
+    int index;
+ 
+    /*printf("Reclaim temps:\n");*/
+@@ -249,7 +250,7 @@ 
+    _mesa_find_temp_intervals(c->prog_instructions, c->nr_fp_insns,
+                              intBegin, intEnd);
+ 
+-   for (index = 0; index < MAX_PROGRAM_TEMPS; index++) {
++   for (index = 0; index < REG_ALLOCATE_MAX_PROGRAM_TEMPS; index++) {
+       if (intEnd[index] != -1 && intEnd[index] < c->cur_inst) {
+          /* program temp[i] can be freed */
+          int component;
