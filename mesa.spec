@@ -20,21 +20,21 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-%define gitdate 20111103
+#define gitdate 20111103
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 7.11
-Release: 11%{?dist}
+Version: 7.11.2
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 
 #Source0: http://downloads.sf.net/mesa3d/MesaLib-%{version}.tar.bz2
 #Source0: http://www.mesa3d.org/beta/MesaLib-%{version}%{?snapshot}.tar.bz2
-#Source0: ftp://ftp.freedesktop.org/pub/%{name}/%{version}/MesaLib-%{version}.tar.bz2
-Source0: %{name}-%{gitdate}.tar.xz
+Source0: ftp://ftp.freedesktop.org/pub/%{name}/%{version}/MesaLib-%{version}.tar.bz2
+#Source0: %{name}-%{gitdate}.tar.xz
 Source2: %{manpages}.tar.bz2
 Source3: make-git-snapshot.sh
 
@@ -84,6 +84,7 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Provides: libGL
 Requires: libdrm%{?isa} >= 2.4.23-1
+Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
 %if %{with_hardware}
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
@@ -213,8 +214,8 @@ Mesa offscreen rendering development package
 
 
 %prep
-#%setup -q -n Mesa-%{version}%{?snapshot} -b0 -b2
-%setup -q -n mesa-%{gitdate} -b2
+%setup -q -n Mesa-%{version}%{?snapshot} -b0 -b2
+#setup -q -n mesa-%{gitdate} -b2
 %patch2 -p1 -b .intel-glthread
 %patch3 -p1 -b .no-mach64
 %patch4 -p1 -b .classic
@@ -462,6 +463,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/osmesa.pc
 
 %changelog
+* Mon Nov 28 2011 Adam Jackson <ajax@redhat.com> 7.11.2-1
+- Mesa 7.11.2
+- Pull in archful -dri-drivers for libGL to pacify wine (#757464)
+
 * Wed Nov 09 2011 Adam Jackson <ajax@redhat.com> 7.11-11
 - Obsolete more -llvmcore (#752152)
 
