@@ -20,13 +20,13 @@
 %define _default_patch_fuzz 2
 
 %define manpages gl-manpages-1.0.1
-#define gitdate 20110730
+#define gitdate 20111103
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 7.11
-Release: 4%{?dist}
+Version: 7.11.2
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -48,6 +48,7 @@ Patch8: mesa-7.10-llvmcore.patch
 Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.10-swrastg.patch
 Patch32: mesa-7.11-generic-wmb.patch
+Patch34: 0001-nv50-fix-max-texture-levels.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -83,6 +84,7 @@ Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Provides: libGL
 Requires: libdrm%{?isa} >= 2.4.23-1
+Requires: mesa-dri-drivers%{?_isa} = %{version}-%{release}
 %if %{with_hardware}
 Conflicts: xorg-x11-server-Xorg < 1.4.99.901-14
 %endif
@@ -123,7 +125,7 @@ Summary: Mesa-based DRI drivers
 Group: User Interface/X Hardware Support
 Requires: mesa-dri-filesystem%{?_isa}
 Obsoletes: mesa-dri-drivers-experimental < 0:7.10-0.24
-Obsoletes: mesa-dri-llvmcore <= 7.11-0.8
+Obsoletes: mesa-dri-llvmcore <= 7.12
 %description dri-drivers
 Mesa-based DRI drivers.
 
@@ -222,6 +224,7 @@ Mesa offscreen rendering development package
 %patch30 -p1 -b .vblank-warning
 #patch31 -p1 -b .swrastg
 %patch32 -p1 -b .wmb
+%patch34 -p1 -b .nv50-texlevel
 
 %build
 
@@ -460,6 +463,30 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/osmesa.pc
 
 %changelog
+* Mon Nov 28 2011 Adam Jackson <ajax@redhat.com> 7.11.2-1
+- Mesa 7.11.2
+- Pull in archful -dri-drivers for libGL to pacify wine (#757464)
+
+* Wed Nov 09 2011 Adam Jackson <ajax@redhat.com> 7.11-11
+- Obsolete more -llvmcore (#752152)
+
+* Thu Nov 03 2011 Dave Airlie <airlied@redhat.com> 7.11-10
+- snapshot latest mesa 7.11 stable branch (what will be 7.11.1)
+
+* Thu Nov 03 2011 Adam Jackson <ajax@redhat.com> 7.11-9
+- mesa-7.11-fix-sw-24bpp.patch: Fix software rendering in 24bpp.
+
+* Fri Oct 28 2011 Adam Jackson <ajax@redhat.com> 7.11-8
+- mesa-7.11-intel-swap-event.patch: Disable GLX_INTEL_swap_event by default;
+  DRI2 enables it explicitly, but swrast doesn't and oughtn't. (#748747)
+
+* Mon Oct 24 2011 Adam Jackson <ajax@redhat.com> 7.11-6
+- 0001-nv50-fix-max-texture-levels.patch: Fix maximum texture size on
+  nouveau (and thus, gnome-shell init on wide display setups) (#748540)
+
+* Mon Oct 24 2011 Adam Jackson <ajax@redhat.com> 7.11-5
+- mesa-7.11-drisw-glx13.patch: Fix GLX 1.3 ctors with swrast (#747276)
+
 * Fri Sep 09 2011 Adam Jackson <ajax@redhat.com> 7.11-4
 - mesa-7.11-generic-wmb.patch: Add generic write memory barrier macro for
   non-PC arches.
