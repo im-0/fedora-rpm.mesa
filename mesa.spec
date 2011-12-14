@@ -1,5 +1,9 @@
+%if 0%{?rhel}
+%define rhel_no_hw_arches ppc ppc64
+%endif
+
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
-%ifarch s390 s390x
+%ifarch s390 s390x %{?rhel_no_hw_arches}
 %define with_hardware 0
 %define dri_drivers --with-dri-drivers=swrast
 %else
@@ -26,7 +30,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -68,7 +72,9 @@ BuildRequires: libXi-devel
 BuildRequires: libXmu-devel
 BuildRequires: elfutils
 BuildRequires: python
+%if %{with_hardware}
 BuildRequires: llvm-static
+%endif
 BuildRequires: libxml2-python
 BuildRequires: libudev-devel
 BuildRequires: libtalloc-devel
@@ -463,6 +469,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/osmesa.pc
 
 %changelog
+* Wed Dec 14 2011 Adam Jackson <ajax@redhat.com> 7.11.2-2
+- Disable hardware drivers on ppc* for RHEL
+
 * Mon Nov 28 2011 Adam Jackson <ajax@redhat.com> 7.11.2-1
 - Mesa 7.11.2
 - Pull in archful -dri-drivers for libGL to pacify wine (#757464)
