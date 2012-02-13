@@ -30,7 +30,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 7.11.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -53,6 +53,7 @@ Patch30: mesa-7.6-hush-vblank-warning.patch
 Patch31: mesa-7.10-swrastg.patch
 Patch32: mesa-7.11-generic-wmb.patch
 Patch34: 0001-nv50-fix-max-texture-levels.patch
+Patch35: mesa-7.11-git.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -231,6 +232,7 @@ Mesa offscreen rendering development package
 #patch31 -p1 -b .swrastg
 %patch32 -p1 -b .wmb
 %patch34 -p1 -b .nv50-texlevel
+%patch35 -p1 -b .git
 
 %build
 
@@ -469,6 +471,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/osmesa.pc
 
 %changelog
+* Mon Feb 13 2012 Adam Jackson <ajax@redhat.com> 7.11.2-3
+- mesa-7.11-git.patch: Sync with 7.11 branch (#767789)
+
 * Wed Dec 14 2011 Adam Jackson <ajax@redhat.com> 7.11.2-2
 - Disable hardware drivers on ppc* for RHEL
 
