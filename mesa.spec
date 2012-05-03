@@ -1,9 +1,6 @@
-%if 0%{?rhel}
-%define rhel_no_hw_arches ppc ppc64
-%endif
-
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
-%ifarch s390 s390x %{?rhel_no_hw_arches}
+# disable hw on PPC, too as only very special configurations have video cards
+%ifarch s390 s390x ppc ppp64
 %define with_hardware 0
 %define dri_drivers --with-dri-drivers=swrast
 %else
@@ -32,7 +29,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 8.0.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -562,6 +559,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu May 03 2012 Karsten Hopp <karsten@redhat.com> 8.0.2-5
+- disable HW on PPC, this also disables LLVM usage and dri drivers
+
 * Thu Apr 26 2012 Adam Jackson <ajax@redhat.com> 8.0.2-4
 - Don't build vmware stuff on PPC (#815444)
 
