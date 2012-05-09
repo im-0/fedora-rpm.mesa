@@ -1,5 +1,5 @@
 %if 0%{?rhel}
-%define rhel_no_hw_arches ppc ppc64
+%define rhel_no_hw_arches ppc ppc64 ppc64p7
 %endif
 
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
@@ -7,6 +7,10 @@
 %define with_hardware 0
 %define dri_drivers --with-dri-drivers=swrast
 %else
+# llvm has some serious issues on PPC*, disable usage
+%ifnarch ppc ppc64 ppc64p7
+%define with_llvm 1
+%endif
 %define with_hardware 1
 %define base_drivers nouveau,radeon,r200
 %ifarch %{ix86}
@@ -32,7 +36,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 8.0.2
-Release: 4%{?dist}
+Release: 6%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -70,7 +74,9 @@ BuildRequires: libXmu-devel
 BuildRequires: elfutils
 BuildRequires: python
 %if %{with_hardware}
+%if 0%{?with_llvm}
 BuildRequires: llvm-devel >= 3.0
+%endif
 %endif
 BuildRequires: libxml2-python
 BuildRequires: libudev-devel
@@ -318,7 +324,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS"
     --enable-gbm \
 %if %{with_hardware}
     --with-gallium-drivers=%{?with_vmware:svga,}r300,r600,nouveau,swrast \
-    --enable-gallium-llvm \
+    %{?with_llvm:--enable-gallium-llvm} \
     %{?with_vmware:--enable-xa} \
 %else
     --disable-gallium-llvm \
@@ -562,6 +568,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed May 09 2012 Karsten Hopp <karsten@redhat.com> 8.0.2-6
+- revert disabling of hardware drivers, disable only llvm on PPC*
+  (#819060)
+
 * Thu Apr 26 2012 Adam Jackson <ajax@redhat.com> 8.0.2-4
 - Don't build vmware stuff on PPC (#815444)
 
