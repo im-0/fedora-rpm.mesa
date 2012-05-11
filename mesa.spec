@@ -36,7 +36,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 8.0.2
-Release: 6%{?dist}
+Release: 7%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -52,8 +52,9 @@ Source3: make-git-snapshot.sh
 Patch8: mesa-7.10-llvmcore.patch
 Patch9: mesa-8.0-llvmpipe-shmget.patch
 Patch10: 0001-intel-fix-null-dereference-processing-HiZ-buffer.patch
-Patch11: mesa-8.0-nouveau-tfp-blacklist.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
+Patch13: mesa-8.0-nouveau-vieux-nvfx-lowmem.patch
+Patch14: mesa-8.0-nouveau-vieux-finish.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -291,8 +292,9 @@ Mesa shared glapi
 %patch8 -p1 -b .llvmcore
 %patch9 -p1 -b .shmget
 %patch10 -p1 -b .intel-hiz-fix
-%patch11 -p1 -b .nouveau
 %patch12 -p1 -b .16bpp
+%patch13 -p1 -b .nouveau-lowmem
+%patch14 -p1 -b .nouveau-finish
 
 %build
 
@@ -568,6 +570,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri May 11 2012 Ben SSkeggs <bskeggs@redhat.com> 8.0.2-7
+- nouveau: fix shell lag on <=nv2x chipsets, and hack around low-vram issues
+
 * Wed May 09 2012 Karsten Hopp <karsten@redhat.com> 8.0.2-6
 - revert disabling of hardware drivers, disable only llvm on PPC*
   (#819060)
