@@ -36,7 +36,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 8.0.2
-Release: 7%{?dist}
+Release: 8%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -570,7 +570,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
-* Fri May 11 2012 Ben SSkeggs <bskeggs@redhat.com> 8.0.2-7
+* Fri May 15 2012 Ben Skeggs <bskeggs@redhat.com> 8.0.2-8
+- nouveau: add back a missing hunk from a previous patch
+
+* Fri May 11 2012 Ben Skeggs <bskeggs@redhat.com> 8.0.2-7
 - nouveau: fix shell lag on <=nv2x chipsets, and hack around low-vram issues
 
 * Wed May 09 2012 Karsten Hopp <karsten@redhat.com> 8.0.2-6

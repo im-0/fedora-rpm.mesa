@@ -1,10 +1,11 @@
-From a8c4c4dde253db0500c3b6115edf87d2caf1667f Mon Sep 17 00:00:00 2001
+From 1313008370f2e179dea102ba1520cf72d9012765 Mon Sep 17 00:00:00 2001
 From: Ben Skeggs <bskeggs@redhat.com>
 Date: Fri, 11 May 2012 01:31:36 +1000
 Subject: [PATCH] vieux/nvfx lowmem hacks
 
 ---
  src/gallium/drivers/nvfx/nvfx_fragprog.c       |   23 ++++++++++----------
+ src/gallium/drivers/nvfx/nvfx_screen.c         |    4 ++++
  src/gallium/drivers/nvfx/nvfx_screen.h         |    2 ++
  src/gallium/drivers/nvfx/nvfx_surface.c        |    9 +++++++-
  src/gallium/drivers/nvfx/nvfx_vbo.c            |    5 +++++
@@ -14,7 +15,7 @@ Subject: [PATCH] vieux/nvfx lowmem hacks
  src/mesa/drivers/dri/nouveau/nouveau_driver.c  |    3 +++
  src/mesa/drivers/dri/nouveau/nouveau_vbo_t.c   |    3 +++
  src/mesa/drivers/dri/nouveau/nv04_surface.c    |   27 +++++++++++++++++++++---
- 10 files changed, 68 insertions(+), 17 deletions(-)
+ 11 Dateien geändert, 72 Zeilen hinzugefügt(+), 17 Zeilen entfernt(-)
 
 diff --git a/src/gallium/drivers/nvfx/nvfx_fragprog.c b/src/gallium/drivers/nvfx/nvfx_fragprog.c
 index 0babcbb..f5b7a0e 100644
@@ -57,6 +58,21 @@ index 0babcbb..f5b7a0e 100644
  				}
  			}
  
+diff --git a/src/gallium/drivers/nvfx/nvfx_screen.c b/src/gallium/drivers/nvfx/nvfx_screen.c
+index b4a1b3a..e6dc596 100644
+--- a/src/gallium/drivers/nvfx/nvfx_screen.c
++++ b/src/gallium/drivers/nvfx/nvfx_screen.c
+@@ -533,6 +533,10 @@ nvfx_screen_create(struct nouveau_device *dev)
+ 	screen->advertise_blend_equation_separate = !!screen->is_nv4x;
+ 	screen->use_nv4x = screen->is_nv4x;
+ 
++	screen->hack = TRUE;
++	if (debug_get_bool_option("NVFX_UNHACK", FALSE))
++		screen->hack = FALSE;
++
+ 	if(screen->is_nv4x) {
+ 		if(debug_get_bool_option("NVFX_SIMULATE_NV30", FALSE))
+ 			screen->use_nv4x = 0;
 diff --git a/src/gallium/drivers/nvfx/nvfx_screen.h b/src/gallium/drivers/nvfx/nvfx_screen.h
 index 35c9d91..55ed439 100644
 --- a/src/gallium/drivers/nvfx/nvfx_screen.h
@@ -137,10 +153,10 @@ index a11941f..e19a288 100644
  	case TGSI_OPCODE_STR:
  		nvfx_vp_emit(vpc, arith(sat, VEC, STR, dst, mask, src[0], src[1], none));
 diff --git a/src/mesa/drivers/dri/nouveau/nouveau_context.c b/src/mesa/drivers/dri/nouveau/nouveau_context.c
-index 0cb918e..9051e18 100644
+index 5838b4e..db5d9ea 100644
 --- a/src/mesa/drivers/dri/nouveau/nouveau_context.c
 +++ b/src/mesa/drivers/dri/nouveau/nouveau_context.c
-@@ -106,6 +106,11 @@ nouveau_context_init(struct gl_context *ctx, struct nouveau_screen *screen,
+@@ -112,6 +112,11 @@ nouveau_context_init(struct gl_context *ctx, struct nouveau_screen *screen,
  	nctx->screen = screen;
  	nctx->fallback = HWTNL;
  
@@ -153,10 +169,10 @@ index 0cb918e..9051e18 100644
  	_mesa_init_driver_functions(&functions);
  	nouveau_driver_functions_init(&functions);
 diff --git a/src/mesa/drivers/dri/nouveau/nouveau_context.h b/src/mesa/drivers/dri/nouveau/nouveau_context.h
-index cd4a9fb..7777246 100644
+index d44c02a..9d06da9 100644
 --- a/src/mesa/drivers/dri/nouveau/nouveau_context.h
 +++ b/src/mesa/drivers/dri/nouveau/nouveau_context.h
-@@ -74,6 +74,8 @@ struct nouveau_context {
+@@ -76,6 +76,8 @@ struct nouveau_context {
  		GLboolean clear_blocked;
  		int clear_seq;
  	} hierz;
@@ -165,7 +181,7 @@ index cd4a9fb..7777246 100644
  };
  
  #define to_nouveau_context(ctx)	((struct nouveau_context *)(ctx))
-@@ -88,6 +90,8 @@ struct nouveau_context {
+@@ -90,6 +92,8 @@ struct nouveau_context {
  	(to_nouveau_context(ctx)->hw.eng3d)
  #define context_drv(ctx) \
  	(to_nouveau_context(ctx)->screen->driver)
@@ -175,10 +191,10 @@ index cd4a9fb..7777246 100644
  	BITSET_SET(to_nouveau_context(ctx)->dirty, NOUVEAU_STATE_##s)
  #define context_dirty_i(ctx, s, i) \
 diff --git a/src/mesa/drivers/dri/nouveau/nouveau_driver.c b/src/mesa/drivers/dri/nouveau/nouveau_driver.c
-index ba818f0..8532032 100644
+index dab6807..6031314 100644
 --- a/src/mesa/drivers/dri/nouveau/nouveau_driver.c
 +++ b/src/mesa/drivers/dri/nouveau/nouveau_driver.c
-@@ -128,6 +128,9 @@ nouveau_clear(struct gl_context *ctx, GLbitfield buffers)
+@@ -138,6 +138,9 @@ nouveau_clear(struct gl_context *ctx, GLbitfield buffers)
  
  	if (buffers)
  		_mesa_meta_Clear(ctx, buffers);
@@ -276,5 +292,5 @@ index 4a3000c..2383711 100644
  }
  
 -- 
-1.7.10
+1.7.10.1
 
