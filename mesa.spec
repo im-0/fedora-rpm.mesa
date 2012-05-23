@@ -35,8 +35,8 @@
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 8.0.2
-Release: 8%{?dist}
+Version: 8.0.3
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -51,7 +51,6 @@ Source3: make-git-snapshot.sh
 #Patch7: mesa-7.1-link-shared.patch
 Patch8: mesa-7.10-llvmcore.patch
 Patch9: mesa-8.0-llvmpipe-shmget.patch
-Patch10: 0001-intel-fix-null-dereference-processing-HiZ-buffer.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch13: mesa-8.0-nouveau-vieux-nvfx-lowmem.patch
 Patch14: mesa-8.0-nouveau-vieux-finish.patch
@@ -291,7 +290,6 @@ Mesa shared glapi
 #patch7 -p1 -b .dricore
 %patch8 -p1 -b .llvmcore
 %patch9 -p1 -b .shmget
-%patch10 -p1 -b .intel-hiz-fix
 %patch12 -p1 -b .16bpp
 %patch13 -p1 -b .nouveau-lowmem
 %patch14 -p1 -b .nouveau-finish
@@ -570,6 +568,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed May 23 2012 Adam Jackson <ajax@redhat.com> 8.0.3-1
+- Mesa 8.0.3
+- 0001-intel-fix-null-dereference-processing-HiZ-buffer.patch: Drop, merged.
+
 * Fri May 15 2012 Ben Skeggs <bskeggs@redhat.com> 8.0.2-8
 - nouveau: add back a missing hunk from a previous patch
 
