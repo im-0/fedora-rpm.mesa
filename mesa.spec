@@ -7,8 +7,8 @@
 %define with_hardware 0
 %define dri_drivers --with-dri-drivers=swrast
 %else
-# llvm has some serious issues on PPC*, disable usage
-%ifnarch ppc ppc64 ppc64p7
+# llvm is a joke on non-x86
+%ifarch %{ix86} x86_64
 %define with_llvm 1
 %endif
 %define with_hardware 1
@@ -36,7 +36,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 8.0.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -568,6 +568,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Jun 07 2012 Adam Jackson <ajax@redhat.com> 8.0.3-2
+- Disable llvm on non-x86 (#829202)
+
 * Wed May 23 2012 Adam Jackson <ajax@redhat.com> 8.0.3-1
 - Mesa 8.0.3
 - 0001-intel-fix-null-dereference-processing-HiZ-buffer.patch: Drop, merged.
