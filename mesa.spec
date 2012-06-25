@@ -36,7 +36,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 8.0.3
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -54,6 +54,7 @@ Patch9: mesa-8.0-llvmpipe-shmget.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch13: mesa-8.0-nouveau-vieux-nvfx-lowmem.patch
 Patch14: mesa-8.0-nouveau-vieux-finish.patch
+Patch15: mesa-8.0.3-git.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -293,6 +294,7 @@ Mesa shared glapi
 %patch12 -p1 -b .16bpp
 %patch13 -p1 -b .nouveau-lowmem
 %patch14 -p1 -b .nouveau-finish
+%patch15 -p1 -b .git
 
 %build
 
@@ -568,6 +570,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Jun 25 2012 Adam Jackson <ajax@redhat.com> 8.0.3-3
+- mesa-8.0.3-git.patch: Sync with 8.0 branch.
+
 * Thu Jun 07 2012 Adam Jackson <ajax@redhat.com> 8.0.3-2
 - Disable llvm on non-x86 (#829202)
 
