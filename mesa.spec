@@ -35,8 +35,8 @@
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 8.0.3
-Release: 3%{?dist}
+Version: 8.0.4
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -54,7 +54,7 @@ Patch9: mesa-8.0-llvmpipe-shmget.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch13: mesa-8.0-nouveau-vieux-nvfx-lowmem.patch
 Patch14: mesa-8.0-nouveau-vieux-finish.patch
-Patch15: mesa-8.0.3-git.patch
+Patch15: mesa-8.0.4-git.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -570,6 +570,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed Sep 19 2012 Dave Airlie <airlied@redhat.com> 8.0.4-1
+- rebase to 8.0.4 release + 8.0 branch fixes
+
 * Mon Jun 25 2012 Adam Jackson <ajax@redhat.com> 8.0.3-3
 - mesa-8.0.3-git.patch: Sync with 8.0 branch.
 
