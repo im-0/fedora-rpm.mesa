@@ -49,7 +49,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 9.0.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -68,6 +68,7 @@ Patch9: mesa-8.0-llvmpipe-shmget.patch
 Patch11: mesa-8.0-nouveau-tfp-blacklist.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch13: mesa-9.0.1-less-cxx-please.patch
+Patch14: mesa-9-r600g-limit-memory.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -291,6 +292,8 @@ Mesa shared glapi
 #patch12 -p1 -b .16bpp
 
 %patch13 -p1 -b .less-cpp
+
+%patch14 -p1 -b .r600g-limit
 
 # default to dri (not xlib) for libGL on all arches
 # XXX please fix upstream
@@ -574,6 +577,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Jan 31 2013 Jerome Glisse <jglisse@redhat.com> 9.0.1-4
+- force r600g to stay in gpu memory limit
+
 * Thu Dec 20 2012 Adam Jackson <ajax@redhat.com> 9.0.1-3
 - mesa-9.0.1-22-gd0a9ab2.patch: Sync with git
 - Build with -fno-rtti -fno-exceptions, modest size and speed win
