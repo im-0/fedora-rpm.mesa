@@ -1,5 +1,4 @@
 %if 0%{?rhel}
-%define rhel_no_hw_arches ppc ppc64 ppc64p7
 %define with_private_llvm 1
 %else
 %define with_private_llvm 0
@@ -15,7 +14,7 @@
 %endif
 
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
-%ifarch s390 s390x  %{?rhel_no_hw_arches}
+%ifarch s390 s390x
 %define with_hardware 0
 %define dri_drivers --with-dri-drivers=swrast
 %else
@@ -49,7 +48,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 9.0.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -352,7 +351,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS -fno-rtti -fno-exceptions"
 %endif
 %else
     --disable-gallium-llvm \
-    --with-gallium-drivers=swrast \
+    --with-gallium-drivers= \
     --enable-dri \
 %endif
     %{?dri_drivers}
@@ -577,6 +576,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Tue Feb 26 2013 Adam Jackson <ajax@redhat.com> 9.0.1-5
+- Fix swrast on s390* to be classic not softpipe
+
 * Thu Jan 31 2013 Jerome Glisse <jglisse@redhat.com> 9.0.1-4
 - force r600g to stay in gpu memory limit
 
