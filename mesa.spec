@@ -467,6 +467,8 @@ rm -rf $RPM_BUILD_ROOT
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
+%else
+%exclude %{_sysconfdir}/drirc
 %endif
 %{_libdir}/libdricore*.so*
 %{_libdir}/dri/swrast_dri.so
@@ -576,6 +578,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed Feb 27 2013 Dan Horák <dan[at]danny.cz>
+- /etc/drirc is always created, so exclude it on platforms without hw drivers
+
 * Tue Feb 26 2013 Adam Jackson <ajax@redhat.com> 9.0.1-5
 - Fix swrast on s390* to be classic not softpipe
 
