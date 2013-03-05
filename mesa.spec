@@ -47,8 +47,8 @@
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 9.0.1
-Release: 5%{?dist}
+Version: 9.0.3
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -60,14 +60,13 @@ Source0: ftp://ftp.freedesktop.org/pub/%{name}/%{version}/MesaLib-%{version}.tar
 Source3: make-git-snapshot.sh
 
 # $ git diff-tree -p mesa-9.0.1..origin/9.0 > `git describe origin/9.0`.patch
-Patch0: mesa-9.0.1-22-gd0a9ab2.patch
+#Patch0: mesa-9.0.1-22-gd0a9ab2.patch
 
 #Patch7: mesa-7.1-link-shared.patch
 Patch9: mesa-8.0-llvmpipe-shmget.patch
 Patch11: mesa-8.0-nouveau-tfp-blacklist.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch13: mesa-9.0.1-less-cxx-please.patch
-Patch14: mesa-9-r600g-limit-memory.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -276,7 +275,7 @@ Mesa shared glapi
 %prep
 %setup -q -n Mesa-%{version}%{?snapshot}
 #setup -q -n mesa-%{gitdate}
-%patch0 -p1 -b .git
+#patch0 -p1 -b .git
 %patch11 -p1 -b .nouveau
 
 # this fastpath is:
@@ -291,8 +290,6 @@ Mesa shared glapi
 #patch12 -p1 -b .16bpp
 
 %patch13 -p1 -b .less-cpp
-
-%patch14 -p1 -b .r600g-limit
 
 # default to dri (not xlib) for libGL on all arches
 # XXX please fix upstream
@@ -315,13 +312,15 @@ sed -i 's/\<libdrm_nouveau\>/&2/' configure.ac
 
 autoreconf --install  
 
-export CFLAGS="$RPM_OPT_FLAGS"
+# the NDEBUG thing is a hack for llvm 3.1 at least. will be removed once
+# i fix llvm to be less stupid [ajax]
+export CFLAGS="$RPM_OPT_FLAGS -DNDEBUG"
 # C++ note: we never say "catch" in the source.  we do say "typeid" once,
 # in an assert, which is patched out above.  LLVM doesn't use RTTI or throw.
 #
 # We do say 'catch' in the clover and d3d1x state trackers, but we're not
 # building those yet.
-export CXXFLAGS="$RPM_OPT_FLAGS -fno-rtti -fno-exceptions"
+export CXXFLAGS="$CFLAGS -fno-rtti -fno-exceptions"
 %ifarch %{ix86}
 # i do not have words for how much the assembly dispatch code infuriates me
 %define common_flags --enable-selinux --enable-pic --disable-asm
@@ -578,6 +577,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Tue Mar 05 2013 Adam Jackson <ajax@redhat.com> 9.0.3-1
+- Mesa 9.0.3
+
 * Wed Feb 27 2013 Dan Horák <dan[at]danny.cz>
 - /etc/drirc is always created, so exclude it on platforms without hw drivers
 

@@ -1,13 +1,12 @@
-diff -up Mesa-9.0.1/src/gallium/drivers/nv50/codegen/nv50_ir.cpp.jx Mesa-9.0.1/src/gallium/drivers/nv50/codegen/nv50_ir.cpp
---- Mesa-9.0.1/src/gallium/drivers/nv50/codegen/nv50_ir.cpp.jx	2012-08-31 19:33:41.000000000 -0400
-+++ Mesa-9.0.1/src/gallium/drivers/nv50/codegen/nv50_ir.cpp	2012-12-20 12:58:02.115699825 -0500
-@@ -715,7 +715,9 @@ Instruction::clone(ClonePolicy<Function>
+diff -up Mesa-9.0.3/src/gallium/drivers/nv50/codegen/nv50_ir.cpp.jx Mesa-9.0.3/src/gallium/drivers/nv50/codegen/nv50_ir.cpp
+--- Mesa-9.0.3/src/gallium/drivers/nv50/codegen/nv50_ir.cpp.jx	2013-02-17 14:28:36.000000000 -0500
++++ Mesa-9.0.3/src/gallium/drivers/nv50/codegen/nv50_ir.cpp	2013-03-05 09:27:35.140943844 -0500
+@@ -715,7 +715,7 @@ Instruction::clone(ClonePolicy<Function>
  {
     if (!i)
        i = new_Instruction(pol.context(), op, dType);
-+#ifdef __GXX_RTTI
+-#ifndef NDEBUG // non-conformant assert, so this is required
++#if 0
     assert(typeid(*i) == typeid(*this));
-+#endif
- 
-    pol.set<Instruction>(this, i);
+ #endif
  
