@@ -48,7 +48,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 9.1
-Release: 1%{?dist}
+Release: 3%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -63,14 +63,17 @@ Source3: make-git-snapshot.sh
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source4: Mesa-MLAA-License-Clarification-Email.txt
 
-# -fno-rtti makes nv50 assert angry
-Patch0: nv50-fix-build.patch
-Patch1: intel-revert-gl3.patch
+# git diff-tree -p mesa-9.1..origin/9.1 > `git describe origin/9.1`.patch
+Patch0: mesa-9.1-53-gd0ccb5b.patch
+
+Patch1: nv50-fix-build.patch
+Patch2: intel-revert-gl3.patch
 #Patch7: mesa-7.1-link-shared.patch
 Patch9: mesa-8.0-llvmpipe-shmget.patch
 #Patch11: mesa-8.0-nouveau-tfp-blacklist.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
-#Patch13: mesa-9.0.1-less-cxx-please.patch
+Patch14: i965-hack-hiz-snb-fix.patch
+
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -280,8 +283,9 @@ Mesa shared glapi
 %prep
 %setup -q -n Mesa-%{version}%{?snapshot}
 #setup -q -n mesa-%{gitdate}
-%patch0 -p1 -b .nv50rtti
-%patch1 -p1 -b .nogl3
+%patch0 -p1 -b .git
+%patch1 -p1 -b .nv50rtti
+%patch2 -p1 -b .nogl3
 #%patch11 -p1 -b .nouveau
 
 # this fastpath is:
@@ -295,8 +299,8 @@ Mesa shared glapi
 #patch9 -p1 -b .shmget
 #patch12 -p1 -b .16bpp
 
-#%patch13 -p1 -b .less-cpp
-
+# hack from chromium - awaiting real upstream fix
+%patch14 -p1 -b .snbfix
 # default to dri (not xlib) for libGL on all arches
 # XXX please fix upstream
 sed -i 's/^default_driver.*$/default_driver="dri"/' configure.ac
@@ -590,6 +594,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Tue Mar 19 2013 Adam Jackson <ajax@redhat.com> 9.1-3
+- mesa-9.1-53-gd0ccb5b.patch: Sync with today's git
+
+* Tue Mar 19 2013 Dave Airlie <airlied@redhat.com> 9.1-2
+- add SNB hang workaround from chromium
+
 * Fri Mar 08 2013 Adam Jackson <ajax@redhat.com> 9.1-1
 - Mesa 9.1
 
