@@ -48,7 +48,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 9.1
-Release: 3%{?dist}
+Release: 5%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -73,7 +73,7 @@ Patch9: mesa-8.0-llvmpipe-shmget.patch
 #Patch11: mesa-8.0-nouveau-tfp-blacklist.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch14: i965-hack-hiz-snb-fix.patch
-
+Patch15: 0001-llvmpipe-Work-without-sse2-if-llvm-is-new-enough.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -301,6 +301,7 @@ Mesa shared glapi
 
 # hack from chromium - awaiting real upstream fix
 %patch14 -p1 -b .snbfix
+%patch15 -p1 -b .sse2
 # default to dri (not xlib) for libGL on all arches
 # XXX please fix upstream
 sed -i 's/^default_driver.*$/default_driver="dri"/' configure.ac
@@ -308,7 +309,6 @@ sed -i 's/^default_driver.*$/default_driver="dri"/' configure.ac
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
 sed -i 's/`$LLVM_CONFIG --version`/&-mesa/' configure.ac
-sed -i 's/llvm-tblgen/mesa-private-&/' src/gallium/drivers/radeon/Makefile
 %endif
 
 # need to use libdrm_nouveau2 on F17
@@ -594,6 +594,12 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Apr 04 2013 Adam Jackson <ajax@redhat.com> 9.1-5
+- Enable llvmpipe even on non-SSE2 machines (#909473)
+
+* Tue Mar 26 2013 Adam Jackson <ajax@redhat.com> 9.1-4
+- Fix build with private LLVM
+
 * Tue Mar 19 2013 Adam Jackson <ajax@redhat.com> 9.1-3
 - mesa-9.1-53-gd0ccb5b.patch: Sync with today's git
 
