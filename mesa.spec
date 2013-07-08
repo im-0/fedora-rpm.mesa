@@ -48,13 +48,13 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20130528
+%define gitdate 20130610
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 9.2
-Release: 0.7.%{gitdate}%{?dist}
+Release: 0.12.%{gitdate}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -77,6 +77,7 @@ Patch15: mesa-9.2-hardware-float.patch
 Patch16: mesa-9.2-no-useless-vdpau.patch
 Patch18: mesa-9.2-llvmpipe-on-big-endian.patch
 Patch19: mesa-9.2-no-gallium-osmesa.patch
+Patch20: 0001-Revert-i965-Disable-unused-pipeline-stages-once-at-s.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -169,14 +170,6 @@ Requires: mesa-filesystem%{?_isa}
 Mesa-based VDPAU drivers.
 %endif
 
-%package -n khrplatform-devel
-Summary: Khronos platform development package
-Group: Development/Libraries
-BuildArch: noarch
-
-%description -n khrplatform-devel
-Khronos platform development package
-
 %package libGL-devel
 Summary: Mesa libGL development package
 Group: Development/Libraries
@@ -191,7 +184,8 @@ Mesa libGL development package
 Summary: Mesa libEGL development package
 Group: Development/Libraries
 Requires: mesa-libEGL = %{version}-%{release}
-Requires: khrplatform-devel >= %{version}-%{release}
+Provides: khrplatform-devel = %{version}-%{release}
+Obsoletes: khrplatform-devel < %{version}-%{release}
 
 %description libEGL-devel
 Mesa libEGL development package
@@ -200,7 +194,6 @@ Mesa libEGL development package
 Summary: Mesa libGLES development package
 Group: Development/Libraries
 Requires: mesa-libGLES = %{version}-%{release}
-Requires: khrplatform-devel >= %{version}-%{release}
 
 %description libGLES-devel
 Mesa libGLES development package
@@ -311,6 +304,7 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch16 -p1 -b .vdpau
 %patch18 -p1 -b .be
 %patch19 -p1 -b .osmesa
+%patch20 -p1 -b .revert
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -360,7 +354,7 @@ export CXXFLAGS="$CFLAGS -fno-rtti -fno-exceptions"
     --enable-gbm \
     --disable-opencl \
     --enable-glx-tls \
-    --enable-texture-float=hardware \
+    --enable-texture-float=yes \
     %{?with_llvm:--enable-gallium-llvm} \
     %{?with_llvm:--with-llvm-shared-libs} \
     --enable-dri \
@@ -385,6 +379,10 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %if 0%{?rhel}
 # remove pre-DX9 drivers
 rm -f $RPM_BUILD_ROOT%{_libdir}/dri/{radeon,r200,nouveau_vieux}_dri.*
+%endif
+
+%if !%{with_hardware}
+rm -f $RPM_BUILD_ROOT%{_sysconfdir}/drirc
 %endif
 
 # libvdpau opens the versioned name, don't bother including the unversioned
@@ -511,10 +509,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 
-%files -n khrplatform-devel
-%defattr(-,root,root,-)
-%{_includedir}/KHR
-
 %files libGL-devel
 %defattr(-,root,root,-)
 %{_includedir}/GL/gl.h
@@ -612,6 +606,23 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Jun 17 2013 Adam Jackson <ajax@redhat.com> 9.2-0.12.20130610
+- Re-enable hardware float support (#975204)
+
+* Mon Jun 17 2013 Adam Jackson <ajax@redhat.com> 9.2-0.11.20130610
+- Fix evergreen on big-endian
+
+* Wed Jun 12 2013 Adam Jackson <ajax@redhat.com> 9.2-0.10.20130610
+- Fix s390x build
+- Fold khrplatform-devel in to libEGL-devel
+
+* Tue Jun 11 2013 Adam Jackson <ajax@redhat.com> 9.2-0.9.20130610
+- 0001-Revert-i965-Disable-unused-pipeline-stages-once-at-s.patch: Fix some
+  hangs on ivb+
+
+* Mon Jun 10 2013 Adam Jackson <ajax@redhat.com> 9.2-0.8.20130610
+- Today's git snap
+
 * Tue May 28 2013 Adam Jackson <ajax@redhat.com> 9.2-0.7.20130528
 - Today's git snap
 
