@@ -48,13 +48,13 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20130610
+%define gitdate 20130902
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 9.2
-Release: 0.12.%{gitdate}%{?dist}
+Release: 1.%{gitdate}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -75,9 +75,7 @@ Patch9: mesa-8.0-llvmpipe-shmget.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch15: mesa-9.2-hardware-float.patch
 Patch16: mesa-9.2-no-useless-vdpau.patch
-Patch18: mesa-9.2-llvmpipe-on-big-endian.patch
-Patch19: mesa-9.2-no-gallium-osmesa.patch
-Patch20: 0001-Revert-i965-Disable-unused-pipeline-stages-once-at-s.patch
+Patch20: mesa-9.2-evergreen-big-endian.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -302,9 +300,7 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 
 %patch15 -p1 -b .hwfloat
 %patch16 -p1 -b .vdpau
-%patch18 -p1 -b .be
-%patch19 -p1 -b .osmesa
-%patch20 -p1 -b .revert
+%patch20 -p1 -b .egbe
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -606,6 +602,15 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Sep 02 2013 Dave Airlie <airlied@redhat.com> 9.2-1.20130902
+- 9.2 upstream release + fixes from git branch
+
+* Tue Jul 23 2013 Adam Jackson <ajax@redhat.com> 9.2-0.14.20130723
+- Today's git snap of 9.2 branch
+
+* Sun Jul 14 2013 Kyle McMartin <kyle@redhat.com> 9.2-0.13.20130610
+- Use LLVM::MCJIT on ARM and AArch64.
+
 * Mon Jun 17 2013 Adam Jackson <ajax@redhat.com> 9.2-0.12.20130610
 - Re-enable hardware float support (#975204)
 
