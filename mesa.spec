@@ -48,12 +48,12 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20131114
+%define gitdate 20131128
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 9.2.3
+Version: 9.2.4
 Release: 1.%{gitdate}%{?dist}
 License: MIT
 Group: System Environment/Libraries
@@ -600,8 +600,14 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Nov 28 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2.4-1.20131128
+- 9.2.4 upstream release
+
 * Thu Nov 14 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2.3-1.20131114
 - 9.2.3 upstream release
+
+* Wed Nov 13 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2.2-1.20131113
+- 9.2.2 upstream release + fixes from git 9.2 branch
 
 * Thu Sep 19 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2-1.20130919
 - Today's git snap of 9.2 branch
