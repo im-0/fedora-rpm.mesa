@@ -49,13 +49,13 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20140419
+%define gitdate 20140509
 #% define snapshot 
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.1.1
-Release: 2.%{gitdate}%{?dist}
+Version: 10.1.3
+Release: 1.%{gitdate}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -645,6 +645,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri May 09 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.1.3-1.20140509
+- 10.1.3 upstream release
+
 * Sat Apr 19 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.1.1-2.20140419
 - fix buildrequires llvm 3.4-5 to 3.4-6, because 3.4-5 is not available for F20
 
