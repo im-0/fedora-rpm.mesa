@@ -53,19 +53,20 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20140510
-#% define snapshot 
+#% define gitdate 20140510
+%define githash 8baed872126b331aa8d789b78986c0100c6d853a
+%define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.2
-Release: 0.4.rc2.%{gitdate}%{?dist}
+Version: 10.3
+Release: 0.devel.1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 
 # Source0: MesaLib-%{version}.tar.xz
-Source0: %{name}-%{gitdate}.tar.xz
+Source0: %{name}-%{git}.tar.xz
 Source1: sanitize-tarball.sh
 Source2: make-release-tarball.sh
 Source3: make-git-snapshot.sh
@@ -332,7 +333,7 @@ Mesa OpenCL development package.
 
 %prep
 #setup -q -n Mesa-%{version}%{?snapshot}
-%setup -q -n mesa-%{gitdate}
+%setup -q -n mesa-%{git}
 grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch1 -p1 -b .nv50rtti
 
@@ -672,6 +673,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon May 12 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3-0.devel.1.8baed872126b331aa8d789b78986c0100c6d853a
+- 8baed872126b331aa8d789b78986c0100c6d853a upstream commit
+
 * Sat May 10 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.2-0.4.rc2.20140510
 - 10.2-rc2 upstream release
 - drop radeonsi hack for LLVM
