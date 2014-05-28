@@ -55,7 +55,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.1.4
-Release: 1.%{gitdate}%{?dist}
+Release: 2.%{gitdate}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -84,6 +84,10 @@ Patch21: 0001-mesa-Don-t-optimize-out-glClear-if-drawbuffer-size-i.patch
 Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
 
 Patch100: radeonsi-llvm-version-hack.patch
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1100967
+# http://lists.freedesktop.org/archives/mesa-dev/2014-May/060191.html
+Patch101: 0001-i915-add-a-missing-NULL-pointer-check.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -341,6 +345,8 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %endif
 
 %patch100 -p1 -b .radeonsi
+
+%patch101 -p1 -b .old_intelInitContext
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -645,6 +651,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed May 28 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.1.4-2.20140521
+- i915: add a missing NULL pointer check (RHBZ #1100967)
+
 * Wed May 21 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.1.4-1.20140521
 - 10.1.4 upstream release
 
