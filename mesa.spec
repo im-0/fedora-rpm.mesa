@@ -13,7 +13,7 @@
 
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
 # llvm (and thus llvmpipe) doesn't actually work on ppc32
-%ifnarch s390 ppc
+%ifnarch s390 ppc  ppc64le
 %define with_llvm 1
 %endif
 
@@ -47,19 +47,20 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20140806
-#% define snapshot 
+%define gitdate 20140824
+#% define githash c2867f5b3626157379ef0d4d5bcaf5180ca0ec1f
+%define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.2.5
-Release: 2.%{gitdate}%{?dist}
+Version: 10.3
+Release: 0.rc1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 
 # Source0: MesaLib-%{version}.tar.xz
-Source0: %{name}-%{gitdate}.tar.xz
+Source0: %{name}-%{git}.tar.xz
 Source1: sanitize-tarball.sh
 Source2: make-release-tarball.sh
 Source3: make-git-snapshot.sh
@@ -323,7 +324,7 @@ Mesa OpenCL development package.
 
 %prep
 #setup -q -n Mesa-%{version}%{?snapshot}
-%setup -q -n mesa-%{gitdate}
+%setup -q -n mesa-%{git}
 grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch1 -p1 -b .nv50rtti
 
@@ -535,14 +536,13 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/gallium-pipe/*.so
 %endif
 %{_libdir}/dri/swrast_dri.so
+%{_libdir}/dri/kms_swrast_dri.so
 
 %if %{with_hardware}
 %if 0%{?with_omx}
 %files omx-drivers
 %defattr(-,root,root,-)
-%{_libdir}/bellagio/libomx_nouveau.so*
-%{_libdir}/bellagio/libomx_r600.so*
-%{_libdir}/bellagio/libomx_radeonsi.so*
+%{_libdir}/bellagio/libomx_mesa.so
 %endif
 %if 0%{?with_vdpau}
 %files vdpau-drivers
@@ -565,6 +565,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glx_mangle.h
 %{_includedir}/GL/glxext.h
+%{_includedir}/GL/glcorearb.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_libdir}/pkgconfig/dri.pc
@@ -579,6 +580,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
+%{_includedir}/EGL/eglextchromium.h
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %{_libdir}/pkgconfig/egl.pc
@@ -667,13 +669,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libMesaOpenCL.so
 %endif
 
+# Generate changelog using:
+# git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Sun Aug 24 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3-0.rc1.20140824
+- 10.3-rc1
+
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 10.2.5-2.20140806
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
 * Wed Aug 06 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.2.5-1.20140806
 - 10.2.5 upstream release (RHBZ #1126223)
-
 * Fri Jul 11 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.2.3-1.20140711
 - 10.2.3 upstream release
 
