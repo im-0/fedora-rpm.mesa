@@ -48,14 +48,14 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20140824
+%define gitdate 20140906
 #% define githash c2867f5b3626157379ef0d4d5bcaf5180ca0ec1f
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.3
-Release: 0.rc1.2.%{git}%{?dist}
+Release: 0.rc3.1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -677,6 +677,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Sat Sep 06 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3-0.rc3.1.20140906
+- 10.3-rc3
+
 * Fri Aug 29 2014 Karsten Hopp <karsten@redhat.com> 10.3-0.rc1.2.20140824
 - fix ppc64/ppc64le filelists
 - fix missing include on bigendian
