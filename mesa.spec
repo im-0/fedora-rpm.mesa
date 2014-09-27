@@ -537,8 +537,10 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 %endif
 %if 0%{?with_llvm}
+%ifarch %{ix86} x86_64
 %dir %{_libdir}/gallium-pipe
 %{_libdir}/gallium-pipe/*.so
+%endif
 %{_libdir}/dri/kms_swrast_dri.so
 %endif
 %{_libdir}/dri/swrast_dri.so
