@@ -677,7 +677,7 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
-* Sat Sep 27 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3-0.rc3.1.20140927
+* Sat Sep 27 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3-1.20140927
 - 10.3
 
 * Sat Sep 06 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3-0.rc3.1.20140906
