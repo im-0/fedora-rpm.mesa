@@ -7,14 +7,14 @@
 %define with_wayland 1
 %endif
 
-%ifarch ppc64le
+%ifarch %{power64} ppc
 %undefine with_vdpau
 %endif
 
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
-# llvm (and thus llvmpipe) doesn't actually work on ppc32 or s390
-
-%ifnarch s390 ppc  ppc64le
+# llvm (and thus llvmpipe) doesn't actually work on ppc32
+# llvm support for ppc64le is supposed to come in llvm-3.5
+%ifnarch s390 ppc ppc64le
 %define with_llvm 1
 %endif
 
@@ -23,25 +23,24 @@
 %define with_radeonsi 1
 %endif
 
-%ifarch %{arm}
-%define with_freedreno 1
-%endif
-
-%ifarch s390 s390x ppc64le
+%ifarch s390 s390x %{power64} ppc
 %define with_hardware 0
-%ifarch s390 ppc64le
 %define base_drivers swrast
 %endif
-%else
+%ifnarch s390 s390x %{power64} ppc
 %define with_hardware 1
-%define base_drivers nouveau,radeon,r200
+%define base_drivers swrast,nouveau,radeon,r200
 %ifarch %{ix86} x86_64
 %define platform_drivers ,i915,i965
 %define with_vmware 1
+%define with_xa     1
 %define with_opencl 1
+%define with_omx    1
 %endif
-%ifarch ppc ppc64le
-%define platform_drivers ,swrast
+%ifarch %{arm} aarch64
+%define with_freedreno 1
+%define with_xa        1
+%define with_omx       1
 %endif
 %endif
 
@@ -49,19 +48,20 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20140607
-#% define snapshot 
+%define gitdate 20141028
+#% define githash c2867f5b3626157379ef0d4d5bcaf5180ca0ec1f
+%define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.1.5
-Release: 1.%{gitdate}%{?dist}
+Version: 10.3.2
+Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 
 # Source0: MesaLib-%{version}.tar.xz
-Source0: %{name}-%{gitdate}.tar.xz
+Source0: %{name}-%{git}.tar.xz
 Source1: sanitize-tarball.sh
 Source2: make-release-tarball.sh
 Source3: make-git-snapshot.sh
@@ -75,15 +75,11 @@ Patch1: mesa-10.0-nv50-fix-build.patch
 Patch9: mesa-8.0-llvmpipe-shmget.patch
 Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch15: mesa-9.2-hardware-float.patch
-Patch20: mesa-9.2-evergreen-big-endian.patch
-
-# https://bugs.freedesktop.org/show_bug.cgi?id=75797#c1
-Patch21: 0001-mesa-Don-t-optimize-out-glClear-if-drawbuffer-size-i.patch
+Patch20: mesa-10.2-evergreen-big-endian.patch
+Patch30: mesa-10.3-bigendian-assert.patch
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=73512
 Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
-
-Patch100: radeonsi-llvm-version-hack.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -109,7 +105,7 @@ BuildRequires: gettext
 %if 0%{?with_private_llvm}
 BuildRequires: mesa-private-llvm-devel
 %else
-BuildRequires: llvm-devel >= 3.4-6
+BuildRequires: llvm-devel >= 3.4-7
 %if 0%{?with_opencl}
 BuildRequires: clang-devel >= 3.0
 %endif
@@ -128,6 +124,9 @@ BuildRequires: mesa-libGL-devel
 BuildRequires: libvdpau-devel
 %endif
 BuildRequires: zlib-devel
+%if 0%{?with_omx}
+BuildRequires: libomxil-bellagio-devel
+%endif
 %if 0%{?with_opencl}
 BuildRequires: libclc-devel llvm-static opencl-filesystem
 %endif
@@ -173,6 +172,16 @@ Obsoletes: mesa-dri-drivers-dri1 < 7.12
 Obsoletes: mesa-dri-llvmcore <= 7.12
 %description dri-drivers
 Mesa-based DRI drivers.
+
+%if 0%{?with_omx}
+%package omx-drivers
+Summary: Mesa-based OMX drivers
+Group: User Interface/X Hardware Support
+Requires: mesa-filesystem%{?_isa}
+Requires: libomxil-bellagio%{?_isa}
+%description omx-drivers
+Mesa-based OMX drivers.
+%endif
 
 %if 0%{?with_vdpau}
 %package vdpau-drivers
@@ -270,14 +279,14 @@ Mesa libwayland-egl development package
 %endif
 
 
-%if 0%{?with_vmware}
+%if 0%{?with_xa}
 %package libxatracker
-Summary: Mesa XA state tracker for vmware
+Summary: Mesa XA state tracker
 Group: System Environment/Libraries
 Provides: libxatracker
 
 %description libxatracker
-Mesa XA state tracker for vmware
+Mesa XA state tracker
 
 %package libxatracker-devel
 Summary: Mesa XA state tracker development package
@@ -317,7 +326,7 @@ Mesa OpenCL development package.
 
 %prep
 #setup -q -n Mesa-%{version}%{?snapshot}
-%setup -q -n mesa-%{gitdate}
+%setup -q -n mesa-%{git}
 grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch1 -p1 -b .nv50rtti
 
@@ -334,13 +343,11 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 
 %patch15 -p1 -b .hwfloat
 %patch20 -p1 -b .egbe
-%patch21 -p1 -b .clear
+%patch30 -p1 -b .beassert
 
 %if 0%{?with_opencl}
 %patch99 -p1 -b .icd
 %endif
-
-%patch100 -p1 -b .radeonsi
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -373,20 +380,23 @@ export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_ope
     --enable-egl \
     --disable-gles1 \
     --enable-gles2 \
-    --disable-gallium-egl \
+%if %{with_hardware}
+    --enable-gallium-egl \
+%endif
     --disable-xvmc \
     %{?with_vdpau:--enable-vdpau} \
     --with-egl-platforms=x11,drm%{?with_wayland:,wayland} \
     --enable-shared-glapi \
     --enable-gbm \
+    %{?with_omx:--enable-omx} \
     %{?with_opencl:--enable-opencl --enable-opencl-icd --with-clang-libdir=%{_prefix}/lib} %{!?with_opencl:--disable-opencl} \
     --enable-glx-tls \
     --enable-texture-float=yes \
     %{?with_llvm:--enable-gallium-llvm} \
-    %{?with_llvm:--with-llvm-shared-libs} \
+    %{?with_llvm:--enable-llvm-shared-libs} \
     --enable-dri \
 %if %{with_hardware}
-    %{?with_vmware:--enable-xa} \
+    %{?with_xa:--enable-xa} \
     --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}r300,nouveau \
 %else
     --with-gallium-drivers=%{?with_llvm:swrast} \
@@ -452,7 +462,7 @@ rm -rf $RPM_BUILD_ROOT
 %post libwayland-egl -p /sbin/ldconfig
 %postun libwayland-egl -p /sbin/ldconfig
 %endif
-%if 0%{?with_vmware}
+%if 0%{?with_xa}
 %post libxatracker -p /sbin/ldconfig
 %postun libxatracker -p /sbin/ldconfig
 %endif
@@ -472,6 +482,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/COPYING
 %{_libdir}/libEGL.so.1
 %{_libdir}/libEGL.so.1.*
+%if %{with_hardware}
+%dir %{_libdir}/egl
+%{_libdir}/egl/egl_gallium.so
+%endif
 
 %files libGLES
 %defattr(-,root,root,-)
@@ -522,9 +536,21 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
 %endif
+%if 0%{?with_llvm}
+%ifarch %{ix86} x86_64
+%dir %{_libdir}/gallium-pipe
+%{_libdir}/gallium-pipe/*.so
+%endif
+%{_libdir}/dri/kms_swrast_dri.so
+%endif
 %{_libdir}/dri/swrast_dri.so
 
 %if %{with_hardware}
+%if 0%{?with_omx}
+%files omx-drivers
+%defattr(-,root,root,-)
+%{_libdir}/bellagio/libomx_mesa.so
+%endif
 %if 0%{?with_vdpau}
 %files vdpau-drivers
 %defattr(-,root,root,-)
@@ -546,6 +572,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx.h
 %{_includedir}/GL/glx_mangle.h
 %{_includedir}/GL/glxext.h
+%{_includedir}/GL/glcorearb.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_libdir}/pkgconfig/dri.pc
@@ -560,6 +587,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/EGL/egl.h
 %{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglplatform.h
+%{_includedir}/EGL/eglextchromium.h
 %dir %{_includedir}/KHR
 %{_includedir}/KHR/khrplatform.h
 %{_libdir}/pkgconfig/egl.pc
@@ -574,6 +602,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GLES3/gl3platform.h
 %{_includedir}/GLES3/gl3.h
 %{_includedir}/GLES3/gl3ext.h
+%{_includedir}/GLES3/gl31.h
 %{_libdir}/pkgconfig/glesv2.pc
 %{_libdir}/libGLESv2.so
 
@@ -594,6 +623,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/COPYING
 %{_libdir}/libgbm.so.1
 %{_libdir}/libgbm.so.1.*
+%if %{with_hardware}
+%dir %{_libdir}/gbm
+%{_libdir}/gbm/gbm_gallium_drm.so
+%endif
 
 %files libgbm-devel
 %defattr(-,root,root,-)
@@ -614,7 +647,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
-%if 0%{?with_vmware}
+%if 0%{?with_xa}
 %files libxatracker
 %defattr(-,root,root,-)
 %doc docs/COPYING
@@ -637,14 +670,18 @@ rm -rf $RPM_BUILD_ROOT
 %if 0%{?with_opencl}
 %files libOpenCL
 %{_libdir}/libMesaOpenCL.so.*
-%{_libdir}/gallium-pipe/
 %{_sysconfdir}/OpenCL/vendors/mesa.icd
 
 %files libOpenCL-devel
 %{_libdir}/libMesaOpenCL.so
 %endif
 
+# Generate changelog using:
+# git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Tue Oct 28 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3.2-1.20141028
+- 10.3.2
+
 * Sat Jun 07 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.1.5-1.20140607
 - 10.1.5 upstream release
 
