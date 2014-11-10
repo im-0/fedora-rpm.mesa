@@ -578,6 +578,7 @@ rm -rf $RPM_BUILD_ROOT
 %files vdpau-drivers
 %defattr(-,root,root,-)
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
+%{_libdir}/vdpau/libvdpau_r300.so.1*
 %if 0%{?with_llvm}
 %{_libdir}/vdpau/libvdpau_r600.so.1*
 %if 0%{?with_radeonsi}
@@ -715,6 +716,7 @@ rm -rf $RPM_BUILD_ROOT
 - Enable VA state-tracker
 - Remove dropped Gallium EGL state tracker
 - Enable Nine state-tracker (Direct3D9 API)
+- Add vdpau_r300 packaging
 
 * Fri Dec 12 2014 Adam Jackson <ajax@redhat.com> 10.3.5-2
 - Rebuild for LLVM 3.5
