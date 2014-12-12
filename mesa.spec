@@ -55,7 +55,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.3.5
-Release: 1.%{git}%{?dist}
+Release: 2.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -679,6 +679,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Fri Dec 12 2014 Adam Jackson <ajax@redhat.com> 10.3.5-2
+- Rebuild for LLVM 3.5
+
 * Sun Dec 07 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.3.5-1.20141207
 - 10.3.5
 
