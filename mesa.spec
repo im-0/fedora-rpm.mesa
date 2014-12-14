@@ -385,9 +385,6 @@ export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_ope
     --enable-egl \
     --disable-gles1 \
     --enable-gles2 \
-%if %{with_hardware}
-    --enable-gallium-egl \
-%endif
     --disable-xvmc \
     %{?with_vdpau:--enable-vdpau} \
     %{?with_vaapi:--enable-va} \
@@ -488,10 +485,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/COPYING
 %{_libdir}/libEGL.so.1
 %{_libdir}/libEGL.so.1.*
-%if %{with_hardware}
-%dir %{_libdir}/egl
-%{_libdir}/egl/egl_gallium.so
-%endif
 
 %files libGLES
 %defattr(-,root,root,-)
@@ -632,10 +625,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc docs/COPYING
 %{_libdir}/libgbm.so.1
 %{_libdir}/libgbm.so.1.*
-%if %{with_hardware}
-%dir %{_libdir}/gbm
-%{_libdir}/gbm/gbm_gallium_drm.so
-%endif
 
 %files libgbm-devel
 %defattr(-,root,root,-)
@@ -691,6 +680,7 @@ rm -rf $RPM_BUILD_ROOT
 * Sun Dec 14 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.4.0-1.20141214
 - 10.4.0
 - Enable VA state-tracker
+- Remove dropped Gallium EGL state tracker
 
 * Fri Dec 12 2014 Adam Jackson <ajax@redhat.com> 10.3.5-2
 - Rebuild for LLVM 3.5
