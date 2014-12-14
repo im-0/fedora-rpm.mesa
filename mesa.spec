@@ -48,14 +48,14 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20141207
+%define gitdate 20141214
 #% define githash c2867f5b3626157379ef0d4d5bcaf5180ca0ec1f
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.3.5
-Release: 2.%{git}%{?dist}
+Version: 10.4.0
+Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -679,6 +679,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Sun Dec 14 2014  10.4.0-1.20141214
+- 10.4.0
+
 * Fri Dec 12 2014 Adam Jackson <ajax@redhat.com> 10.3.5-2
 - Rebuild for LLVM 3.5
 
