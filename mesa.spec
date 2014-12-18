@@ -8,15 +8,9 @@
 %define with_wayland 1
 %endif
 
-%ifarch %{power64} ppc
-%undefine with_vdpau
-%undefine with_vaapi
-%endif
-
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
 # llvm (and thus llvmpipe) doesn't actually work on ppc32
-# llvm support for ppc64le is supposed to come in llvm-3.5
-%ifnarch s390 ppc ppc64le
+%ifnarch s390 ppc
 %define with_llvm 1
 %define with_nine 1
 %endif
@@ -26,11 +20,11 @@
 %define with_radeonsi 1
 %endif
 
-%ifarch s390 s390x %{power64} ppc
+%ifarch s390 s390x ppc
 %define with_hardware 0
 %define base_drivers swrast
 %endif
-%ifnarch s390 s390x %{power64} ppc
+%ifnarch s390 s390x ppc
 %define with_hardware 1
 %define base_drivers swrast,nouveau,radeon,r200
 %ifarch %{ix86} x86_64
@@ -58,7 +52,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.4.0
-Release: 2.%{git}%{?dist}
+Release: 3.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -710,6 +704,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Thu Dec 18 2014 Adam Jackson <ajax@redhat.com> 10.4.0-3
+- Restore hardware drivers on ppc64{,le}
+
 * Wed Dec 17 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.4.0-2.20141214
 - fix requirements for d3d
 
