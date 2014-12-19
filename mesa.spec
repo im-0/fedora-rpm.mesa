@@ -3,8 +3,6 @@
 %define with_wayland 0
 %else
 %define with_private_llvm 0
-%define with_vdpau 1
-%define with_vaapi 1
 %define with_wayland 1
 %endif
 
@@ -12,7 +10,6 @@
 # llvm (and thus llvmpipe) doesn't actually work on ppc32
 %ifnarch s390 ppc
 %define with_llvm 1
-%define with_nine 1
 %endif
 
 %define min_wayland_version 1.0
@@ -26,6 +23,9 @@
 %endif
 %ifnarch s390 s390x ppc
 %define with_hardware 1
+%define with_vdpau 1
+%define with_vaapi 1
+%define with_nine 1
 %define base_drivers swrast,nouveau,radeon,r200
 %ifarch %{ix86} x86_64
 %define platform_drivers ,i915,i965
@@ -52,7 +52,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.4.0
-Release: 3.%{git}%{?dist}
+Release: 4.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -704,6 +704,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Fri Dec 19 2014 Dan Horák <dan[at]danny.cz> 10.4.0-4
+- fix build on s390(x) by moving the with_{nine,vaapi,vdpau} options under the with_hardware case
+
 * Thu Dec 18 2014 Adam Jackson <ajax@redhat.com> 10.4.0-3
 - Restore hardware drivers on ppc64{,le}
 
