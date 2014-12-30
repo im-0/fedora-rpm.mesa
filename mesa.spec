@@ -45,14 +45,14 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20141214
+%define gitdate 20141230
 #% define githash c2867f5b3626157379ef0d4d5bcaf5180ca0ec1f
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.4.0
-Release: 4.%{git}%{?dist}
+Version: 10.4.1
+Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -704,6 +704,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Tue Dec 30 2014 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 10.4.1-1.20141230
+- 10.4.1
+
 * Fri Dec 19 2014 Dan Horák <dan[at]danny.cz> 10.4.0-4
 - fix build on s390(x) by moving the with_{nine,vaapi,vdpau} options under the with_hardware case
 
