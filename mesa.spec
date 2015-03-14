@@ -47,14 +47,14 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20150218
+%define gitdate 20150314
 #% define githash 6171131
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.5.0
-Release: 2.%{git}%{?dist}
+Version: 10.5.1
+Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -76,10 +76,6 @@ Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch15: mesa-9.2-hardware-float.patch
 Patch20: mesa-10.2-evergreen-big-endian.patch
 Patch30: mesa-10.3-bigendian-assert.patch
-
-# Backported from upstream
-# https://bugs.freedesktop.org/show_bug.cgi?id=89292
-Patch31: 0001-meta-TexSubImage-Stash-everything-other-than-PIXEL_T.patch
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=73512
 Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
@@ -366,7 +362,6 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch15 -p1 -b .hwfloat
 %patch20 -p1 -b .egbe
 %patch30 -p1 -b .beassert
-%patch31 -p1 -b .transparent-screenshots
 
 %if 0%{?with_opencl}
 %patch99 -p1 -b .icd
@@ -715,6 +710,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Sat Mar 14 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.5.1-1.20150314
+- 10.5.1
+
 * Sun Mar 08 2015 Kalev Lember <kalevlember@gmail.com> - 10.5.0-2.20150218
 - Backport a patch fixing partially transparent screenshots (fdo#89292)
 
