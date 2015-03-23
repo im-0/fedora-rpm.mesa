@@ -45,13 +45,13 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20150220
+%define gitdate 20150323
 #% define githash c2867f5b3626157379ef0d4d5bcaf5180ca0ec1f
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.4.4
+Version: 10.4.7
 Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
@@ -704,6 +704,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Mon Mar 23 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.4.7-1.20150323
+- 10.4.7
+
 * Fri Feb 20 2015 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 10.4.4-1.20150220
 - 10.4.4
 
