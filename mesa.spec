@@ -37,6 +37,7 @@
 %define with_omx    1
 %endif
 %ifarch %{arm} aarch64
+%define with_vc4       1
 %define with_freedreno 1
 %define with_xa        1
 %define with_omx       1
@@ -47,23 +48,22 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20150608
-#% define githash 6171131
+%define gitdate 20150618
+#% define githash 5a55f68
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.5.7
-Release: 1.%{git}%{?dist}
+Version: 10.6.0
+Release: 1%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 
-# Source0: MesaLib-%{version}.tar.xz
 Source0: %{name}-%{git}.tar.xz
-Source1: sanitize-tarball.sh
-Source2: make-release-tarball.sh
-Source3: make-git-snapshot.sh
+Source1: Makefile
+Source2: vl_decoder.c
+Source3: vl_mpeg12_decoder.c
 
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
 # Source4 contains email correspondence clarifying the license terms.
@@ -77,8 +77,14 @@ Patch15: mesa-9.2-hardware-float.patch
 Patch20: mesa-10.2-evergreen-big-endian.patch
 Patch30: mesa-10.3-bigendian-assert.patch
 
+# https://bugs.freedesktop.org/show_bug.cgi?id=90466
+Patch60: mesa-10.6-nir-linker.patch
+
 # https://bugs.freedesktop.org/show_bug.cgi?id=73512
 Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
+
+# To have sha info in glxinfo
+BuildRequires: git
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -363,6 +369,8 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch20 -p1 -b .egbe
 %patch30 -p1 -b .beassert
 
+%patch60 -p1 -b .nir
+
 %if 0%{?with_opencl}
 %patch99 -p1 -b .icd
 %endif
@@ -414,7 +422,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_ope
 %if %{with_hardware}
     %{?with_xa:--enable-xa} \
     %{?with_nine:--enable-nine} \
-    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_ilo:ilo,}r300,nouveau \
+    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_vc4:vc4,}%{?with_ilo:ilo,}r300,nouveau \
 %else
     --with-gallium-drivers=%{?with_llvm:swrast} \
 %endif
@@ -546,6 +554,9 @@ rm -rf $RPM_BUILD_ROOT
 %if 0%{?with_ilo}
 %{_libdir}/dri/ilo_dri.so
 %endif
+%endif
+%if 0%{?with_vc4}
+%{_libdir}/dri/vc4_dri.so
 %endif
 %if 0%{?with_freedreno}
 %{_libdir}/dri/kgsl_dri.so
@@ -707,9 +718,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/d3d/*.so
 %endif
 
-# Generate changelog using:
-# git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Thu Jun 18 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.6.0-1
+- 10.6.0
+
 * Mon Jun 08 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.5.7-1.20150608
 - 10.5.7
 
