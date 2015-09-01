@@ -48,14 +48,14 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20150824
+%define gitdate 20150902
 #% define githash 21ccdbd
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 11.0.0
-Release: 0.rc1.1.%{git}%{?dist}
+Release: 0.rc2.1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -675,6 +675,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Wed Sep 02 2015 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 11.0.0-0.rc2.1.20150902
+- 11.0.0-rc2
+
 * Mon Aug 24 2015 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 11.0.0-0.rc1.1.20150824
 - 11.0.0-rc1
 
