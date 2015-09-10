@@ -682,7 +682,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 * Thu Sep 10 2015 Rex Dieter <rdieter@fedoraproject.org> 11.0.0-0.rc2.2.20150902
-- - Add brw_meta_fast_clear crash workaround patch (#1259443, fdo#86281)
+- Add brw_meta_fast_clear crash workaround patch (#1259443, fdo#86281)
 
 * Wed Sep 02 2015 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 11.0.0-0.rc2.1.20150902
 - 11.0.0-rc2
