@@ -55,7 +55,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.6.3
-Release: 1.%{git}%{?dist}
+Release: 2.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -79,6 +79,11 @@ Patch30: mesa-10.3-bigendian-assert.patch
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=73512
 Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
+
+# upstream workaround for recent intel crasher regression
+# https://bugzilla.redhat.com/show_bug.cgi?id=1259443
+# http://bugs.freedesktop.org/show_bug.cgi?id=86281
+Patch100: i965_Remove_early_release_of_DRI2_miptree.patch
 
 # To have sha info in glxinfo
 BuildRequires: git
@@ -369,6 +374,8 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %if 0%{?with_opencl}
 %patch99 -p1 -b .icd
 %endif
+%patch100 -p1 -b .i965_Remove_early_release_of_DRI2_miptree
+
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -714,6 +721,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Sep 10 2015 Rex Dieter <rdieter@fedoraproject.org> 10.6.3-2.20150729
+- Add brw_meta_fast_clear crash workaround patch (#1259443, fdo#86281)
+
 * Wed Jul 29 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.6.3-1.20150729
 - 10.6.3
 
