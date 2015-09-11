@@ -52,7 +52,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.4.7
-Release: 1.%{git}%{?dist}
+Release: 2.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -77,6 +77,9 @@ Patch30: mesa-10.3-bigendian-assert.patch
 
 # https://bugs.freedesktop.org/show_bug.cgi?id=73512
 Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
+
+# upstream fix for msaa issues on nv3x/nv4x
+Patch100: 0001-nv30-Disable-msaa-unless-requested-from-the-env-by-N.patch
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -363,6 +366,8 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %if 0%{?with_opencl}
 %patch99 -p1 -b .icd
 %endif
+
+%patch100 -p1
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -704,6 +709,9 @@ rm -rf $RPM_BUILD_ROOT
 # Generate changelog using:
 # git log old_commit_sha..new_commit_sha --format="- %H: %s (%an)"
 %changelog
+* Fri Sep 11 2015 Hans de Goede <hdegoede@redhat.com> - 10.4.7-2.20150323
+- Add a patch from upstream master to disable msaa on nv3x/nv4x (#1008089)
+
 * Mon Mar 23 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.4.7-1.20150323
 - 10.4.7
 
