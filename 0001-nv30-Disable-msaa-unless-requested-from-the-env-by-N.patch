@@ -1,0 +1,82 @@
+From 3e9df0e3af7a8a84147ae48f588e9c435bf65b98 Mon Sep 17 00:00:00 2001
+From: Hans de Goede <hdegoede@redhat.com>
+Date: Wed, 9 Sep 2015 15:52:09 +0200
+Subject: [PATCH mesa] nv30: Disable msaa unless requested from the env by
+ NV30_MAX_MSAA
+
+Some modern apps try to use msaa without keeping in mind the
+restrictions on videomem of older cards. Resulting in dmesg saying:
+
+ [ 1197.850642] nouveau E[soffice.bin[3785]] fail ttm_validate
+ [ 1197.850648] nouveau E[soffice.bin[3785]] validating bo list
+ [ 1197.850654] nouveau E[soffice.bin[3785]] validate: -12
+
+Because we are running out of video memory, after which the program
+using the msaa visual freezes, and eventually the entire system freezes.
+
+To work around this we do not allow msaa visauls by default and allow
+the user to override this via NV30_MAX_MSAA.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+[imirkin: move env var lookup to screen so that it's only done once]
+Signed-off-by: Ilia Mirkin <imirkin@alum.mit.edu>
+Cc: "10.6 11.0" <mesa-stable@lists.freedesktop.org>
+---
+ src/gallium/drivers/nouveau/nv30/nv30_screen.c | 20 +++++++++++++++++++-
+ src/gallium/drivers/nouveau/nv30/nv30_screen.h |  2 ++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
+
+diff --git a/src/gallium/drivers/nouveau/nv30/nv30_screen.c b/src/gallium/drivers/nouveau/nv30/nv30_screen.c
+index 7aad26b..efa3a59 100644
+--- a/src/gallium/drivers/nouveau/nv30/nv30_screen.c
++++ b/src/gallium/drivers/nouveau/nv30/nv30_screen.c
+@@ -310,8 +310,9 @@ nv30_screen_is_format_supported(struct p
+                                 unsigned sample_count,
+                                 unsigned bindings)
+ {
+-   if (sample_count > 4)
++   if (sample_count > nv30_screen(pscreen)->max_sample_count)
+       return FALSE;
++
+    if (!(0x00000017 & (1 << sample_count)))
+       return FALSE;
+ 
+@@ -441,6 +442,23 @@ nv30_screen_create(struct nouveau_device
+       return NULL;
+    }
+ 
++   /*
++    * Some modern apps try to use msaa without keeping in mind the
++    * restrictions on videomem of older cards. Resulting in dmesg saying:
++    * [ 1197.850642] nouveau E[soffice.bin[3785]] fail ttm_validate
++    * [ 1197.850648] nouveau E[soffice.bin[3785]] validating bo list
++    * [ 1197.850654] nouveau E[soffice.bin[3785]] validate: -12
++    *
++    * Because we are running out of video memory, after which the program
++    * using the msaa visual freezes, and eventually the entire system freezes.
++    *
++    * To work around this we do not allow msaa visauls by default and allow
++    * the user to override this via NV30_MAX_MSAA.
++    */
++   screen->max_sample_count = debug_get_num_option("NV30_MAX_MSAA", 0);
++   if (screen->max_sample_count > 4)
++      screen->max_sample_count = 4;
++
+    pscreen = &screen->base.base;
+    pscreen->destroy = nv30_screen_destroy;
+    pscreen->get_param = nv30_screen_get_param;
+diff --git a/src/gallium/drivers/nouveau/nv30/nv30_screen.h b/src/gallium/drivers/nouveau/nv30/nv30_screen.h
+index 7b17b88..df11233 100644
+--- a/src/gallium/drivers/nouveau/nv30/nv30_screen.h
++++ b/src/gallium/drivers/nouveau/nv30/nv30_screen.h
+@@ -38,6 +38,8 @@ struct nv30_screen {
+    /*XXX: nvfx state */
+    struct nouveau_heap *vp_exec_heap;
+    struct nouveau_heap *vp_data_heap;
++
++   unsigned max_sample_count;
+ };
+ 
+ static INLINE struct nv30_screen *
+-- 
+2.4.3

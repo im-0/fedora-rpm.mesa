@@ -55,7 +55,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 10.6.3
-Release: 2.%{git}%{?dist}
+Release: 3.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -84,6 +84,9 @@ Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1259443
 # http://bugs.freedesktop.org/show_bug.cgi?id=86281
 Patch100: i965_Remove_early_release_of_DRI2_miptree.patch
+
+# upstream fix for msaa issues on nv3x/nv4x
+Patch101: 0001-nv30-Disable-msaa-unless-requested-from-the-env-by-N.patch
 
 # To have sha info in glxinfo
 BuildRequires: git
@@ -375,6 +378,7 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch99 -p1 -b .icd
 %endif
 %patch100 -p1 -b .i965_Remove_early_release_of_DRI2_miptree
+%patch101 -p1
 
 
 %if 0%{with_private_llvm}
@@ -721,6 +725,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Sep 11 2015 Hans de Goede <hdegoede@redhat.com> - 10.6.3-3.20150729
+- Add a patch from upstream master to disable msaa on nv3x/nv4x (#1008089)
+
 * Thu Sep 10 2015 Rex Dieter <rdieter@fedoraproject.org> 10.6.3-2.20150729
 - Add brw_meta_fast_clear crash workaround patch (#1259443, fdo#86281)
 
