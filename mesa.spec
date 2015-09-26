@@ -55,7 +55,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 11.0.0
-Release: 3.%{git}%{?dist}
+Release: 2.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -78,8 +78,6 @@ Patch1: i965_Remove_early_release_of_DRI2_miptree.patch
 Patch15: mesa-9.2-hardware-float.patch
 Patch20: mesa-10.2-evergreen-big-endian.patch
 Patch30: mesa-10.3-bigendian-assert.patch
-
-Patch99: Mesa-dev-Revert-mesa-extensions-restrict-GL_OES_EGL_image-to-GLES.patch
 
 # To have sha info in glxinfo
 BuildRequires: git-core
@@ -355,8 +353,6 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch15 -p1 -b .hwfloat
 %patch20 -p1 -b .egbe
 %patch30 -p1 -b .beassert
-
-%patch99 -p1
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -685,9 +681,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
-* Sat Sep 26 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 11.0.0-3.20150913
-- Add fix for "Broken X on hybrid graphics due to missing GL_OES_EGL_image OpenGL extension" (RHBZ #1265997)
-
 * Mon Sep 21 2015 Dave Airlie <airlied@redhat.com> 11.0.0-2.20150913
 - rebuild 11.0.0 against llvm 3.7
 
