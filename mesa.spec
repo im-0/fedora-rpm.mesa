@@ -48,14 +48,14 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20150729
+%define gitdate 20151008
 #% define githash 5a55f68
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.6.3
-Release: 3.%{git}%{?dist}
+Version: 10.6.9
+Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -76,17 +76,6 @@ Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch15: mesa-9.2-hardware-float.patch
 Patch20: mesa-10.2-evergreen-big-endian.patch
 Patch30: mesa-10.3-bigendian-assert.patch
-
-# https://bugs.freedesktop.org/show_bug.cgi?id=73512
-Patch99: 0001-opencl-use-versioned-.so-in-mesa.icd.patch
-
-# upstream workaround for recent intel crasher regression
-# https://bugzilla.redhat.com/show_bug.cgi?id=1259443
-# http://bugs.freedesktop.org/show_bug.cgi?id=86281
-Patch100: i965_Remove_early_release_of_DRI2_miptree.patch
-
-# upstream fix for msaa issues on nv3x/nv4x
-Patch101: 0001-nv30-Disable-msaa-unless-requested-from-the-env-by-N.patch
 
 # To have sha info in glxinfo
 BuildRequires: git
@@ -373,13 +362,6 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch15 -p1 -b .hwfloat
 %patch20 -p1 -b .egbe
 %patch30 -p1 -b .beassert
-
-%if 0%{?with_opencl}
-%patch99 -p1 -b .icd
-%endif
-%patch100 -p1 -b .i965_Remove_early_release_of_DRI2_miptree
-%patch101 -p1
-
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -725,6 +707,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Oct 08 2015 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 10.6.9-1.20151008
+- Update to 10.6.9
+
 * Fri Sep 11 2015 Hans de Goede <hdegoede@redhat.com> - 10.6.3-3.20150729
 - Add a patch from upstream master to disable msaa on nv3x/nv4x (#1008089)
 
