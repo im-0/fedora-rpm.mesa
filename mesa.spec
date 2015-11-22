@@ -1,3 +1,5 @@
+%{!?_licensedir:%global license %%doc}
+
 %if 0%{?rhel}
 %define with_private_llvm 1
 %define with_wayland 0
@@ -8,7 +10,6 @@
 
 # S390 doesn't have video cards, but we need swrast for xserver's GLX
 # llvm (and thus llvmpipe) doesn't actually work on ppc32
-# llvm support for ppc64le is supposed to come in llvm-3.5
 %ifnarch s390 ppc
 %define with_llvm 1
 %endif
@@ -21,13 +22,13 @@
 %ifarch s390 s390x ppc
 %define with_hardware 0
 %define base_drivers swrast
-%endif
-%ifnarch s390 s390x ppc
+%else
 %define with_hardware 1
 %define with_vdpau 1
 %define with_vaapi 1
 %define with_nine 1
 %define base_drivers swrast,nouveau,radeon,r200
+%endif
 %ifarch %{ix86} x86_64
 %define platform_drivers ,i915,i965
 %define with_ilo    1
@@ -42,19 +43,18 @@
 %define with_xa        1
 %define with_omx       1
 %endif
-%endif
 
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20151008
-#% define githash 5a55f68
+%define gitdate 20151122
+#% define githash 21ccdbd
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 10.6.9
+Version: 11.0.6
 Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
@@ -70,15 +70,12 @@ Source3: vl_mpeg12_decoder.c
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source4: Mesa-MLAA-License-Clarification-Email.txt
 
-Patch1: mesa-10.0-nv50-fix-build.patch
-Patch9: mesa-8.0-llvmpipe-shmget.patch
-Patch12: mesa-8.0.1-fix-16bpp.patch
 Patch15: mesa-9.2-hardware-float.patch
 Patch20: mesa-10.2-evergreen-big-endian.patch
 Patch30: mesa-10.3-bigendian-assert.patch
 
 # To have sha info in glxinfo
-BuildRequires: git
+BuildRequires: git-core
 
 BuildRequires: pkgconfig autoconf automake libtool
 %if %{with_hardware}
@@ -346,18 +343,6 @@ Mesa Direct3D9 state tracker development package
 #setup -q -n Mesa-%{version}%{?snapshot}
 %setup -q -n mesa-%{git}
 grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
-%patch1 -p1 -b .nv50rtti
-
-# this fastpath is:
-# - broken with swrast classic
-# - broken on 24bpp
-# - not a huge win anyway
-# - ABI-broken wrt upstream
-# - eventually obsoleted by vgem
-#
-# dear ajax: fix this one way or the other
-#patch9 -p1 -b .shmget
-#patch12 -p1 -b .16bpp
 
 %patch15 -p1 -b .hwfloat
 %patch20 -p1 -b .egbe
@@ -397,7 +382,7 @@ export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_ope
     --disable-xvmc \
     %{?with_vdpau:--enable-vdpau} \
     %{?with_vaapi:--enable-va} \
-    --with-egl-platforms=x11,drm%{?with_wayland:,wayland} \
+    --with-egl-platforms=x11,drm,surfaceless%{?with_wayland:,wayland} \
     --enable-shared-glapi \
     --enable-gbm \
     %{?with_omx:--enable-omx} \
@@ -418,9 +403,6 @@ export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_ope
     --disable-dri3 \
 %endif
     %{?dri_drivers}
-
-# this seems to be neccessary for s390
-make -C src/mesa/drivers/dri/common/xmlpool/
 
 make %{?_smp_mflags} MKDEP=/bin/true
 
@@ -445,7 +427,7 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/vdpau/*.so
 rm -f $RPM_BUILD_ROOT%{_includedir}/GL/w*.h
 
 # remove .la files
-find $RPM_BUILD_ROOT -name \*.la | xargs rm -f
+find $RPM_BUILD_ROOT -name '*.la' -delete
 
 # this keeps breaking, check it early.  note that the exit from eu-ftr is odd.
 pushd $RPM_BUILD_ROOT%{_libdir}
@@ -489,26 +471,23 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files libGL
-%defattr(-,root,root,-)
-%doc docs/COPYING
+%license docs/COPYING
 %{_libdir}/libGL.so.1
 %{_libdir}/libGL.so.1.*
 
 %files libEGL
-%defattr(-,root,root,-)
-%doc docs/COPYING
+%license docs/COPYING
 %{_libdir}/libEGL.so.1
 %{_libdir}/libEGL.so.1.*
 
 %files libGLES
-%defattr(-,root,root,-)
-%doc docs/COPYING
+%license docs/COPYING
 %{_libdir}/libGLESv2.so.2
 %{_libdir}/libGLESv2.so.2.*
 
 %files filesystem
-%defattr(-,root,root,-)
-%doc docs/COPYING docs/Mesa-MLAA-License-Clarification-Email.txt
+%license docs/COPYING
+%doc docs/Mesa-MLAA-License-Clarification-Email.txt
 %dir %{_libdir}/dri
 %if %{with_hardware}
 %if 0%{?with_vdpau}
@@ -517,11 +496,11 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files libglapi
+%license docs/COPYING
 %{_libdir}/libglapi.so.0
 %{_libdir}/libglapi.so.0.*
 
 %files dri-drivers
-%defattr(-,root,root,-)
 %if %{with_hardware}
 %config(noreplace) %{_sysconfdir}/drirc
 %if !0%{?rhel}
@@ -570,12 +549,10 @@ rm -rf $RPM_BUILD_ROOT
 %if %{with_hardware}
 %if 0%{?with_omx}
 %files omx-drivers
-%defattr(-,root,root,-)
 %{_libdir}/bellagio/libomx_mesa.so
 %endif
 %if 0%{?with_vdpau}
 %files vdpau-drivers
-%defattr(-,root,root,-)
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %{_libdir}/vdpau/libvdpau_r300.so.1*
 %if 0%{?with_llvm}
@@ -588,7 +565,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files libGL-devel
-%defattr(-,root,root,-)
 %{_includedir}/GL/gl.h
 %{_includedir}/GL/gl_mangle.h
 %{_includedir}/GL/glext.h
@@ -604,7 +580,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/gl.pc
 
 %files libEGL-devel
-%defattr(-,root,root,-)
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/eglext.h
 %{_includedir}/EGL/egl.h
@@ -617,7 +592,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libEGL.so
 
 %files libGLES-devel
-%defattr(-,root,root,-)
 %dir %{_includedir}/GLES2
 %{_includedir}/GLES2/gl2platform.h
 %{_includedir}/GLES2/gl2.h
@@ -630,53 +604,45 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libGLESv2.so
 
 %files libOSMesa
-%defattr(-,root,root,-)
-%doc docs/COPYING
+%license docs/COPYING
 %{_libdir}/libOSMesa.so.8*
 
 %files libOSMesa-devel
-%defattr(-,root,root,-)
 %dir %{_includedir}/GL
 %{_includedir}/GL/osmesa.h
 %{_libdir}/libOSMesa.so
 %{_libdir}/pkgconfig/osmesa.pc
 
 %files libgbm
-%defattr(-,root,root,-)
-%doc docs/COPYING
+%license docs/COPYING
 %{_libdir}/libgbm.so.1
 %{_libdir}/libgbm.so.1.*
 
 %files libgbm-devel
-%defattr(-,root,root,-)
 %{_libdir}/libgbm.so
 %{_includedir}/gbm.h
 %{_libdir}/pkgconfig/gbm.pc
 
 %if 0%{?with_wayland}
 %files libwayland-egl
-%defattr(-,root,root,-)
-%doc docs/COPYING
+%license docs/COPYING
 %{_libdir}/libwayland-egl.so.1
 %{_libdir}/libwayland-egl.so.1.*
 
 %files libwayland-egl-devel
-%defattr(-,root,root,-)
 %{_libdir}/libwayland-egl.so
 %{_libdir}/pkgconfig/wayland-egl.pc
 %endif
 
 %if 0%{?with_xa}
 %files libxatracker
-%defattr(-,root,root,-)
-%doc docs/COPYING
+%license docs/COPYING
 %if %{with_hardware}
 %{_libdir}/libxatracker.so.2
 %{_libdir}/libxatracker.so.2.*
 %endif
 
 %files libxatracker-devel
-%defattr(-,root,root,-)
 %if %{with_hardware}
 %{_libdir}/libxatracker.so
 %{_includedir}/xa_tracker.h
@@ -688,6 +654,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?with_opencl}
 %files libOpenCL
+%license docs/COPYING
 %{_libdir}/libMesaOpenCL.so.*
 %{_sysconfdir}/OpenCL/vendors/mesa.icd
 
@@ -697,6 +664,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?with_nine}
 %files libd3d
+%license docs/COPYING
 %dir %{_libdir}/d3d/
 %{_libdir}/d3d/*.so.*
 
@@ -707,6 +675,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Sun Nov 22 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 11.0.6-1.20151122
+- 11.0.6
+
 * Thu Oct 08 2015 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 10.6.9-1.20151008
 - Update to 10.6.9
 
