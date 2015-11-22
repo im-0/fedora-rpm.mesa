@@ -48,13 +48,13 @@
 
 %define _default_patch_fuzz 2
 
-%define gitdate 20151105
+%define gitdate 20151122
 #% define githash 21ccdbd
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 11.0.4
+Version: 11.0.6
 Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
@@ -675,6 +675,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Sun Nov 22 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 11.0.6-1.20151122
+- 11.0.6
+
 * Thu Nov 05 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 11.0.4-1.20151105
 - 11.0.4
 
