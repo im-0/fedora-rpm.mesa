@@ -55,7 +55,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 11.1.0
-Release: 1.%{git}%{?dist}
+Release: 2.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -130,6 +130,7 @@ BuildRequires: libomxil-bellagio-devel
 BuildRequires: libclc-devel llvm-static opencl-filesystem
 %endif
 BuildRequires: python-mako
+BuildRequires: libstdc++-static
 
 %description
 Mesa
@@ -366,6 +367,8 @@ export CFLAGS="$RPM_OPT_FLAGS"
 # We do say 'catch' in the clover and d3d1x state trackers, but we're not
 # building those yet.
 export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_opencl:-fno-rtti -fno-exceptions}"
+export LDFLAGS="%{__global_ldflags} -static-libstdc++"
+
 %ifarch %{ix86}
 # i do not have words for how much the assembly dispatch code infuriates me
 %define asm_flags --disable-asm
@@ -404,6 +407,14 @@ export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_ope
 %endif
     %{?dri_drivers}
 
+# libtool refuses to pass through things you ask for in LDFLAGS that it doesn't
+# know about, like -static-libstdc++, so...
+sed -i 's/-fuse-linker-plugin|/-static-lib*|&/' libtool
+sed -i 's/-nostdlib//g' libtool
+sed -i 's/^predep_objects=.*$/#&/' libtool
+sed -i 's/^postdep_objects=.*$/#&/' libtool
+sed -i 's/^postdeps=.*$/#&/' libtool
+
 make %{?_smp_mflags} MKDEP=/bin/true
 
 %install
@@ -434,6 +445,8 @@ pushd $RPM_BUILD_ROOT%{_libdir}
 for i in libOSMesa*.so libGL.so ; do
     eu-findtextrel $i && exit 1
 done
+# check that we really didn't link libstdc++ dynamically
+eu-readelf -d i965_dri.so | grep -q libstdc && exit 1
 popd
 
 %clean
@@ -675,6 +688,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Jan 08 2016 Adam Jackson <ajax@redhat.com> 11.1.0-2
+- Link with -static-libstdc++
+
 * Fri Dec 18 2015 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 11.1.0-1.20151218
 - 11.1.0
 
