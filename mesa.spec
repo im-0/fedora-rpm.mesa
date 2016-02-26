@@ -55,7 +55,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 11.1.0
-Release: 2.%{git}%{?dist}
+Release: 3.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -398,7 +398,7 @@ export LDFLAGS="%{__global_ldflags} -static-libstdc++"
 %if %{with_hardware}
     %{?with_xa:--enable-xa} \
     %{?with_nine:--enable-nine} \
-    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_vc4:vc4,}%{?with_ilo:ilo,}r300,nouveau \
+    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_vc4:vc4,}%{?with_ilo:ilo,}r300,nouveau,virgl \
 %else
     --with-gallium-drivers=%{?with_llvm:swrast} \
 %endif
@@ -546,6 +546,7 @@ rm -rf $RPM_BUILD_ROOT
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
+%{_libdir}/dri/virtio_gpu_dri.so
 %endif
 %if 0%{?with_llvm}
 %ifarch %{ix86} x86_64
@@ -688,6 +689,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Feb 26 2016 Dave Airlie <airlied@redhat.com> 11.1.0-3
+- enable virgl
+
 * Fri Jan 08 2016 Adam Jackson <ajax@redhat.com> 11.1.0-2
 - Link with -static-libstdc++
 
