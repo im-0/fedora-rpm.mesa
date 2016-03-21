@@ -57,7 +57,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 11.2.0
-Release: 0.devel.11.%{git}%{?dist}
+Release: 0.devel.12.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -76,6 +76,7 @@ Patch10: mhack.patch
 Patch15: mesa-9.2-hardware-float.patch
 Patch20: mesa-10.2-evergreen-big-endian.patch
 Patch30: mesa-10.3-bigendian-assert.patch
+Patch31: 0001-llvmpipe-Do-not-use-barriers-if-not-using-threads.patch
 
 # To have sha info in glxinfo
 BuildRequires: git-core
@@ -352,6 +353,7 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch15 -p1 -b .hwfloat
 %patch20 -p1 -b .egbe
 %patch30 -p1 -b .beassert
+%patch31 -p1 -b .threadless
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
@@ -691,6 +693,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Mon Mar 21 2016 Adam Jackson <ajax@redhat.com> 11.2.0-0.devel.12
+- Fix llvmpipe crashes when not multithreaded
+
 * Fri Feb 19 2016 Dave Airlie <airlied@redhat.com> 11.2.0-0.devel.11
 - rebuild against llvm 3.8.0
 
