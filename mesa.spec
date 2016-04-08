@@ -57,7 +57,7 @@
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 11.2.0
-Release: 0.devel.12.%{git}%{?dist}
+Release: 0.devel.13.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -317,6 +317,10 @@ Summary: Mesa OpenCL runtime library
 Requires: ocl-icd
 Requires: libclc
 Requires: mesa-libgbm = %{version}-%{release}
+
+# Virtual Provides for ocl-icd (RHBZ #1317602)
+Provides: opencl-icd
+Provides: opencl-icd%{?_isa}
 
 %description libOpenCL
 Mesa OpenCL runtime library.
@@ -693,6 +697,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Fri Apr 08 2016 Björn Esser <fedora@besser82.io> - 11.2.0-0.devel.13
+- add virtual Provides for ocl-icd (RHBZ #1317602)
+
 * Mon Mar 21 2016 Adam Jackson <ajax@redhat.com> 11.2.0-0.devel.12
 - Fix llvmpipe crashes when not multithreaded
 
