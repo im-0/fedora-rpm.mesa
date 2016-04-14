@@ -76,7 +76,6 @@ Patch10: mhack.patch
 Patch15: mesa-9.2-hardware-float.patch
 Patch20: mesa-10.2-evergreen-big-endian.patch
 Patch30: mesa-10.3-bigendian-assert.patch
-Patch31: 0001-llvmpipe-Do-not-use-barriers-if-not-using-threads.patch
 
 # To have sha info in glxinfo
 BuildRequires: git-core
@@ -357,7 +356,6 @@ grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
 %patch15 -p1 -b .hwfloat
 %patch20 -p1 -b .egbe
 %patch30 -p1 -b .beassert
-%patch31 -p1 -b .threadless
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
