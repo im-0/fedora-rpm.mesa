@@ -50,14 +50,14 @@
 
 %define _default_patch_fuzz 2
 
-#% define gitdate 20150218
-%define githash 24ea81a
+%define gitdate 20160414
+#% define githash 24ea81a
 %define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
 
 Summary: Mesa graphics libraries
 Name: mesa
 Version: 11.2.0
-Release: 0.devel.13.%{git}%{?dist}
+Release: 1.%{git}%{?dist}
 License: MIT
 Group: System Environment/Libraries
 URL: http://www.mesa3d.org
@@ -697,6 +697,9 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
+* Thu Apr 14 2016 Igor Gnatenko <ignatenko@redhat.com> - 11.2.0-1.20160414
+- 11.2.0
+
 * Fri Apr 08 2016 Björn Esser <fedora@besser82.io> - 11.2.0-0.devel.13
 - add virtual Provides for ocl-icd (RHBZ #1317602)
 

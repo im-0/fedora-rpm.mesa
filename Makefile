@@ -4,7 +4,7 @@ SANITIZE ?= 1
 
 ifeq ($(strip $(COMMIT)),)
 	COMMIT = `date +%Y%m%d`
-	BRANCH = 11.1
+	BRANCH = 11.2
 else
 	BRANCH = master
 endif
@@ -26,5 +26,5 @@ ifdef SANITIZE
 endif
 
 archive: clone sanitize
-	tar -cvf ${DIRNAME}.tar.xz ${DIRNAME}
+	tar -Jcvf ${DIRNAME}.tar.xz ${DIRNAME}
 
