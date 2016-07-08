@@ -48,42 +48,34 @@
 
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
 
-%define _default_patch_fuzz 2
+%global sanitize 1
 
-%define gitdate 20160614
-#% define githash 24ea81a
-%define git %{?githash:%{githash}}%{!?githash:%{gitdate}}
+#global rctag rc4
 
 Summary: Mesa graphics libraries
 Name: mesa
-Version: 11.2.2
-Release: 2.%{git}%{?dist}
+Version: 12.0.0
+Release: 1%{?rctag:.%{rctag}}%{?dist}
 License: MIT
-Group: System Environment/Libraries
 URL: http://www.mesa3d.org
 
-Source0: %{name}-%{git}.tar.xz
-Source1: Makefile
-Source2: vl_decoder.c
-Source3: vl_mpeg12_decoder.c
+Source0: https://mesa.freedesktop.org/archive/%{version}/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+Source1: vl_decoder.c
+Source2: vl_mpeg12_decoder.c
 
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
 # Source4 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
-Source4: Mesa-MLAA-License-Clarification-Email.txt
+Source3: Mesa-MLAA-License-Clarification-Email.txt
 
-Patch10: mhack.patch
-Patch15: mesa-9.2-hardware-float.patch
-Patch20: mesa-10.2-evergreen-big-endian.patch
-Patch30: mesa-10.3-bigendian-assert.patch
+Patch1:  0001-llvm-SONAME-without-version.patch
+Patch2:  0002-hardware-gloat.patch
+Patch3:  0003-evergreen-big-endian.patch
+Patch4:  0004-bigendian-assert.patch
 
-# upstream backport for virgl fix
-Patch40: 0001-virgl-fix-checking-fences.patch
-
-# To have sha info in glxinfo
-BuildRequires: git-core
-
-BuildRequires: pkgconfig autoconf automake libtool
+BuildRequires: automake
+BuildRequires: autoconf
+BuildRequires: libtool
 %if %{with_hardware}
 BuildRequires: kernel-headers
 BuildRequires: xorg-x11-server-devel
@@ -352,45 +344,38 @@ Mesa Direct3D9 state tracker development package
 %endif
 
 %prep
-#setup -q -n Mesa-%{version}%{?snapshot}
-%setup -q -n mesa-%{git}
-grep -q ^/ src/gallium/auxiliary/vl/vl_decoder.c && exit 1
-
-%patch10 -p1 -b .mhack
-%patch15 -p1 -b .hwfloat
-%patch20 -p1 -b .egbe
-%patch30 -p1 -b .beassert
-
-%patch40 -p1 -b .virglfix
+%autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
+%if 0%{sanitize}
+  cp -f %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
+  cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
+%endif
 
 %if 0%{with_private_llvm}
 sed -i 's/llvm-config/mesa-private-llvm-config-%{__isa_bits}/g' configure.ac
 sed -i 's/`$LLVM_CONFIG --version`/&-mesa/' configure.ac
 %endif
 
-cp %{SOURCE4} docs/
+cp %{SOURCE3} docs/
 
 %build
+autoreconf -vfi
 
-autoreconf --install
-
-export CFLAGS="$RPM_OPT_FLAGS"
 # C++ note: we never say "catch" in the source.  we do say "typeid" once,
 # in an assert, which is patched out above.  LLVM doesn't use RTTI or throw.
 #
 # We do say 'catch' in the clover and d3d1x state trackers, but we're not
 # building those yet.
-export CXXFLAGS="$RPM_OPT_FLAGS %{?with_opencl:-frtti -fexceptions} %{!?with_opencl:-fno-rtti -fno-exceptions}"
-export LDFLAGS="%{__global_ldflags} -static-libstdc++"
+export CXXFLAGS="%{?with_opencl:-frtti -fexceptions} %{!?with_opencl:-fno-rtti -fno-exceptions}"
+export LDFLAGS="-static-libstdc++"
 %ifarch %{ix86}
 # i do not have words for how much the assembly dispatch code infuriates me
-%define asm_flags --disable-asm
+%global asm_flags --disable-asm
 %endif
 
 %configure \
     %{?asm_flags} \
     --enable-selinux \
-    --enable-osmesa \
+    --enable-gallium-osmesa \
     --with-dri-driverdir=%{_libdir}/dri \
     --enable-egl \
     --disable-gles1 \
@@ -415,9 +400,6 @@ export LDFLAGS="%{__global_ldflags} -static-libstdc++"
 %else
     --with-gallium-drivers=%{?with_llvm:swrast,}virgl \
 %endif
-%if 0%{?fedora} < 21
-    --disable-dri3 \
-%endif
     %{?dri_drivers}
 
 # libtool refuses to pass through things you ask for in LDFLAGS that it doesn't
@@ -427,44 +409,37 @@ sed -i 's/-nostdlib//g' libtool
 sed -i 's/^predep_objects=.*$/#&/' libtool
 sed -i 's/^postdep_objects=.*$/#&/' libtool
 sed -i 's/^postdeps=.*$/#&/' libtool
-make %{?_smp_mflags} MKDEP=/bin/true V=1
+%make_build MKDEP=/bin/true V=1
 
 %install
-rm -rf $RPM_BUILD_ROOT
-
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 
 %if 0%{?rhel}
 # remove pre-DX9 drivers
-rm -f $RPM_BUILD_ROOT%{_libdir}/dri/{radeon,r200,nouveau_vieux}_dri.*
+rm -f %{buildroot}%{_libdir}/dri/{radeon,r200,nouveau_vieux}_dri.*
 %endif
 
 %if !%{with_hardware}
-rm -f $RPM_BUILD_ROOT%{_sysconfdir}/drirc
+rm -f %{buildroot}%{_sysconfdir}/drirc
 %endif
 
 # libvdpau opens the versioned name, don't bother including the unversioned
-rm -f $RPM_BUILD_ROOT%{_libdir}/vdpau/*.so
+rm -f %{buildroot}%{_libdir}/vdpau/*.so
 
 # strip out useless headers
-rm -f $RPM_BUILD_ROOT%{_includedir}/GL/w*.h
+rm -f %{buildroot}%{_includedir}/GL/w*.h
 
 # remove .la files
-find $RPM_BUILD_ROOT -name '*.la' -delete
+find %{buildroot} -name '*.la' -delete
 
 # this keeps breaking, check it early.  note that the exit from eu-ftr is odd.
-pushd $RPM_BUILD_ROOT%{_libdir}
+pushd %{buildroot}%{_libdir}
 for i in libOSMesa*.so libGL.so ; do
     eu-findtextrel $i && exit 1
 done
 # check that we really didn't link libstdc++ dynamically
 eu-readelf -d mesa_dri_drivers.so | grep -q libstdc && exit 1
 popd
-
-%clean
-rm -rf $RPM_BUILD_ROOT
-
-%check
 
 %post libGL -p /sbin/ldconfig
 %postun libGL -p /sbin/ldconfig
@@ -496,22 +471,18 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files libGL
-%license docs/COPYING
 %{_libdir}/libGL.so.1
 %{_libdir}/libGL.so.1.*
 
 %files libEGL
-%license docs/COPYING
 %{_libdir}/libEGL.so.1
 %{_libdir}/libEGL.so.1.*
 
 %files libGLES
-%license docs/COPYING
 %{_libdir}/libGLESv2.so.2
 %{_libdir}/libGLESv2.so.2.*
 
 %files filesystem
-%license docs/COPYING
 %doc docs/Mesa-MLAA-License-Clarification-Email.txt
 %dir %{_libdir}/dri
 %if %{with_hardware}
@@ -521,7 +492,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files libglapi
-%license docs/COPYING
 %{_libdir}/libglapi.so.0
 %{_libdir}/libglapi.so.0.*
 
@@ -558,6 +528,13 @@ rm -rf $RPM_BUILD_ROOT
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
+%{_libdir}/dri/nouveau_drv_video.so
+%if 0%{?with_llvm}
+%{_libdir}/dri/r600_drv_video.so
+%if 0%{?with_radeonsi}
+%{_libdir}/dri/radeonsi_drv_video.so
+%endif
+%endif
 %endif
 %if 0%{?with_llvm}
 %ifarch %{ix86} x86_64 aarch64
@@ -567,9 +544,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/dri/kms_swrast_dri.so
 %endif
 %{_libdir}/dri/swrast_dri.so
-%if 0%{?with_vaapi}
-%{_libdir}/dri/gallium_drv_video.so
-%endif
 %{_libdir}/dri/virtio_gpu_dri.so
 
 %if %{with_hardware}
@@ -598,6 +572,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/GL/glx_mangle.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glcorearb.h
+%{_includedir}/GL/mesa_glinterop.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_libdir}/pkgconfig/dri.pc
@@ -630,7 +605,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libGLESv2.so
 
 %files libOSMesa
-%license docs/COPYING
 %{_libdir}/libOSMesa.so.8*
 
 %files libOSMesa-devel
@@ -640,7 +614,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/pkgconfig/osmesa.pc
 
 %files libgbm
-%license docs/COPYING
 %{_libdir}/libgbm.so.1
 %{_libdir}/libgbm.so.1.*
 
@@ -651,7 +624,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?with_wayland}
 %files libwayland-egl
-%license docs/COPYING
 %{_libdir}/libwayland-egl.so.1
 %{_libdir}/libwayland-egl.so.1.*
 
@@ -662,7 +634,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?with_xa}
 %files libxatracker
-%license docs/COPYING
 %if %{with_hardware}
 %{_libdir}/libxatracker.so.2
 %{_libdir}/libxatracker.so.2.*
@@ -680,7 +651,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?with_opencl}
 %files libOpenCL
-%license docs/COPYING
 %{_libdir}/libMesaOpenCL.so.*
 %{_sysconfdir}/OpenCL/vendors/mesa.icd
 
@@ -690,7 +660,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %if 0%{?with_nine}
 %files libd3d
-%license docs/COPYING
 %dir %{_libdir}/d3d/
 %{_libdir}/d3d/*.so.*
 
@@ -701,23 +670,44 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %changelog
-* Tue Jun 14 2016 Dominik Mierzejewski <rpm@greysector.net> - 11.2.2-2.20160614
+* Fri Jul 08 2016 Igor Gnatenko <ignatenko@redhat.com> - 12.0.0-1
+- 12.0.0
+
+* Wed Jun 22 2016 Igor Gnatenko <ignatenko@redhat.com> - 12.0.0-0.3.rc4
+- 12.0.0-rc4
+
+* Mon Jun 20 2016 Adam Jackson <ajax@redhat.com> - 12.0.0-0.3.rc3
+- Fix packaging error on s390*
+
+* Mon Jun 20 2016 Igor Gnatenko <ignatenko@redhat.com> - 12.0.0-0.2.rc3
+- 12.0.0-rc3
+
+* Tue Jun 14 2016 Dominik Mierzejewski <rpm@greysector.net> - 12.0.0-0.2.rc2
 - add missing dependency for /etc/OpenCL/vendors ownership (RHBZ #1265948)
 
-* Tue Jun 14 2016 Dave Airlie <airlied@redhat.com> - 11.2.2-1.20160614
-- 11.2.2 + virgl fence fix
+* Tue Jun 14 2016 Igor Gnatenko <ignatenko@redhat.com> - 12.0.0-0.1.rc2
+- 12.0.0-rc2
 
-* Sun May 01 2016 Igor Gnatenko <ignatenko@redhat.com> - 11.2.1-1.20160601
-- 11.2.1
+* Wed Jun 01 2016 Igor Gnatenko <ignatenko@redhat.com> - 12.0.0-0.1.rc1
+- 12.0.0-rc1
 
-* Thu Apr 14 2016 Igor Gnatenko <ignatenko@redhat.com> - 11.2.0-1.20160414
-- 11.2.0
+* Sun May 01 2016 Igor Gnatenko <ignatenko@redhat.com> - 11.3.0-0.4.gitcbcd7b6
+- cbcd7b6
 
-* Fri Apr 08 2016 Björn Esser <fedora@besser82.io> - 11.2.0-0.devel.13
+* Thu Apr 14 2016 Igor Gnatenko <ignatenko@redhat.com> - 11.3.0-0.3.git171a570
+- 171a570
+
+* Fri Apr 08 2016 Björn Esser <fedora@besser82.io> - 11.3.0-0.2.gitea2bff1
 - add virtual Provides for ocl-icd (RHBZ #1317602)
 
-* Mon Mar 21 2016 Adam Jackson <ajax@redhat.com> 11.2.0-0.devel.12
-- Fix llvmpipe crashes when not multithreaded
+* Sun Mar 20 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 11.3.0-0.1.gitea2bff1
+- 11.3.0 (gitea2bff1)
+- Add SWR state-tracker (but disable because build is broken)
+- Use gallium-osmesa instead of classic osmesa (RHBZ #1305588)
+- Remove very old changelogs
+
+* Sun Mar 20 2016 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 11.2.0-0.1.rc3.20160320
+- Update to 11.2.0-rc3
 
 * Fri Feb 19 2016 Dave Airlie <airlied@redhat.com> 11.2.0-0.devel.11
 - rebuild against llvm 3.8.0
@@ -1082,242 +1072,3 @@ rm -rf $RPM_BUILD_ROOT
 * Sun Jan 19 2014 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 10.0.2-3.20140118
 - Enable OpenCL (RHBZ #887628)
 - Enable r600 llvm compiler (RHBZ #1055098)
-
-* Fri Dec 20 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2.5-1.20131220
-- 9.2.5 upstream release
-
-* Fri Dec 13 2013 Dave Airlie <airlied@redhat.com> 9.2.4-2.20131128
-- backport the GLX_MESA_copy_sub_buffer from upstream for cogl
-
-* Thu Nov 28 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2.4-1.20131128
-- 9.2.4 upstream release
-
-* Thu Nov 14 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2.3-1.20131114
-- 9.2.3 upstream release
-
-* Wed Nov 13 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2.2-1.20131113
-- 9.2.2 upstream release + fixes from git 9.2 branch
-
-* Thu Sep 19 2013 Igor Gnatenko <i.gnatenko.brain@gmail.com> - 9.2-1.20130919
-- Today's git snap of 9.2 branch
-- [NVE4] Fix crashing games when set AA to x2 on GTX760
-- (freedesktop 68665 rhbz 1001714 1001698 1001740 1004674)
-
-* Mon Sep 02 2013 Dave Airlie <airlied@redhat.com> 9.2-1.20130902
-- 9.2 upstream release + fixes from git branch
-
-* Sat Aug 03 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 9.2-0.15.20130723
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_20_Mass_Rebuild
-
-* Tue Jul 23 2013 Adam Jackson <ajax@redhat.com> 9.2-0.14.20130723
-- Today's git snap of 9.2 branch
-
-* Sun Jul 14 2013 Kyle McMartin <kyle@redhat.com> 9.2-0.13.20130610
-- Use LLVM::MCJIT on ARM and AArch64.
-
-* Mon Jun 17 2013 Adam Jackson <ajax@redhat.com> 9.2-0.12.20130610
-- Re-enable hardware float support (#975204)
-
-* Mon Jun 17 2013 Adam Jackson <ajax@redhat.com> 9.2-0.11.20130610
-- Fix evergreen on big-endian
-
-* Wed Jun 12 2013 Adam Jackson <ajax@redhat.com> 9.2-0.10.20130610
-- Fix s390x build
-- Fold khrplatform-devel in to libEGL-devel
-
-* Tue Jun 11 2013 Adam Jackson <ajax@redhat.com> 9.2-0.9.20130610
-- 0001-Revert-i965-Disable-unused-pipeline-stages-once-at-s.patch: Fix some
-  hangs on ivb+
-
-* Mon Jun 10 2013 Adam Jackson <ajax@redhat.com> 9.2-0.8.20130610
-- Today's git snap
-
-* Tue May 28 2013 Adam Jackson <ajax@redhat.com> 9.2-0.7.20130528
-- Today's git snap
-
-* Sun May 19 2013 Peter Robinson <pbrobinson@fedoraproject.org> 9.2-0.6.20130514
-- Update the name of the freedreno driver
-
-* Fri May 17 2013 Adam Jackson <ajax@redhat.com> 9.2-0.5.20130514
-- Fix build issues on ppc32
-
-* Thu May 16 2013 Adam Jackson <ajax@redhat.com> 9.2-0.4.20130514
-- Fix yet more build issues on s390{,x}
-
-* Wed May 15 2013 Adam Jackson <ajax@redhat.com> 9.2-0.3.20130514
-- Fix build ordering issue on s390x
-
-* Wed May 15 2013 Adam Jackson <ajax@redhat.com> 9.2-0.2.20130514
-- Fix filesystem for with_hardware == 0
-
-* Tue May 14 2013 Adam Jackson <ajax@redhat.com> 9.2-0.1.20130514
-- Today's git snap
-- Revert to swrast on ppc32 and s390 since llvm doesn't actually work
-- Build freedreno on arm
-- Drop snb hang workaround (upstream 1dfea559)
-- Rename filesystem package
-
-* Wed May 08 2013 Adam Jackson <ajax@redhat.com> 9.2-0.1.20130508
-- Switch to Mesa master (pre 9.2)
-- Fix llvmpipe on big-endian and enable llvmpipe everywhere
-- Build vdpau drivers for r600/radeonsi/nouveau
-- Enable hardware floating-point texture support
-- Drop GLESv1, nothing's using it, let's not start
-
-* Sat Apr 27 2013 Dave Airlie <airlied@redhat.com> 9.1.1-1
-- rebase to Mesa 9.1.1 + fixes from git
-
-* Thu Apr 11 2013 Dave Airlie <airlied@redhat.com> 9.1-6
-- enable glx tls for glamor to work properly
-
-* Thu Apr 04 2013 Adam Jackson <ajax@redhat.com> 9.1-5
-- Enable llvmpipe even on non-SSE2 machines (#909473)
-
-* Tue Mar 26 2013 Adam Jackson <ajax@redhat.com> 9.1-4
-- Fix build with private LLVM
-
-* Tue Mar 19 2013 Adam Jackson <ajax@redhat.com> 9.1-3
-- mesa-9.1-53-gd0ccb5b.patch: Sync with today's git
-
-* Tue Mar 19 2013 Dave Airlie <airlied@redhat.com> 9.1-2
-- add SNB hang workaround from chromium
-
-* Fri Mar 08 2013 Adam Jackson <ajax@redhat.com> 9.1-1
-- Mesa 9.1
-
-* Wed Feb 27 2013 Dan Horák <dan[at]danny.cz> - 9.1-0.4
-- /etc/drirc is always created, so exclude it on platforms without hw drivers
-
-* Tue Feb 26 2013 Adam Jackson <ajax@redhat.com> 9.1-0.3
-- Fix s390*'s swrast to be classic not softpipe
-
-* Tue Feb 19 2013 Jens Petersen <petersen@redhat.com> - 9.1-0.2
-- build against llvm-3.2
-- turn on radeonsi
-
-* Wed Feb 13 2013 Dave Airlie <airlied@redhat.com> 9.1-0.1
-- snapshot mesa 9.1 branch
-
-* Tue Jan 15 2013 Tom Callaway <spot@fedoraproject.org> 9.0.1-4
-- clarify license on pp_mlaa* files
-
-* Thu Dec 20 2012 Adam Jackson <ajax@redhat.com> 9.0.1-3
-- mesa-9.0.1-22-gd0a9ab2.patch: Sync with git
-- Build with -fno-rtti -fno-exceptions, modest size and speed win
-- mesa-9.0.1-less-cxx-please.patch: Remove the only use of typeid() so the
-  above works.
-
-* Wed Dec 05 2012 Adam Jackson <ajax@redhat.com> 9.0.1-2
-- Allow linking against a private version of LLVM libs for RHEL7
-- Build with -j again
-
-* Mon Dec 03 2012 Adam Jackson <ajax@redhat.com> 9.0.1-1
-- Mesa 9.0.1
-
-* Wed Nov 07 2012 Dave Airlie <airlied@redhat.com> 9.0-5
-- mesa-9.0-19-g895a587.patch: sync with 9.0 branch with git
-- drop wayland patch its in git now.
-
-* Thu Nov 01 2012 Adam Jackson <ajax@redhat.com> 9.0-4
-- mesa-9.0-18-g5fe5aa8: sync with 9.0 branch in git
-- Portability fixes for F17: old wayland, old llvm.
-
-* Sat Oct 27 2012 Dan Horák <dan[at]danny.cz> 9.0-3
-- gallium drivers must be set explicitely for s390(x) otherwise also r300, r600 and vmwgfx are built
-
-* Fri Oct 19 2012 Adam Jackson <ajax@redhat.com> 9.0-2
-- Rebuild for wayland 0.99
-
-* Wed Oct 10 2012 Adam Jackson <ajax@redhat.com> 9.0-1
-- Mesa 9.0
-- mesa-9.0-12-gd56ee24.patch: sync with 9.0 branch in git
-
-* Wed Oct 10 2012 Adam Jackson <ajax@redhat.com> 9.0-0.4
-- Switch to external gl-manpages and libGLU
-- Drop ShmGetImage fastpath for a bit
-
-* Mon Oct 01 2012 Dan Horák <dan[at]danny.cz> 9.0-0.3
-- explicit BR: libGL-devel is required on s390(x), it's probbaly brought in indirectly on x86
-- gallium drivers must be set explicitely for s390(x) otherwise also r300, r600 and vmwgfx are built
-
-* Mon Sep 24 2012 Adam Jackson <ajax@redhat.com> 9.0-0.2
-- Switch to swrast classic instead of softpipe for non-llvm arches
-- Re-disable llvm on ppc until it can draw pixels
-
-* Mon Sep 24 2012 Dave Airlie <airlied@redhat.com> 9.0-0.1
-- rebase to latest upstream 9.0 pre-release branch
-- add back glu from new upstream (split for f18 later)
-
-* Fri Sep 14 2012 Dave Airlie <airlied@redhat.com> 8.1-0.21
-- why fix one yylex when you can fix two
-
-* Fri Sep 14 2012 Dave Airlie <airlied@redhat.com> 8.1-0.20
-- fix yylex collision reported on irc by hughsie
-
-* Mon Aug 27 2012 Adam Jackson <ajax@redhat.com> 8.1-0.19
-- Today's git snap
-- Revert dependency on libkms
-- Patch from Mageia to fix some undefined symbols
-
-* Fri Aug 17 2012 Dave Airlie <airlied@redhat.com> 8.1-0.18
-- parallel make seems broken - on 16 way machine internally.
-
-* Thu Aug 16 2012 Dave Airlie <airlied@redhat.com> 8.1-0.17
-- upstream snapshot
-
-* Wed Jul 25 2012 Peter Robinson <pbrobinson@fedoraproject.org> 8.1-0.16
-- Enable LLVM on ARM
-
-* Wed Jul 25 2012 Peter Robinson <pbrobinson@fedoraproject.org> 8.1-0.15
-- Fix building on platforms with HW and without LLVM
-
-* Tue Jul 24 2012 Adam Jackson <ajax@redhat.com> 8.1-0.14
-- Re-enable llvm on ppc, being worked on
-- Don't BuildReq on wayland things in RHEL
-
-* Mon Jul 23 2012 Adam Jackson <ajax@redhat.com> 8.1-0.13
-- Build radeonsi (#842194)
-
-* Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 8.1-0.12
-- Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
-
-* Tue Jul 17 2012 Dave Airlie <airlied@redhat.com> 8.1-0.11
-- upstream snapshot: fixes build issues
-
-* Tue Jul 17 2012 Dave Airlie <airlied@redhat.com> 8.1-0.10
-- snapshot mesa: add some build hackarounds 
-
-* Sat Jul 14 2012 Ville Skyttä <ville.skytta@iki.fi> - 8.1-0.9
-- Call ldconfig at -libglapi and -libxatracker post(un)install time.
-- Drop redundant ldconfig dependencies, let rpm auto-add them.
-
-* Wed Jun 13 2012 Dave Airlie <airlied@redhat.com> 8.1-0.8
-- enable shared llvm usage.
-
-* Thu Jun 07 2012 Adam Jackson <ajax@redhat.com> 8.1-0.7
-- Disable llvm on non-x86 (#829020)
-
-* Sun Jun 03 2012 Dave Airlie <airlied@redhat.com> 8.1-0.6
-- rebase to git master + build on top of llvm 3.1
-
-* Thu May 17 2012 Adam Jackson <ajax@redhat.com> 8.1-0.5
-- mesa-8.0-llvmpipe-shmget.patch: Rediff for 8.1.
-
-* Thu May 10 2012 Karsten Hopp <karsten@redhat.com> 8.1-0.4
-- revert disabling of hardware drivers, disable only llvm on PPC*
-  (#819060)
-
-* Tue May 01 2012 Adam Jackson <ajax@redhat.com> 8.1-0.3
-- More RHEL tweaking: no pre-DX7 drivers, no wayland.
-
-* Thu Apr 26 2012 Karsten Hopp <karsten@redhat.com> 8.1-0.2
-- move drirc into with_hardware section (Dave Airlie)
-- libdricore.so and libglsl.so get built and installed on
-  non-hardware archs, include them in the file list
-
-* Thu Apr 26 2012 Adam Jackson <ajax@redhat.com> 8.1-0.2
-- Don't build vmware stuff on non-x86 (#815444)
-
-* Tue Apr 24 2012 Richard Hughes <rhughes@redhat.com> 8.0.3-0.1
-- Rebuild with new git snapshot
-- Remove upstreamed patches
