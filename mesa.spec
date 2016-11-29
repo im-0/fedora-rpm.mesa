@@ -45,8 +45,8 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        12.0.3
-Release:        3%{?rctag:.%{rctag}}%{?dist}
+Version:        12.0.4
+Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -64,9 +64,6 @@ Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
 
 # Cherry picked from upstream master
-Patch5:         0001-pipe_loader_sw-Fix-fd-leak-when-instantiated-via-pip.patch
-Patch6:         0001-loader-dri3-add-get_dri_screen-to-the-vtable.patch
-Patch7:         0002-loader-dri3-import-prime-buffers-in-the-currently-bo.patch
 Patch8:         vc4-avoid-texture-load.patch
 
 BuildRequires:  gcc
@@ -623,6 +620,9 @@ popd
 %endif
 
 %changelog
+* Tue Nov 29 2016 Adam Jackson <ajax@redhat.com> - 12.0.4-1
+- 12.0.4
+
 * Sat Oct 22 2016 Peter Robinson <pbrobinson@fedoraproject.org> 12.0.3-3
 - Add patch to improve performance in some Raspberry Pi use cases
 
