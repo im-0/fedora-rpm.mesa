@@ -57,6 +57,8 @@ Source2:        vl_mpeg12_decoder.c
 # Source4 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source3:        Mesa-MLAA-License-Clarification-Email.txt
+# bug in 12.0.4 packaging
+Source4:	mesa_glinterop.h
 
 Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
@@ -387,6 +389,9 @@ sed -i 's/^postdeps=.*$/#&/' libtool
 
 %install
 %make_install
+
+# bug in 12.0.4
+install -p %{SOURCE4} %{buildroot}%{_includedir}/GL/
 
 %if !%{with_hardware}
 rm -f %{buildroot}%{_sysconfdir}/drirc
