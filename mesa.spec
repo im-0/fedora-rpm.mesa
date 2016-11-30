@@ -46,7 +46,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        12.0.4
-Release:        1%{?rctag:.%{rctag}}%{?dist}
+Release:        2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -67,6 +67,7 @@ Patch4:         0004-bigendian-assert.patch
 
 # Cherry picked from upstream master
 Patch8:         vc4-avoid-texture-load.patch
+Patch9:		0001-gallium-radeon-add-support-for-sharing-textures-with.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -625,6 +626,9 @@ popd
 %endif
 
 %changelog
+* Wed Nov 30 2016 Adam Jackson <ajax@redhat.com> - 12.0.4-2
+- Backport a texture corruption fix for radeon
+
 * Tue Nov 29 2016 Adam Jackson <ajax@redhat.com> - 12.0.4-1
 - 12.0.4
 

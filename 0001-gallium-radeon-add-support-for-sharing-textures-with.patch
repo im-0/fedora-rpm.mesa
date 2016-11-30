@@ -1,0 +1,140 @@
+From 095803a37aa67361fc68604e81f858f31ae59b1b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marek=20Ol=C5=A1=C3=A1k?= <marek.olsak@amd.com>
+Date: Thu, 2 Jun 2016 23:36:43 +0200
+Subject: [PATCH] gallium/radeon: add support for sharing textures with DCC
+ between processes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+v2: use a function for calculating WORD1 of bo metadata
+
+Reviewed-by: Nicolai Hähnle <nicolai.haehnle@amd.com>
+---
+ src/gallium/drivers/radeon/r600_pipe_common.h |  4 +++
+ src/gallium/drivers/radeon/r600_texture.c     | 16 +++++++++---
+ src/gallium/drivers/radeonsi/si_state.c       | 35 ++++++++++++++++++++++++++-
+ 3 files changed, 51 insertions(+), 4 deletions(-)
+
+diff --git a/src/gallium/drivers/radeon/r600_pipe_common.h b/src/gallium/drivers/radeon/r600_pipe_common.h
+index 2d60da4..fd658b6 100644
+--- a/src/gallium/drivers/radeon/r600_pipe_common.h
++++ b/src/gallium/drivers/radeon/r600_pipe_common.h
+@@ -379,6 +379,10 @@ struct r600_common_screen {
+ 	void (*query_opaque_metadata)(struct r600_common_screen *rscreen,
+ 				      struct r600_texture *rtex,
+ 				      struct radeon_bo_metadata *md);
++
++	void (*apply_opaque_metadata)(struct r600_common_screen *rscreen,
++				    struct r600_texture *rtex,
++				    struct radeon_bo_metadata *md);
+ };
+ 
+ /* This encapsulates a state or an operation which can emitted into the GPU
+diff --git a/src/gallium/drivers/radeon/r600_texture.c b/src/gallium/drivers/radeon/r600_texture.c
+index 0f5c08f..920cc21 100644
+--- a/src/gallium/drivers/radeon/r600_texture.c
++++ b/src/gallium/drivers/radeon/r600_texture.c
+@@ -1035,8 +1035,12 @@ r600_texture_create_object(struct pipe_screen *screen,
+ 			}
+ 		}
+ 
+-		if (!buf && rtex->surface.dcc_size &&
+-		    !(rscreen->debug_flags & DBG_NO_DCC)) {
++		/* Shared textures must always set up DCC here.
++		 * If it's not present, it will be disabled by
++		 * apply_opaque_metadata later.
++		 */
++		if (rtex->surface.dcc_size &&
++		    (buf || !(rscreen->debug_flags & DBG_NO_DCC))) {
+ 			/* Reserve space for the DCC buffer. */
+ 			rtex->dcc_offset = align64(rtex->size, rtex->surface.dcc_alignment);
+ 			rtex->size = rtex->dcc_offset + rtex->surface.dcc_size;
+@@ -1063,7 +1067,9 @@ r600_texture_create_object(struct pipe_screen *screen,
+ 					 rtex->cmask.offset, rtex->cmask.size,
+ 					 0xCCCCCCCC, R600_COHERENCY_NONE);
+ 	}
+-	if (rtex->dcc_offset) {
++
++	/* Initialize DCC only if the texture is not being imported. */
++	if (!buf && rtex->dcc_offset) {
+ 		r600_screen_clear_buffer(rscreen, &rtex->resource.b.b,
+ 					 rtex->dcc_offset,
+ 					 rtex->surface.dcc_size,
+@@ -1229,6 +1235,10 @@ static struct pipe_resource *r600_texture_from_handle(struct pipe_screen *screen
+ 
+ 	rtex->resource.is_shared = true;
+ 	rtex->resource.external_usage = usage;
++
++	if (rscreen->apply_opaque_metadata)
++		rscreen->apply_opaque_metadata(rscreen, rtex, &metadata);
++
+ 	return &rtex->resource.b.b;
+ }
+ 
+diff --git a/src/gallium/drivers/radeonsi/si_state.c b/src/gallium/drivers/radeonsi/si_state.c
+index 14520ca..e506ec9 100644
+--- a/src/gallium/drivers/radeonsi/si_state.c
++++ b/src/gallium/drivers/radeonsi/si_state.c
+@@ -3398,6 +3398,11 @@ void si_init_state_functions(struct si_context *sctx)
+ 	si_init_config(sctx);
+ }
+ 
++static uint32_t si_get_bo_metadata_word1(struct r600_common_screen *rscreen)
++{
++	return (ATI_VENDOR_ID << 16) | rscreen->info.pci_id;
++}
++
+ static void si_query_opaque_metadata(struct r600_common_screen *rscreen,
+ 				     struct r600_texture *rtex,
+ 			             struct radeon_bo_metadata *md)
+@@ -3432,7 +3437,7 @@ static void si_query_opaque_metadata(struct r600_common_screen *rscreen,
+ 	md->metadata[0] = 1; /* metadata image format version 1 */
+ 
+ 	/* TILE_MODE_INDEX is ambiguous without a PCI ID. */
+-	md->metadata[1] = (ATI_VENDOR_ID << 16) | rscreen->info.pci_id;
++	md->metadata[1] = si_get_bo_metadata_word1(rscreen);
+ 
+ 	si_make_texture_descriptor(sscreen, rtex, true,
+ 				   res->target, res->format,
+@@ -3459,9 +3464,37 @@ static void si_query_opaque_metadata(struct r600_common_screen *rscreen,
+ 	md->size_metadata = (11 + res->last_level) * 4;
+ }
+ 
++static void si_apply_opaque_metadata(struct r600_common_screen *rscreen,
++				     struct r600_texture *rtex,
++			             struct radeon_bo_metadata *md)
++{
++	uint32_t *desc = &md->metadata[2];
++
++	if (rscreen->chip_class < VI)
++		return;
++
++	/* Return if DCC is enabled. The texture should be set up with it
++	 * already.
++	 */
++	if (md->size_metadata >= 11 * 4 &&
++	    md->metadata[0] != 0 &&
++	    md->metadata[1] == si_get_bo_metadata_word1(rscreen) &&
++	    G_008F28_COMPRESSION_EN(desc[6])) {
++		assert(rtex->dcc_offset == ((uint64_t)desc[7] << 8));
++		return;
++	}
++
++	/* Disable DCC. These are always set by texture_from_handle and must
++	 * be cleared here.
++	 */
++	rtex->dcc_offset = 0;
++	rtex->cb_color_info &= ~VI_S_028C70_DCC_ENABLE(1);
++}
++
+ void si_init_screen_state_functions(struct si_screen *sscreen)
+ {
+ 	sscreen->b.query_opaque_metadata = si_query_opaque_metadata;
++	sscreen->b.apply_opaque_metadata = si_apply_opaque_metadata;
+ }
+ 
+ static void
+-- 
+2.9.3
+
