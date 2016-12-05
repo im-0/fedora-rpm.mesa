@@ -20,6 +20,7 @@
 %define with_nine 1
 %define base_drivers swrast,nouveau,radeon,r200
 %endif
+
 %ifarch %{ix86} x86_64
 %define platform_drivers ,i915,i965
 %define with_ilo    1
@@ -27,9 +28,17 @@
 %define with_xa     1
 %define with_omx    1
 %endif
+
+%ifarch x86_64
+%define with_vulkan 1
+%else
+%define with_vulkan 0
+%endif
+
 %ifarch aarch64 %{ix86} x86_64
 %define with_opencl 1
 %endif
+
 %ifarch %{arm} aarch64
 %define with_vc4       1
 %define with_freedreno 1
@@ -39,14 +48,18 @@
 
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
 
+%if 0%{?with_vulkan}
+%define vulkan_drivers --with-vulkan-drivers=intel
+%endif
+
 %global sanitize 1
 
-#global rctag rc4
+#global rctag rc2
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        12.0.4
-Release:        2%{?rctag:.%{rctag}}%{?dist}
+Version:        13.0.2
+Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -64,10 +77,6 @@ Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
-
-# Cherry picked from upstream master
-Patch8:         vc4-avoid-texture-load.patch
-Patch9:		0001-gallium-radeon-add-support-for-sharing-textures-with.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -101,7 +110,6 @@ BuildRequires: clang-devel >= 3.0
 %endif
 BuildRequires: elfutils-libelf-devel
 BuildRequires: libxml2-python
-BuildRequires: libudev-devel
 BuildRequires: bison flex
 %if %{with wayland}
 BuildRequires: pkgconfig(wayland-client)
@@ -119,6 +127,10 @@ BuildRequires: libomxil-bellagio-devel
 %endif
 %if 0%{?with_opencl}
 BuildRequires: libclc-devel opencl-filesystem
+%endif
+%if 0%{?with_vulkan}
+BuildRequires: vulkan-devel
+BuildRequires: openssl-devel
 %endif
 BuildRequires: python-mako
 BuildRequires: libstdc++-static
@@ -325,6 +337,23 @@ Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
 %{summary}.
 %endif
 
+%if 0%{?with_vulkan}
+%package vulkan-drivers
+Summary:        Mesa Vulkan drivers
+Requires:       vulkan%{_isa}
+
+%description vulkan-drivers
+The drivers with support for the Vulkan API.
+
+%package vulkan-devel
+Summary:        Mesa Vulkan development files
+Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
+Requires:       vulkan-devel
+
+%description vulkan-devel
+Headers for development with the Vulkan API.
+%endif
+
 %prep
 %autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
 %if 0%{sanitize}
@@ -367,6 +396,10 @@ export LDFLAGS="-static-libstdc++"
     %{?with_opencl:--enable-opencl --enable-opencl-icd} %{!?with_opencl:--disable-opencl} \
     --enable-glx-tls \
     --enable-texture-float=yes \
+%if %{with_vulkan}
+    %{?vulkan_drivers} \
+    --with-sha1=libcrypto \
+%endif
     %{?with_llvm:--enable-gallium-llvm} \
     %{?with_llvm:--enable-llvm-shared-libs} \
     --enable-dri \
@@ -404,6 +437,10 @@ rm -f %{buildroot}%{_libdir}/vdpau/*.so
 # strip out useless headers
 rm -f %{buildroot}%{_includedir}/GL/w*.h
 
+# these are shipped already in vulkan-devel
+rm -f %{buildroot}/%{_includedir}/vulkan/vk_platform.h
+rm -f %{buildroot}/%{_includedir}/vulkan/vulkan.h
+
 # remove .la files
 find %{buildroot} -name '*.la' -delete
 
@@ -438,9 +475,9 @@ popd
 %{_includedir}/GL/glx_mangle.h
 %{_includedir}/GL/glxext.h
 %{_includedir}/GL/glcorearb.h
-%{_includedir}/GL/mesa_glinterop.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
+%{_includedir}/GL/mesa_glinterop.h
 %{_libdir}/pkgconfig/dri.pc
 %{_libdir}/libGL.so
 %{_libdir}/libglapi.so
@@ -478,6 +515,7 @@ popd
 %{_includedir}/GLES3/gl3.h
 %{_includedir}/GLES3/gl3ext.h
 %{_includedir}/GLES3/gl31.h
+%{_includedir}/GLES3/gl32.h
 %{_libdir}/pkgconfig/glesv2.pc
 %{_libdir}/libGLESv2.so
 
@@ -625,7 +663,19 @@ popd
 %endif
 %endif
 
+%if 0%{?with_vulkan}
+%files vulkan-drivers
+%{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
+
+%files vulkan-devel
+%{_includedir}/vulkan/
+%endif
+
 %changelog
+* Mon Dec 05 2016 Dave Airlie <airlied@redhat.com> - 13.0.2-1
+- 13.0.2 - enable intel vulkan support
+
 * Wed Nov 30 2016 Adam Jackson <ajax@redhat.com> - 12.0.4-2
 - Backport a texture corruption fix for radeon
 
