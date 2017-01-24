@@ -59,7 +59,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        13.0.3
-Release:        3%{?rctag:.%{rctag}}%{?dist}
+Release:        4%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -83,6 +83,9 @@ Patch11:        0001-egl-glvnd-support.patch
 Patch12:        glvnd-fix-gl-dot-pc.patch
 Patch13:        0001-Fix-linkage-against-shared-glapi.patch
 Patch14:        0001-glapi-Link-with-glapi-when-built-shared.patch
+
+# regression fix should be in 13.0.4
+Patch15:	mesa-13.0-fix-radeonsi-tess.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -679,6 +682,9 @@ popd
 %endif
 
 %changelog
+* Tue Jan 24 2017 Dave Airlie <airlied@redhat.com< - 13.0.3-4
+- Fix llvm 3.8 radeonsi tess bug (#1413888)
+
 * Tue Jan 17 2017 Hans de Goede <hdegoede@redhat.com> - 13.0.3-3
 - Enable libglvnd support (rhbz#1413579)
 
