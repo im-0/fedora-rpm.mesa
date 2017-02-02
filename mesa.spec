@@ -59,7 +59,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        13.0.3
-Release:        6%{?rctag:.%{rctag}}%{?dist}
+Release:        7%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -72,6 +72,9 @@ Source2:        vl_mpeg12_decoder.c
 Source3:        Mesa-MLAA-License-Clarification-Email.txt
 # bug in 12.0.4 packaging
 Source4:	mesa_glinterop.h
+# Update eglext.h to 20161230 version, drop this once upstream has this version
+# or newer
+Source5:        eglext.h
 
 Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
@@ -376,6 +379,7 @@ Headers for development with the Vulkan API.
 %endif
 
 cp %{SOURCE3} docs/
+cp %{SOURCE5} include/EGL
 
 %build
 autoreconf -vfi
@@ -682,6 +686,10 @@ popd
 %endif
 
 %changelog
+* Thu Feb  2 2017 Hans de Goede <hdegoede@redhat.com> - 13.0.3-7
+- Update eglext.h to 20161230 version this brings in some new defines needed
+  by some apps / libraries
+
 * Mon Jan 30 2017 Kalev Lember <klember@redhat.com> - 13.0.3-6
 - Add back libglvnd support again
 
