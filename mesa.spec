@@ -58,8 +58,8 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        13.0.3
-Release:        7%{?rctag:.%{rctag}}%{?dist}
+Version:        13.0.4
+Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -87,8 +87,8 @@ Patch12:        glvnd-fix-gl-dot-pc.patch
 Patch13:        0001-Fix-linkage-against-shared-glapi.patch
 Patch14:        0001-glapi-Link-with-glapi-when-built-shared.patch
 
-# regression fix should be in 13.0.4
-Patch15:	mesa-13.0-fix-radeonsi-tess.patch
+# submitted upstream
+Patch15:        0001-glx-glvnd-Fix-GLXdispatchIndex-sorting.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -686,6 +686,11 @@ popd
 %endif
 
 %changelog
+* Mon Feb  6 2017 Hans de Goede <hdegoede@redhat.com> - 13.0.4-1
+- New upstream bugfix release 13.0.4
+- Fix GLX_SGIX_fbconfig extension dispatching with glvnd, this fixes games such
+  as "The Binding of Isaac: Rebirth" and "Crypt of the NecroDancer" from Steam
+
 * Thu Feb  2 2017 Hans de Goede <hdegoede@redhat.com> - 13.0.3-7
 - Update eglext.h to 20161230 version this brings in some new defines needed
   by some apps / libraries
