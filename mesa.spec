@@ -59,7 +59,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        13.0.4
-Release:        1%{?rctag:.%{rctag}}%{?dist}
+Release:        2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -686,6 +686,9 @@ popd
 %endif
 
 %changelog
+* Mon Mar 06 2017 Dave Airlie <airlied@redhat.com> - 13.0.4-2
+- rebuild for llvm 3.9
+
 * Mon Feb  6 2017 Hans de Goede <hdegoede@redhat.com> - 13.0.4-1
 - New upstream bugfix release 13.0.4
 - Fix GLX_SGIX_fbconfig extension dispatching with glvnd, this fixes games such
