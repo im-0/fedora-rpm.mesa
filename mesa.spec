@@ -59,7 +59,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        17.0.2
+Version:        17.0.5
 Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
@@ -691,6 +691,9 @@ popd
 %endif
 
 %changelog
+* Tue May 02 2017 Dave Airlie <airlied@redhat.com> - 17.0.5-1
+- Update to 17.0.5
+
 * Mon Mar 20 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.0.2-1
 - Update to 17.0.2
 
