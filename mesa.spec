@@ -40,10 +40,11 @@
 %endif
 
 %ifarch %{arm} aarch64
-%define with_vc4       1
+%define with_etnaviv   1
 %define with_freedreno 1
-%define with_xa        1
 %define with_omx       1
+%define with_vc4       1
+%define with_xa        1
 %endif
 
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
@@ -54,27 +55,26 @@
 
 %global sanitize 1
 
-#global rctag rc2
+#global rctag rc3
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        13.0.4
-Release:        3%{?rctag:.%{rctag}}%{?dist}
+Version:        17.0.5
+Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
-Source0:        https://mesa.freedesktop.org/archive/%{version}/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+Source0:        https://mesa.freedesktop.org/archive/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
 Source1:        vl_decoder.c
 Source2:        vl_mpeg12_decoder.c
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
 # Source4 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source3:        Mesa-MLAA-License-Clarification-Email.txt
-# bug in 12.0.4 packaging
-Source4:	mesa_glinterop.h
+
 # Update eglext.h to 20161230 version, drop this once upstream has this version
 # or newer
-Source5:        eglext.h
+Source4:        eglext.h
 
 Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
@@ -82,13 +82,14 @@ Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
 
 # glvnd support patches
-Patch11:        0001-egl-glvnd-support.patch
-Patch12:        glvnd-fix-gl-dot-pc.patch
-Patch13:        0001-Fix-linkage-against-shared-glapi.patch
-Patch14:        0001-glapi-Link-with-glapi-when-built-shared.patch
-
+# https://patchwork.freedesktop.org/series/12354/, v3 & v4
+Patch11:        0001-EGL-Implement-the-libglvnd-interface-for-EGL-v2.patch
+Patch12:        0002-fixup-EGL-Implement-the-libglvnd-interface-for-EGL-v.patch
+# non-upstreamed ones
+Patch13:        glvnd-fix-gl-dot-pc.patch
+Patch14:        0001-Fix-linkage-against-shared-glapi.patch
+Patch15:        0001-glapi-Link-with-glapi-when-built-shared.patch
 # submitted upstream
-Patch15:        0001-glx-glvnd-Fix-GLXdispatchIndex-sorting.patch
 Patch16:        0001-glxglvnddispatch-Add-missing-dispatch-for-GetDriverC.patch
 
 BuildRequires:  gcc
@@ -144,7 +145,6 @@ BuildRequires: libclc-devel opencl-filesystem
 %endif
 %if 0%{?with_vulkan}
 BuildRequires: vulkan-devel
-BuildRequires: nettle-devel
 %endif
 BuildRequires: python-mako
 BuildRequires: libstdc++-static
@@ -380,7 +380,7 @@ Headers for development with the Vulkan API.
 %endif
 
 cp %{SOURCE3} docs/
-cp %{SOURCE5} include/EGL
+cp %{SOURCE4} include/EGL
 
 %build
 autoreconf -vfi
@@ -418,7 +418,6 @@ export LDFLAGS="-static-libstdc++"
     --enable-texture-float=yes \
 %if %{with_vulkan}
     %{?vulkan_drivers} \
-    --with-sha1=libnettle \
 %endif
     %{?with_llvm:--enable-gallium-llvm} \
     %{?with_llvm:--enable-llvm-shared-libs} \
@@ -426,7 +425,7 @@ export LDFLAGS="-static-libstdc++"
 %if %{with_hardware}
     %{?with_xa:--enable-xa} \
     %{?with_nine:--enable-nine} \
-    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_vc4:vc4,}%{?with_ilo:ilo,}virgl,r300,nouveau \
+    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_etnaviv:etnaviv,}%{?with_vc4:vc4,}%{?with_ilo:ilo,}virgl,r300,nouveau \
 %else
     --with-gallium-drivers=%{?with_llvm:swrast,}virgl \
 %endif
@@ -443,9 +442,6 @@ sed -i 's/^postdeps=.*$/#&/' libtool
 
 %install
 %make_install
-
-# bug in 12.0.4
-install -p %{SOURCE4} %{buildroot}%{_includedir}/GL/
 
 %if !%{with_hardware}
 rm -f %{buildroot}%{_sysconfdir}/drirc
@@ -504,7 +500,6 @@ popd
 %{_includedir}/GL/glcorearb.h
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
-%{_includedir}/GL/mesa_glinterop.h
 %{_libdir}/pkgconfig/dri.pc
 %{_libdir}/libglapi.so
 %{_libdir}/pkgconfig/gl.pc
@@ -642,6 +637,9 @@ popd
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
 %endif
+%if 0%{?with_etnaviv}
+%{_libdir}/dri/etnaviv_dri.so
+%endif
 %{_libdir}/dri/nouveau_dri.so
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
@@ -692,6 +690,9 @@ popd
 %endif
 
 %changelog
+* Tue May 02 2017 Dave Airlie <airlied@redhat.com> - 17.0.5-1
+- Update to 17.0.5
+
 * Mon Mar 20 2017 Hans de Goede <hdegoede@redhat.com> - 13.0.4-3
 - Fix glXGetDriverConfig not working with glvnd (rhbz#1429894)
 - Fix indirect rendering, add libGLX_indirect.so.0 symlink (rhbz#1427174)
