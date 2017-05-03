@@ -50,7 +50,7 @@
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
 
 %if 0%{?with_vulkan}
-%define vulkan_drivers --with-vulkan-drivers=intel
+%define vulkan_drivers --with-vulkan-drivers=intel,radeon
 %endif
 
 %global sanitize 1
@@ -60,7 +60,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        17.0.5
-Release:        1%{?rctag:.%{rctag}}%{?dist}
+Release:        2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -683,13 +683,18 @@ popd
 %if 0%{?with_vulkan}
 %files vulkan-drivers
 %{_libdir}/libvulkan_intel.so
+%{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
+%{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
 
 %files vulkan-devel
 %{_includedir}/vulkan/
 %endif
 
 %changelog
+* Wed May 03 2017 Dave Airlie <airlied@redhat.com> - 17.0.5-2
+- enable radv
+
 * Tue May 02 2017 Dave Airlie <airlied@redhat.com> - 17.0.5-1
 - Update to 17.0.5
 
