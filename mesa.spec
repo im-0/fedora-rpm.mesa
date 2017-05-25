@@ -23,7 +23,6 @@
 
 %ifarch %{ix86} x86_64
 %define platform_drivers ,i915,i965
-%define with_ilo    1
 %define with_vmware 1
 %define with_xa     1
 %define with_omx    1
@@ -55,11 +54,11 @@
 
 %global sanitize 1
 
-#global rctag rc3
+#global rctag rc4
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        17.0.5
+Version:        17.1.1
 Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
@@ -81,15 +80,9 @@ Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
 
 # glvnd support patches
-# https://patchwork.freedesktop.org/series/12354/, v3 & v4
-Patch11:        0001-EGL-Implement-the-libglvnd-interface-for-EGL-v2.patch
-Patch12:        0002-fixup-EGL-Implement-the-libglvnd-interface-for-EGL-v.patch
 # non-upstreamed ones
 Patch13:        glvnd-fix-gl-dot-pc.patch
 Patch14:        0001-Fix-linkage-against-shared-glapi.patch
-Patch15:        0001-glapi-Link-with-glapi-when-built-shared.patch
-# submitted upstream
-Patch16:        0001-glxglvnddispatch-Add-missing-dispatch-for-GetDriverC.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -135,7 +128,7 @@ BuildRequires: libvdpau-devel
 %if 0%{?with_vaapi}
 BuildRequires: libva-devel
 %endif
-BuildRequires: zlib-devel
+BuildRequires: pkgconfig(zlib)
 %if 0%{?with_omx}
 BuildRequires: libomxil-bellagio-devel
 %endif
@@ -150,7 +143,7 @@ BuildRequires: libstdc++-static
 %ifarch %{valgrind_arches}
 BuildRequires: pkgconfig(valgrind)
 %endif
-BuildRequires: libglvnd-core-devel
+BuildRequires: pkgconfig(libglvnd) >= 0.2.0
 
 %description
 %{summary}.
@@ -408,7 +401,7 @@ export LDFLAGS="-static-libstdc++"
     --disable-xvmc \
     %{?with_vdpau:--enable-vdpau} \
     %{?with_vaapi:--enable-va} \
-    --with-egl-platforms=x11,drm,surfaceless%{?with_wayland:,wayland} \
+    --with-platforms=x11,drm,surfaceless%{?with_wayland:,wayland} \
     --enable-shared-glapi \
     --enable-gbm \
     %{?with_omx:--enable-omx} \
@@ -418,13 +411,13 @@ export LDFLAGS="-static-libstdc++"
 %if %{with_vulkan}
     %{?vulkan_drivers} \
 %endif
-    %{?with_llvm:--enable-gallium-llvm} \
+    %{?with_llvm:--enable-llvm} \
     %{?with_llvm:--enable-llvm-shared-libs} \
     --enable-dri \
 %if %{with_hardware}
     %{?with_xa:--enable-xa} \
     %{?with_nine:--enable-nine} \
-    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_etnaviv:etnaviv,}%{?with_vc4:vc4,}%{?with_ilo:ilo,}virgl,r300,nouveau \
+    --with-gallium-drivers=%{?with_vmware:svga,}%{?with_radeonsi:radeonsi,}%{?with_llvm:swrast,r600,}%{?with_freedreno:freedreno,}%{?with_etnaviv:etnaviv,imx,}%{?with_vc4:vc4,}virgl,r300,nouveau \
 %else
     --with-gallium-drivers=%{?with_llvm:swrast,}virgl \
 %endif
@@ -625,9 +618,6 @@ popd
 %ifarch %{ix86} x86_64
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/i965_dri.so
-%if 0%{?with_ilo}
-%{_libdir}/dri/ilo_dri.so
-%endif
 %endif
 %if 0%{?with_vc4}
 %{_libdir}/dri/vc4_dri.so
@@ -638,6 +628,7 @@ popd
 %endif
 %if 0%{?with_etnaviv}
 %{_libdir}/dri/etnaviv_dri.so
+%{_libdir}/dri/imx-drm_dri.so
 %endif
 %{_libdir}/dri/nouveau_dri.so
 %if 0%{?with_vmware}
@@ -691,8 +682,29 @@ popd
 %endif
 
 %changelog
-* Tue May 02 2017 Dave Airlie <airlied@redhat.com> - 17.0.5-1
-- Update to 17.0.5
+* Thu May 25 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.1.1-1
+- Update to 17.1.1
+
+* Thu May 11 2017 Dave Airlie <airlied@redhat.com> - 17.1.0-1
+- Update to 17.1.0
+
+* Tue May  9 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.1.0-0.4.rc4
+- Update to 17.1.0-rc4
+
+* Fri Apr 28 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.1.0-0.3.rc2
+- Enable renderonly support for i.MX SoC (rhbz #1424714)
+
+* Mon Apr 24 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.1.0-0.2.rc2
+- Update to 17.1.0-rc2
+
+* Tue Apr 18 2017 Igor Gnatenko <ignatenko@redhat.com> - 17.1.0-0.1.rc1
+- Update to 17.1.0-rc1
+
+* Sun Apr 02 2017 Igor Gnatenko <ignatenko@redhat.com> - 17.0.3-1
+- Update to 17.0.3
+
+* Fri Mar 24 2017 Igor Gnatenko <ignatenko@redhat.com> - 17.0.2-2
+- Rebuild for LLVM4
 
 * Mon Mar 20 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.0.2-1
 - Update to 17.0.2
