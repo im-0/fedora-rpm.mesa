@@ -1,0 +1,50 @@
+From 14a5478a27ccd58855d49d227b0762287fd2cbc2 Mon Sep 17 00:00:00 2001
+From: Lyude <lyude@redhat.com>
+Date: Fri, 2 Jun 2017 20:27:07 -0400
+Subject: [PATCH] nvc0: Disable BGRA8 images on Fermi
+
+For unknown reasons, using BGRA8 images on Fermi results in breaking
+reads from PBOs, such that they always return 0x0. Discovered this
+through a glamor bug, and confirmed it does indeed break a good number
+of piglit tests such as spec/arb_pixel_buffer_object/pbo-read-argb8888
+
+Until we have a proper fix, just disable this functionality on Fermi.
+
+Signed-off-by: Lyude <lyude@redhat.com>
+---
+ src/gallium/drivers/nouveau/nvc0/nvc0_screen.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
+
+diff --git a/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c b/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c
+index c636926..f6c5c72 100644
+--- a/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c
++++ b/src/gallium/drivers/nouveau/nvc0/nvc0_screen.c
+@@ -87,11 +87,20 @@ nvc0_screen_is_format_supported(struct pipe_screen *pscreen,
+    bindings &= ~(PIPE_BIND_LINEAR |
+                  PIPE_BIND_SHARED);
+ 
+-   if (bindings & PIPE_BIND_SHADER_IMAGE && sample_count > 1 &&
+-       nouveau_screen(pscreen)->class_3d >= GM107_3D_CLASS) {
+-      /* MS images are currently unsupported on Maxwell because they have to
+-       * be handled explicitly. */
+-      return false;
++   if (bindings & PIPE_BIND_SHADER_IMAGE) {
++      if (sample_count > 1 &&
++          nouveau_screen(pscreen)->class_3d >= GM107_3D_CLASS) {
++         /* MS images are currently unsupported on Maxwell because they have to
++          * be handled explicitly. */
++         return false;
++      }
++
++      if (format == PIPE_FORMAT_B8G8R8A8_UNORM &&
++          nouveau_screen(pscreen)->class_3d < NVE4_3D_CLASS) {
++         /* This should work on Fermi, but for currently unknown reasons it
++          * does not and results in breaking reads from pbos. */
++         return false;
++      }
+    }
+ 
+    return (( nvc0_format_table[format].usage |
+-- 
+2.9.4
+

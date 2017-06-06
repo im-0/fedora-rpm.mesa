@@ -60,7 +60,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        17.0.5
-Release:        2%{?rctag:.%{rctag}}%{?dist}
+Release:        3%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -91,6 +91,8 @@ Patch14:        0001-Fix-linkage-against-shared-glapi.patch
 Patch15:        0001-glapi-Link-with-glapi-when-built-shared.patch
 # submitted upstream
 Patch16:        0001-glxglvnddispatch-Add-missing-dispatch-for-GetDriverC.patch
+# fix XWayland on fermi with nouveau
+Patch17:        0001-nvc0-Disable-BGRA8-images-on-Fermi.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -692,6 +694,9 @@ popd
 %endif
 
 %changelog
+* Tue Jun 06 2017 Lyude Paul <lyude@redhat.com> - 17.0.5-3
+- add fix for rhbz#1411447
+
 * Wed May 03 2017 Dave Airlie <airlied@redhat.com> - 17.0.5-2
 - enable radv
 
