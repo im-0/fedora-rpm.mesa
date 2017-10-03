@@ -54,12 +54,12 @@
 
 %global sanitize 1
 
-#global rctag rc4
+#global rctag rc6
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        17.1.7
-Release:        1%{?rctag:.%{rctag}}%{?dist}
+Version:        17.2.2
+Release:        2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -71,6 +71,9 @@ Source2:        vl_mpeg12_decoder.c
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source3:        Mesa-MLAA-License-Clarification-Email.txt
 
+# https://cgit.freedesktop.org/~ajax/mesa/log/?h=mesa-17.2-s3tc
+Patch0:		0001-mesa-Squash-merge-of-S3TC-support.patch
+
 Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
@@ -78,13 +81,10 @@ Patch4:         0004-bigendian-assert.patch
 
 # glvnd support patches
 # non-upstreamed ones
-Patch13:        glvnd-fix-gl-dot-pc.patch
-Patch14:        0001-Fix-linkage-against-shared-glapi.patch
+Patch10:        glvnd-fix-gl-dot-pc.patch
+Patch11:        0001-Fix-linkage-against-shared-glapi.patch
 
 # backport from upstream
-Patch51:	mesa-7.1.2-etnaviv-upstream-fixes.patch
-Patch52:	mesa-7.1.2-etnaviv-fixes.patch
-Patch53:	mesa-7.1-vc4-fixes.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -123,6 +123,7 @@ BuildRequires: bison flex
 %if %{with wayland}
 BuildRequires: pkgconfig(wayland-client)
 BuildRequires: pkgconfig(wayland-server)
+BuildRequires: pkgconfig(wayland-protocols)
 %endif
 %if 0%{?with_vdpau}
 BuildRequires: libvdpau-devel
@@ -374,6 +375,10 @@ Headers for development with the Vulkan API.
 %endif
 
 cp %{SOURCE3} docs/
+
+# this is a hack for S3TC support. r200_screen.c is symlinked to
+# radeon_screen.c in git, but is its own file in the tarball.
+cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c
 
 %build
 autoreconf -vfi
@@ -683,8 +688,35 @@ popd
 %endif
 
 %changelog
-* Tue Aug 22 2017 Peter Robinson <pbrobinson@fedoraproject.org> 7.1.7-1
-- Update to 17.1.7
+* Tue Oct 03 2017 Adam Jackson <ajax@redhat.com> - 17.2.2-2
+- Backport S3TC support from master
+
+* Tue Oct  3 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.2-1
+- Update to 17.2.2 GA
+
+* Wed Sep 20 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.1-1
+- Update to 17.2.1 GA
+
+* Mon Sep 11 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.0-2
+- Add upstream patch for glibc xlocale.h change (fdo bz 102454)
+
+* Tue Sep  5 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.0-1
+- Update to 17.2.0 GA
+
+* Thu Aug 31 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.0-0.3.rc6
+- Update to 17.2.0-rc6
+
+* Tue Aug 22 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.0-0.2.rc5
+- Update to 17.2.0-rc5
+
+* Sun Aug 13 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.0-0.1.rc4
+- Update to 17.2.0-rc4
+
+* Thu Aug 03 2017 Fedora Release Engineering <releng@fedoraproject.org> - 17.1.5-1.2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Binutils_Mass_Rebuild
+
+* Wed Jul 26 2017 Fedora Release Engineering <releng@fedoraproject.org> - 17.1.5-1.1
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
 * Mon Jul 17 2017 Peter Robinson <pbrobinson@fedoraproject.org> 7.1.5-1
 - Update to 17.1.5
