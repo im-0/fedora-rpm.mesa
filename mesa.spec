@@ -58,12 +58,14 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        17.2.4
-Release:        1%{?rctag:.%{rctag}}%{?dist}
+Version:        17.3.99.0
+Release:        0.1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
-Source0:        https://mesa.freedesktop.org/archive/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+#Source0:        https://mesa.freedesktop.org/archive/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+# wrong version number, sorry about that
+Source0:        mesa-17.3.0-devel.tar.xz
 Source1:        vl_decoder.c
 Source2:        vl_mpeg12_decoder.c
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
@@ -71,19 +73,15 @@ Source2:        vl_mpeg12_decoder.c
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source3:        Mesa-MLAA-License-Clarification-Email.txt
 
-# https://cgit.freedesktop.org/~ajax/mesa/log/?h=mesa-17.2-s3tc
-Patch0:		0001-mesa-Squash-merge-of-S3TC-support.patch
-
 Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
-Patch5:         vc4-Don-t-advertise-tiled-dmabuf-modifiers-if-we-can-t-use-them.patch
 
 # glvnd support patches
 # non-upstreamed ones
 Patch10:        glvnd-fix-gl-dot-pc.patch
-Patch11:        0001-Fix-linkage-against-shared-glapi.patch
+#Patch11:        0001-Fix-linkage-against-shared-glapi.patch
 
 # backport from upstream
 
@@ -143,7 +141,6 @@ BuildRequires: libclc-devel opencl-filesystem
 BuildRequires: vulkan-devel
 %endif
 BuildRequires: python-mako
-BuildRequires: libstdc++-static
 %ifarch %{valgrind_arches}
 BuildRequires: pkgconfig(valgrind)
 %endif
@@ -369,17 +366,14 @@ Headers for development with the Vulkan API.
 %endif
 
 %prep
-%autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
+#autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
+%autosetup -n %{name}-17.3.0-devel -p1
 %if 0%{sanitize}
   cp -f %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
   cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
 %endif
 
 cp %{SOURCE3} docs/
-
-# this is a hack for S3TC support. r200_screen.c is symlinked to
-# radeon_screen.c in git, but is its own file in the tarball.
-cp -f src/mesa/drivers/dri/{radeon,r200}/radeon_screen.c
 
 %build
 autoreconf -vfi
@@ -389,8 +383,7 @@ autoreconf -vfi
 #
 # We do say 'catch' in the clover and d3d1x state trackers, but we're not
 # building those yet.
-export CXXFLAGS="%{?with_opencl:-frtti -fexceptions} %{!?with_opencl:-fno-rtti -fno-exceptions}"
-export LDFLAGS="-static-libstdc++"
+# export CXXFLAGS="%{?with_opencl:-frtti -fexceptions} %{!?with_opencl:-fno-rtti -fno-exceptions}"
 %ifarch %{ix86}
 # i do not have words for how much the assembly dispatch code infuriates me
 %global asm_flags --disable-asm
@@ -430,13 +423,6 @@ export LDFLAGS="-static-libstdc++"
 %endif
     %{?dri_drivers}
 
-# libtool refuses to pass through things you ask for in LDFLAGS that it doesn't
-# know about, like -static-libstdc++, so...
-sed -i 's/-fuse-linker-plugin|/-static-lib*|&/' libtool
-sed -i 's/-nostdlib//g' libtool
-sed -i 's/^predep_objects=.*$/#&/' libtool
-sed -i 's/^postdep_objects=.*$/#&/' libtool
-sed -i 's/^postdeps=.*$/#&/' libtool
 %make_build MKDEP=/bin/true V=1
 
 %install
@@ -694,6 +680,9 @@ popd
 %endif
 
 %changelog
+* Mon Nov 06 2017 Adam Jackson <ajax@redhat.com> - 17.3.99.0-0.1
+- today's git snapshot
+
 * Tue Oct 31 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.4-1
 - Update to 17.2.4 GA
 
