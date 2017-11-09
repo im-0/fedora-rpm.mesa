@@ -59,7 +59,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        17.3.99.0
-Release:        0.1%{?rctag:.%{rctag}}%{?dist}
+Release:        0.2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -77,6 +77,8 @@ Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
+Patch5:         0001-context_flush_control-squash.patch
+Patch6:         0001-glx-Implement-GLX_EXT_no_config_context-v2-squash.patch
 
 # glvnd support patches
 # non-upstreamed ones
@@ -680,6 +682,10 @@ popd
 %endif
 
 %changelog
+* Thu Nov 09 2017 Adam Jackson <ajax@redhat.com> - 17.3.99.0-0.2
+- GLX_EXT_no_config_context
+- {EGL_KHR,GLX_ARB}_context_flush_control
+
 * Mon Nov 06 2017 Adam Jackson <ajax@redhat.com> - 17.3.99.0-0.1
 - today's git snapshot
 

@@ -1,0 +1,250 @@
+From 0d9f80a538a1d39206ac82c97f10253481595150 Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Tue, 7 Nov 2017 10:42:08 -0500
+Subject: [PATCH] glx: Implement GLX_EXT_no_config_context (v2 squash)
+
+This more or less ports EGL_KHR_no_config_context to GLX.
+
+v2: Enable the extension only for those backends that support it.
+
+Khronos: https://github.com/KhronosGroup/OpenGL-Registry/pull/102
+Reviewed-by: Kenneth Graunke <kenneth@whitecape.org>
+Signed-off-by: Adam Jackson <ajax@redhat.com>
+---
+ src/glx/create_context.c | 41 +++++++++++++++++++++++++++--------------
+ src/glx/dri2_glx.c       |  5 +++--
+ src/glx/dri3_glx.c       |  6 ++++--
+ src/glx/drisw_glx.c      |  5 +++--
+ src/glx/glxcmds.c        | 30 +++++++++++++++++-------------
+ src/glx/glxextensions.c  |  1 +
+ src/glx/glxextensions.h  |  1 +
+ 7 files changed, 56 insertions(+), 33 deletions(-)
+
+diff --git a/src/glx/create_context.c b/src/glx/create_context.c
+index 38e949ab4c..eab6511ad8 100644
+--- a/src/glx/create_context.c
++++ b/src/glx/create_context.c
+@@ -47,21 +47,11 @@ glXCreateContextAttribsARB(Display *dpy, GLXFBConfig config,
+    xcb_generic_error_t *err;
+    xcb_void_cookie_t cookie;
+    unsigned dummy_err = 0;
++   int screen = -1;
+ 
+-
+-   if (dpy == NULL || cfg == NULL)
+-      return NULL;
+-
+-   /* This means that either the caller passed the wrong display pointer or
+-    * one of the internal GLX data structures (probably the fbconfig) has an
+-    * error.  There is nothing sensible to do, so return an error.
+-    */
+-   psc = GetGLXScreenConfigs(dpy, cfg->screen);
+-   if (psc == NULL)
++   if (dpy == NULL)
+       return NULL;
+ 
+-   assert(cfg->screen == psc->scr);
+-
+    /* Count the number of attributes specified by the application.  All
+     * attributes appear in pairs, except the terminating None.
+     */
+@@ -70,6 +60,29 @@ glXCreateContextAttribsARB(Display *dpy, GLXFBConfig config,
+ 	 /* empty */ ;
+    }
+ 
++   if (cfg) {
++      screen = cfg->screen;
++   } else {
++      int i;
++      for (i = 0; i < num_attribs; i++) {
++         if (attrib_list[i * 2] == GLX_SCREEN)
++            screen = attrib_list[i * 2 + 1];
++      }
++   }
++
++   /* This means that either the caller passed the wrong display pointer or
++    * one of the internal GLX data structures (probably the fbconfig) has an
++    * error.  There is nothing sensible to do, so return an error.
++    */
++   psc = GetGLXScreenConfigs(dpy, screen);
++   if (psc == NULL)
++      return NULL;
++
++   assert(screen == psc->scr);
++
++   if (!cfg && !__glXExtensionBitIsEnabled(psc, EXT_no_config_context_bit))
++      return NULL;
++
+    if (direct && psc->vtable->create_context_attribs) {
+       /* GLX drops the error returned by the driver.  The expectation is that
+        * an error will also be returned by the server.  The server's error
+@@ -104,8 +117,8 @@ glXCreateContextAttribsARB(Display *dpy, GLXFBConfig config,
+    cookie =
+       xcb_glx_create_context_attribs_arb_checked(c,
+ 						 gc->xid,
+-						 cfg->fbconfigID,
+-						 cfg->screen,
++						 cfg ? cfg->fbconfigID : 0,
++						 screen,
+ 						 gc->share_xid,
+ 						 gc->isDirect,
+ 						 num_attribs,
+diff --git a/src/glx/dri2_glx.c b/src/glx/dri2_glx.c
+index e67a15f9da..eeec4f0d60 100644
+--- a/src/glx/dri2_glx.c
++++ b/src/glx/dri2_glx.c
+@@ -278,7 +278,7 @@ dri2_create_context_attribs(struct glx_screen *base,
+       goto error_exit;
+    }
+ 
+-   if (!glx_context_init(&pcp->base, &psc->base, &config->base))
++   if (!glx_context_init(&pcp->base, &psc->base, config_base))
+       goto error_exit;
+ 
+    ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_MAJOR_VERSION;
+@@ -317,7 +317,7 @@ dri2_create_context_attribs(struct glx_screen *base,
+    pcp->driContext =
+       (*psc->dri2->createContextAttribs) (psc->driScreen,
+ 					  api,
+-					  config->driConfig,
++					  config ? config->driConfig : NULL,
+ 					  shared,
+ 					  num_ctx_attribs / 2,
+ 					  ctx_attribs,
+@@ -1129,6 +1129,7 @@ dri2BindExtensions(struct dri2_screen *psc, struct glx_display * priv,
+ 
+       __glXEnableDirectExtension(&psc->base, "GLX_ARB_create_context");
+       __glXEnableDirectExtension(&psc->base, "GLX_ARB_create_context_profile");
++      __glXEnableDirectExtension(&psc->base, "GLX_EXT_no_config_context");
+ 
+       if ((mask & ((1 << __DRI_API_GLES) |
+                    (1 << __DRI_API_GLES2) |
+diff --git a/src/glx/dri3_glx.c b/src/glx/dri3_glx.c
+index d613073994..4470d1ef68 100644
+--- a/src/glx/dri3_glx.c
++++ b/src/glx/dri3_glx.c
+@@ -263,7 +263,7 @@ dri3_create_context_attribs(struct glx_screen *base,
+       goto error_exit;
+    }
+ 
+-   if (!glx_context_init(&pcp->base, &psc->base, &config->base))
++   if (!glx_context_init(&pcp->base, &psc->base, config_base))
+       goto error_exit;
+ 
+    ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_MAJOR_VERSION;
+@@ -297,7 +297,8 @@ dri3_create_context_attribs(struct glx_screen *base,
+    pcp->driContext =
+       (*psc->image_driver->createContextAttribs) (psc->driScreen,
+                                                   api,
+-                                                  config->driConfig,
++                                                  config ? config->driConfig
++                                                         : NULL,
+                                                   shared,
+                                                   num_ctx_attribs / 2,
+                                                   ctx_attribs,
+@@ -718,6 +719,7 @@ dri3_bind_extensions(struct dri3_screen *psc, struct glx_display * priv,
+ 
+    __glXEnableDirectExtension(&psc->base, "GLX_ARB_create_context");
+    __glXEnableDirectExtension(&psc->base, "GLX_ARB_create_context_profile");
++   __glXEnableDirectExtension(&psc->base, "GLX_EXT_no_config_context");
+ 
+    if ((mask & ((1 << __DRI_API_GLES) |
+                 (1 << __DRI_API_GLES2) |
+diff --git a/src/glx/drisw_glx.c b/src/glx/drisw_glx.c
+index a471856634..1f86ac2d4c 100644
+--- a/src/glx/drisw_glx.c
++++ b/src/glx/drisw_glx.c
+@@ -455,7 +455,7 @@ drisw_create_context_attribs(struct glx_screen *base,
+    if (pcp == NULL)
+       return NULL;
+ 
+-   if (!glx_context_init(&pcp->base, &psc->base, &config->base)) {
++   if (!glx_context_init(&pcp->base, &psc->base, config_base)) {
+       free(pcp);
+       return NULL;
+    }
+@@ -483,7 +483,7 @@ drisw_create_context_attribs(struct glx_screen *base,
+    pcp->driContext =
+       (*psc->swrast->createContextAttribs) (psc->driScreen,
+ 					    api,
+-					    config->driConfig,
++					    config ? config->driConfig : 0,
+ 					    shared,
+ 					    num_ctx_attribs / 2,
+ 					    ctx_attribs,
+@@ -630,6 +630,7 @@ driswBindExtensions(struct drisw_screen *psc, const __DRIextension **extensions)
+    if (psc->swrast->base.version >= 3) {
+       __glXEnableDirectExtension(&psc->base, "GLX_ARB_create_context");
+       __glXEnableDirectExtension(&psc->base, "GLX_ARB_create_context_profile");
++      __glXEnableDirectExtension(&psc->base, "GLX_EXT_no_config_context");
+ 
+       /* DRISW version >= 2 implies support for OpenGL ES.
+        */
+diff --git a/src/glx/glxcmds.c b/src/glx/glxcmds.c
+index 10c7c2c3eb..c707d0cedf 100644
+--- a/src/glx/glxcmds.c
++++ b/src/glx/glxcmds.c
+@@ -235,19 +235,23 @@ Bool
+ validate_renderType_against_config(const struct glx_config *config,
+                                    int renderType)
+ {
+-    switch (renderType) {
+-    case GLX_RGBA_TYPE:
+-        return (config->renderType & GLX_RGBA_BIT) != 0;
+-    case GLX_COLOR_INDEX_TYPE:
+-        return (config->renderType & GLX_COLOR_INDEX_BIT) != 0;
+-    case GLX_RGBA_FLOAT_TYPE_ARB:
+-        return (config->renderType & GLX_RGBA_FLOAT_BIT_ARB) != 0;
+-    case GLX_RGBA_UNSIGNED_FLOAT_TYPE_EXT:
+-        return (config->renderType & GLX_RGBA_UNSIGNED_FLOAT_BIT_EXT) != 0;
+-    default:
+-        break;
+-    }
+-    return 0;
++   /* GLX_EXT_no_config_context supports any render type */
++   if (!config)
++      return True;
++
++   switch (renderType) {
++      case GLX_RGBA_TYPE:
++         return (config->renderType & GLX_RGBA_BIT) != 0;
++      case GLX_COLOR_INDEX_TYPE:
++         return (config->renderType & GLX_COLOR_INDEX_BIT) != 0;
++      case GLX_RGBA_FLOAT_TYPE_ARB:
++         return (config->renderType & GLX_RGBA_FLOAT_BIT_ARB) != 0;
++      case GLX_RGBA_UNSIGNED_FLOAT_TYPE_EXT:
++         return (config->renderType & GLX_RGBA_UNSIGNED_FLOAT_BIT_EXT) != 0;
++      default:
++         break;
++   }
++   return 0;
+ }
+ 
+ _X_HIDDEN Bool
+diff --git a/src/glx/glxextensions.c b/src/glx/glxextensions.c
+index af6ffbf660..4853ad534e 100644
+--- a/src/glx/glxextensions.c
++++ b/src/glx/glxextensions.c
+@@ -146,6 +146,7 @@ static const struct extension_info known_glx_extensions[] = {
+    { GLX(EXT_fbconfig_packed_float),   VER(0,0), Y, Y, N, N },
+    { GLX(EXT_framebuffer_sRGB),        VER(0,0), Y, Y, N, N },
+    { GLX(EXT_import_context),          VER(0,0), Y, Y, N, N },
++   { GLX(EXT_no_config_context),       VER(0,0), Y, N, N, N },
+    { GLX(EXT_texture_from_pixmap),     VER(0,0), Y, N, N, N },
+    { GLX(EXT_visual_info),             VER(0,0), Y, Y, N, N },
+    { GLX(EXT_visual_rating),           VER(0,0), Y, Y, N, N },
+diff --git a/src/glx/glxextensions.h b/src/glx/glxextensions.h
+index d73128bd0e..07cd3af0ff 100644
+--- a/src/glx/glxextensions.h
++++ b/src/glx/glxextensions.h
+@@ -50,6 +50,7 @@ enum
+    EXT_fbconfig_packed_float_bit,
+    EXT_framebuffer_sRGB_bit,
+    EXT_import_context_bit,
++   EXT_no_config_context_bit,
+    EXT_texture_from_pixmap_bit,
+    EXT_visual_info_bit,
+    EXT_visual_rating_bit,
+-- 
+2.14.3
+

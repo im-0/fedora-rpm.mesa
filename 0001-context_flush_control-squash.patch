@@ -1,0 +1,1332 @@
+From 1b7402f3ceaaf6493735f38096008fa1e2767b3c Mon Sep 17 00:00:00 2001
+From: Adam Jackson <ajax@redhat.com>
+Date: Thu, 22 Sep 2016 03:38:01 -0400
+Subject: [PATCH] context_flush_control squash
+
+---
+ include/GL/internal/dri_interface.h            | 25 +++++++++
+ src/egl/drivers/dri2/egl_dri2.c                | 42 ++++++---------
+ src/egl/drivers/dri2/egl_dri2.h                |  1 +
+ src/egl/main/eglapi.c                          |  1 +
+ src/egl/main/eglcontext.c                      | 10 ++++
+ src/egl/main/eglcontext.h                      |  1 +
+ src/egl/main/egldisplay.h                      |  1 +
+ src/gallium/include/state_tracker/st_api.h     |  1 +
+ src/gallium/state_trackers/dri/dri_context.c   | 42 ++++++++-------
+ src/gallium/state_trackers/dri/dri_context.h   | 14 ++---
+ src/gallium/state_trackers/dri/drisw.c         |  1 +
+ src/glx/dri2_glx.c                             | 18 ++++++-
+ src/glx/dri3_glx.c                             | 14 ++++-
+ src/glx/dri_common.c                           | 16 +++++-
+ src/glx/dri_common.h                           |  2 +-
+ src/glx/drisw_glx.c                            | 17 +++++-
+ src/glx/glxextensions.c                        |  1 +
+ src/glx/glxextensions.h                        |  3 +-
+ src/mesa/drivers/dri/common/dri_util.c         | 71 +++++++++++++++++---------
+ src/mesa/drivers/dri/common/dri_util.h         | 42 +++++++++++++--
+ src/mesa/drivers/dri/i915/intel_context.c      |  9 ----
+ src/mesa/drivers/dri/i915/intel_screen.c       | 18 +++----
+ src/mesa/drivers/dri/i965/brw_context.c        | 68 ++++++++++++++----------
+ src/mesa/drivers/dri/i965/brw_context.h        |  6 +--
+ src/mesa/drivers/dri/i965/intel_screen.c       |  2 +
+ src/mesa/drivers/dri/nouveau/nouveau_context.c | 15 +++---
+ src/mesa/drivers/dri/nouveau/nouveau_context.h |  3 +-
+ src/mesa/drivers/dri/r200/r200_context.c       | 12 ++---
+ src/mesa/drivers/dri/r200/r200_context.h       |  7 +--
+ src/mesa/drivers/dri/radeon/radeon_context.c   | 12 ++---
+ src/mesa/drivers/dri/radeon/radeon_context.h   |  7 +--
+ src/mesa/drivers/dri/swrast/swrast.c           | 16 +++---
+ src/mesa/state_tracker/st_manager.c            |  3 ++
+ 33 files changed, 318 insertions(+), 183 deletions(-)
+
+diff --git a/include/GL/internal/dri_interface.h b/include/GL/internal/dri_interface.h
+index 98402eae05..b47947380c 100644
+--- a/include/GL/internal/dri_interface.h
++++ b/include/GL/internal/dri_interface.h
+@@ -1106,6 +1106,16 @@ struct __DRIdri2LoaderExtensionRec {
+ #define __DRI_CTX_PRIORITY_MEDIUM		1
+ #define __DRI_CTX_PRIORITY_HIGH			2
+ 
++/**
++ * \name Context release behaviors.
++ */
++/*@{*/
++#define __DRI_CTX_ATTRIB_RELEASE_BEHAVIOR	5
++
++#define __DRI_CTX_RELEASE_BEHAVIOR_NONE         0
++#define __DRI_CTX_RELEASE_BEHAVIOR_FLUSH        1
++/*@}*/
++
+ /**
+  * \name Reasons that __DRIdri2Extension::createContextAttribs might fail
+  */
+@@ -1715,6 +1725,21 @@ typedef struct __DRInoErrorExtensionRec {
+    __DRIextension base;
+ } __DRInoErrorExtension;
+ 
++/*
++ * Flush control driver extension.
++ *
++ * Existence of this extension means the driver can accept the
++ * \c __DRI_CTX_ATTRIB_RELEASE_BEHAVIOR attribute in
++ * \c __DRIdri2ExtensionRec::createContextAttribs.
++ */
++#define __DRI2_FLUSH_CONTROL "DRI_FlushControl"
++#define __DRI2_FLUSH_CONTROL_VERSION 1
++
++typedef struct __DRI2flushControlExtensionRec __DRI2flushControlExtension;
++struct __DRI2flushControlExtensionRec {
++   __DRIextension base;
++};
++
+ /**
+  * DRI config options extension.
+  *
+diff --git a/src/egl/drivers/dri2/egl_dri2.c b/src/egl/drivers/dri2/egl_dri2.c
+index 503450542e..b486be7487 100644
+--- a/src/egl/drivers/dri2/egl_dri2.c
++++ b/src/egl/drivers/dri2/egl_dri2.c
+@@ -92,7 +92,7 @@
+ #define DRM_FORMAT_MOD_INVALID ((1ULL<<56) - 1)
+ #endif
+ 
+-#define NUM_ATTRIBS 10
++#define NUM_ATTRIBS 12
+ 
+ static void
+ dri_set_background_context(void *loaderPrivate)
+@@ -457,6 +457,7 @@ static const struct dri2_extension_match optional_core_extensions[] = {
+    { __DRI2_RENDERER_QUERY, 1, offsetof(struct dri2_egl_display, rendererQuery) },
+    { __DRI2_INTEROP, 1, offsetof(struct dri2_egl_display, interop) },
+    { __DRI_IMAGE, 1, offsetof(struct dri2_egl_display, image) },
++   { __DRI2_FLUSH_CONTROL, 1, offsetof(struct dri2_egl_display, flush_control) },
+    { NULL, 0, 0 }
+ };
+ 
+@@ -766,6 +767,9 @@ dri2_setup_screen(_EGLDisplay *disp)
+       }
+ #endif
+    }
++
++   if (dri2_dpy->flush_control)
++      disp->Extensions.KHR_context_flush_control = EGL_TRUE;
+ }
+ 
+ void
+@@ -1227,6 +1231,11 @@ dri2_fill_context_attribs(struct dri2_egl_context *dri2_ctx,
+       ctx_attribs[pos++] = val;
+    }
+ 
++   if (dri2_ctx->base.ReleaseBehavior == EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR) {
++      ctx_attribs[pos++] = __DRI_CTX_ATTRIB_RELEASE_BEHAVIOR;
++      ctx_attribs[pos++] = __DRI_CTX_RELEASE_BEHAVIOR_NONE;
++   }
++
+    *num_attribs = pos;
+ 
+    return true;
+@@ -1247,6 +1256,9 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+    struct dri2_egl_config *dri2_config = dri2_egl_config(conf);
+    const __DRIconfig *dri_config;
+    int api;
++   unsigned error;
++   unsigned num_attribs = NUM_ATTRIBS;
++   uint32_t ctx_attribs[NUM_ATTRIBS];
+ 
+    (void) drv;
+ 
+@@ -1339,15 +1351,11 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+    else
+       dri_config = NULL;
+ 
++   if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
++                                  &num_attribs))
++      goto cleanup;
++
+    if (dri2_dpy->image_driver) {
+-      unsigned error;
+-      unsigned num_attribs = NUM_ATTRIBS;
+-      uint32_t ctx_attribs[NUM_ATTRIBS];
+-
+-      if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
+-                                        &num_attribs))
+-         goto cleanup;
+-
+       dri2_ctx->dri_context =
+          dri2_dpy->image_driver->createContextAttribs(dri2_dpy->dri_screen,
+                                                       api,
+@@ -1360,14 +1368,6 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+       dri2_create_context_attribs_error(error);
+    } else if (dri2_dpy->dri2) {
+       if (dri2_dpy->dri2->base.version >= 3) {
+-         unsigned error;
+-         unsigned num_attribs = NUM_ATTRIBS;
+-         uint32_t ctx_attribs[NUM_ATTRIBS];
+-
+-         if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
+-                                        &num_attribs))
+-            goto cleanup;
+-
+          dri2_ctx->dri_context =
+             dri2_dpy->dri2->createContextAttribs(dri2_dpy->dri_screen,
+                                                  api,
+@@ -1389,14 +1389,6 @@ dri2_create_context(_EGLDriver *drv, _EGLDisplay *disp, _EGLConfig *conf,
+    } else {
+       assert(dri2_dpy->swrast);
+       if (dri2_dpy->swrast->base.version >= 3) {
+-         unsigned error;
+-         unsigned num_attribs = NUM_ATTRIBS;
+-         uint32_t ctx_attribs[NUM_ATTRIBS];
+-
+-         if (!dri2_fill_context_attribs(dri2_ctx, dri2_dpy, ctx_attribs,
+-                                        &num_attribs))
+-            goto cleanup;
+-
+          dri2_ctx->dri_context =
+             dri2_dpy->swrast->createContextAttribs(dri2_dpy->dri_screen,
+                                                    api,
+diff --git a/src/egl/drivers/dri2/egl_dri2.h b/src/egl/drivers/dri2/egl_dri2.h
+index cd2487ab22..0ec8f44dce 100644
+--- a/src/egl/drivers/dri2/egl_dri2.h
++++ b/src/egl/drivers/dri2/egl_dri2.h
+@@ -164,6 +164,7 @@ struct dri2_egl_display
+    const __DRIdri2Extension       *dri2;
+    const __DRIswrastExtension     *swrast;
+    const __DRI2flushExtension     *flush;
++   const __DRI2flushControlExtension *flush_control;
+    const __DRItexBufferExtension  *tex_buffer;
+    const __DRIimageExtension      *image;
+    const __DRIrobustnessExtension *robustness;
+diff --git a/src/egl/main/eglapi.c b/src/egl/main/eglapi.c
+index 215332f99c..76dabba2eb 100644
+--- a/src/egl/main/eglapi.c
++++ b/src/egl/main/eglapi.c
+@@ -494,6 +494,7 @@ _eglCreateExtensionsString(_EGLDisplay *dpy)
+ 
+    _EGL_CHECK_EXTENSION(KHR_cl_event2);
+    _EGL_CHECK_EXTENSION(KHR_config_attribs);
++   _EGL_CHECK_EXTENSION(KHR_context_flush_control);
+    _EGL_CHECK_EXTENSION(KHR_create_context);
+    _EGL_CHECK_EXTENSION(KHR_create_context_no_error);
+    _EGL_CHECK_EXTENSION(KHR_fence_sync);
+diff --git a/src/egl/main/eglcontext.c b/src/egl/main/eglcontext.c
+index 8c64f9ab82..18c1bc59ac 100644
+--- a/src/egl/main/eglcontext.c
++++ b/src/egl/main/eglcontext.c
+@@ -386,6 +386,15 @@ _eglParseContextAttribList(_EGLContext *ctx, _EGLDisplay *dpy,
+             break;
+          }
+ 
++      case EGL_CONTEXT_RELEASE_BEHAVIOR_KHR:
++         if (val == EGL_CONTEXT_RELEASE_BEHAVIOR_NONE_KHR ||
++             val == EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR) {
++            ctx->ReleaseBehavior = val;
++         } else {
++            err = EGL_BAD_ATTRIBUTE;
++         }
++         break;
++
+       default:
+          err = EGL_BAD_ATTRIBUTE;
+          break;
+@@ -588,6 +597,7 @@ _eglInitContext(_EGLContext *ctx, _EGLDisplay *dpy, _EGLConfig *conf,
+    ctx->Profile = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
+    ctx->ResetNotificationStrategy = EGL_NO_RESET_NOTIFICATION_KHR;
+    ctx->ContextPriority = EGL_CONTEXT_PRIORITY_MEDIUM_IMG;
++   ctx->ReleaseBehavior = EGL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR;
+ 
+    err = _eglParseContextAttribList(ctx, dpy, attrib_list);
+    if (err == EGL_SUCCESS && ctx->Config) {
+diff --git a/src/egl/main/eglcontext.h b/src/egl/main/eglcontext.h
+index a752368313..8d97ef9eab 100644
+--- a/src/egl/main/eglcontext.h
++++ b/src/egl/main/eglcontext.h
+@@ -64,6 +64,7 @@ struct _egl_context
+    EGLint ResetNotificationStrategy;
+    EGLint ContextPriority;
+    EGLBoolean NoError;
++   EGLint ReleaseBehavior;
+ 
+    /* The real render buffer when a window surface is bound */
+    EGLint WindowRenderBuffer;
+diff --git a/src/egl/main/egldisplay.h b/src/egl/main/egldisplay.h
+index 952bfe53f0..981cbf4ca0 100644
+--- a/src/egl/main/egldisplay.h
++++ b/src/egl/main/egldisplay.h
+@@ -112,6 +112,7 @@ struct _egl_extensions
+ 
+    EGLBoolean KHR_cl_event2;
+    EGLBoolean KHR_config_attribs;
++   EGLBoolean KHR_context_flush_control;
+    EGLBoolean KHR_create_context;
+    EGLBoolean KHR_fence_sync;
+    EGLBoolean KHR_get_all_proc_addresses;
+diff --git a/src/gallium/include/state_tracker/st_api.h b/src/gallium/include/state_tracker/st_api.h
+index 2232c3efa1..11a9878cf6 100644
+--- a/src/gallium/include/state_tracker/st_api.h
++++ b/src/gallium/include/state_tracker/st_api.h
+@@ -91,6 +91,7 @@ enum st_api_feature
+ #define ST_CONTEXT_FLAG_ROBUST_ACCESS       (1 << 2)
+ #define ST_CONTEXT_FLAG_RESET_NOTIFICATION_ENABLED (1 << 3)
+ #define ST_CONTEXT_FLAG_NO_ERROR            (1 << 4)
++#define ST_CONTEXT_FLAG_RELEASE_NONE	    (1 << 5)
+ 
+ /**
+  * Reasons that context creation might fail.
+diff --git a/src/gallium/state_trackers/dri/dri_context.c b/src/gallium/state_trackers/dri/dri_context.c
+index 8776aacc09..18bbfa046c 100644
+--- a/src/gallium/state_trackers/dri/dri_context.c
++++ b/src/gallium/state_trackers/dri/dri_context.c
+@@ -42,14 +42,10 @@
+ 
+ GLboolean
+ dri_create_context(gl_api api, const struct gl_config * visual,
+-		   __DRIcontext * cPriv,
+-		   unsigned major_version,
+-		   unsigned minor_version,
+-		   uint32_t flags,
+-                   bool notify_reset,
+-                   unsigned priority,
+-		   unsigned *error,
+-		   void *sharedContextPrivate)
++                   __DRIcontext * cPriv,
++                   const struct __DriverContextConfig *ctx_config,
++                   unsigned *error,
++                   void *sharedContextPrivate)
+ {
+    __DRIscreen *sPriv = cPriv->driScreenPriv;
+    struct dri_screen *screen = dri_screen(sPriv);
+@@ -61,18 +57,21 @@ dri_create_context(gl_api api, const struct gl_config * visual,
+    unsigned allowed_flags = __DRI_CTX_FLAG_DEBUG |
+                             __DRI_CTX_FLAG_FORWARD_COMPATIBLE |
+                             __DRI_CTX_FLAG_NO_ERROR;
++   unsigned allowed_attribs = __DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR;
+    const __DRIbackgroundCallableExtension *backgroundCallable =
+       screen->sPriv->dri2.backgroundCallable;
+ 
+-   if (screen->has_reset_status_query)
++   if (screen->has_reset_status_query) {
+       allowed_flags |= __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS;
++      allowed_attribs |= __DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY;
++   }
+ 
+-   if (flags & ~allowed_flags) {
++   if (ctx_config->flags & ~allowed_flags) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_FLAG;
+       goto fail;
+    }
+ 
+-   if (!screen->has_reset_status_query && notify_reset) {
++   if (ctx_config->attribute_mask & ~allowed_attribs) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
+       goto fail;
+    }
+@@ -89,10 +88,10 @@ dri_create_context(gl_api api, const struct gl_config * visual,
+    case API_OPENGL_CORE:
+       attribs.profile = api == API_OPENGL_COMPAT ? ST_PROFILE_DEFAULT
+                                                  : ST_PROFILE_OPENGL_CORE;
+-      attribs.major = major_version;
+-      attribs.minor = minor_version;
++      attribs.major = ctx_config->major_version;
++      attribs.minor = ctx_config->minor_version;
+ 
+-      if ((flags & __DRI_CTX_FLAG_FORWARD_COMPATIBLE) != 0)
++      if ((ctx_config->flags & __DRI_CTX_FLAG_FORWARD_COMPATIBLE) != 0)
+ 	 attribs.flags |= ST_CONTEXT_FLAG_FORWARD_COMPATIBLE;
+       break;
+    default:
+@@ -100,18 +99,23 @@ dri_create_context(gl_api api, const struct gl_config * visual,
+       goto fail;
+    }
+ 
+-   if ((flags & __DRI_CTX_FLAG_DEBUG) != 0)
++   if ((ctx_config->flags & __DRI_CTX_FLAG_DEBUG) != 0)
+       attribs.flags |= ST_CONTEXT_FLAG_DEBUG;
+ 
+-   if (flags & __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS)
++   if (ctx_config->flags & __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS)
+       attribs.flags |= ST_CONTEXT_FLAG_ROBUST_ACCESS;
+ 
+-   if (notify_reset)
+-      attribs.flags |= ST_CONTEXT_FLAG_RESET_NOTIFICATION_ENABLED;
++   if (ctx_config->attribute_mask & __DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY)
++      if (ctx_config->reset_strategy != __DRI_CTX_RESET_NO_NOTIFICATION)
++         attribs.flags |= ST_CONTEXT_FLAG_RESET_NOTIFICATION_ENABLED;
+ 
+-   if (flags & __DRI_CTX_FLAG_NO_ERROR)
++   if (ctx_config->flags & __DRI_CTX_FLAG_NO_ERROR)
+       attribs.flags |= ST_CONTEXT_FLAG_NO_ERROR;
+ 
++   if ((ctx_config->attribute_mask & __DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR)
++       && (ctx_config->release_behavior == __DRI_CTX_RELEASE_BEHAVIOR_NONE))
++      attribs.flags |= ST_CONTEXT_FLAG_RELEASE_NONE;
++
+    if (sharedContextPrivate) {
+       st_share = ((struct dri_context *)sharedContextPrivate)->st;
+    }
+diff --git a/src/gallium/state_trackers/dri/dri_context.h b/src/gallium/state_trackers/dri/dri_context.h
+index afa9c49ff3..96e21e0695 100644
+--- a/src/gallium/state_trackers/dri/dri_context.h
++++ b/src/gallium/state_trackers/dri/dri_context.h
+@@ -84,15 +84,11 @@ dri_get_current(__DRIscreen * driScreenPriv);
+ 
+ boolean
+ dri_create_context(gl_api api,
+-		   const struct gl_config * visual,
+-		   __DRIcontext * driContextPriv,
+-		   unsigned major_version,
+-		   unsigned minor_version,
+-		   uint32_t flags,
+-		   bool notify_reset,
+-                   unsigned priority,
+-		   unsigned *error,
+-		   void *sharedContextPrivate);
++                   const struct gl_config * visual,
++                   __DRIcontext * driContextPriv,
++                   const struct __DriverContextConfig *ctx_config,
++                   unsigned *error,
++                   void *sharedContextPrivate);
+ 
+ #endif
+ 
+diff --git a/src/gallium/state_trackers/dri/drisw.c b/src/gallium/state_trackers/dri/drisw.c
+index 9466cfdb20..eb5752386d 100644
+--- a/src/gallium/state_trackers/dri/drisw.c
++++ b/src/gallium/state_trackers/dri/drisw.c
+@@ -381,6 +381,7 @@ static const __DRIextension *drisw_screen_extensions[] = {
+    &dri2FenceExtension.base,
+    &dri2NoErrorExtension.base,
+    &driSWImageExtension.base,
++   &dri2FlushControlExtension.base,
+    NULL
+ };
+ 
+diff --git a/src/glx/dri2_glx.c b/src/glx/dri2_glx.c
+index ae8cb11ef8..e67a15f9da 100644
+--- a/src/glx/dri2_glx.c
++++ b/src/glx/dri2_glx.c
+@@ -247,7 +247,8 @@ dri2_create_context_attribs(struct glx_screen *base,
+    uint32_t flags;
+    unsigned api;
+    int reset;
+-   uint32_t ctx_attribs[2 * 5];
++   int release;
++   uint32_t ctx_attribs[2 * 6];
+    unsigned num_ctx_attribs = 0;
+ 
+    if (psc->dri2->base.version < 3) {
+@@ -259,7 +260,7 @@ dri2_create_context_attribs(struct glx_screen *base,
+     */
+    if (!dri2_convert_glx_attribs(num_attribs, attribs,
+                                  &major_ver, &minor_ver, &renderType, &flags,
+-                                 &api, &reset, error))
++                                 &api, &reset, &release, error))
+       goto error_exit;
+ 
+    /* Check the renderType value */
+@@ -294,6 +295,11 @@ dri2_create_context_attribs(struct glx_screen *base,
+       ctx_attribs[num_ctx_attribs++] = reset;
+    }
+ 
++   if (release != __DRI_CTX_RELEASE_BEHAVIOR_FLUSH) {
++      ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_RELEASE_BEHAVIOR;
++      ctx_attribs[num_ctx_attribs++] = release;
++   }
++
+    if (flags != 0) {
+       ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_FLAGS;
+ 
+@@ -1170,6 +1176,14 @@ dri2BindExtensions(struct dri2_screen *psc, struct glx_display * priv,
+ 
+       if (strcmp(extensions[i]->name, __DRI2_INTEROP) == 0)
+ 	 psc->interop = (__DRI2interopExtension*)extensions[i];
++
++      /* DRI2 version 3 is also required because
++       * GLX_ARB_control_flush_control requires GLX_ARB_create_context.
++       */
++      if (psc->dri2->base.version >= 3
++          && strcmp(extensions[i]->name, __DRI2_FLUSH_CONTROL) == 0)
++         __glXEnableDirectExtension(&psc->base,
++                                    "GLX_ARB_context_flush_control");
+    }
+ }
+ 
+diff --git a/src/glx/dri3_glx.c b/src/glx/dri3_glx.c
+index b79fec7335..d613073994 100644
+--- a/src/glx/dri3_glx.c
++++ b/src/glx/dri3_glx.c
+@@ -235,7 +235,8 @@ dri3_create_context_attribs(struct glx_screen *base,
+    uint32_t flags = 0;
+    unsigned api;
+    int reset = __DRI_CTX_RESET_NO_NOTIFICATION;
+-   uint32_t ctx_attribs[2 * 5];
++   int release = __DRI_CTX_RELEASE_BEHAVIOR_FLUSH;
++   uint32_t ctx_attribs[2 * 6];
+    unsigned num_ctx_attribs = 0;
+    uint32_t render_type;
+ 
+@@ -244,7 +245,7 @@ dri3_create_context_attribs(struct glx_screen *base,
+    if (!dri2_convert_glx_attribs(num_attribs, attribs,
+                                  &major_ver, &minor_ver,
+                                  &render_type, &flags, &api,
+-                                 &reset, error))
++                                 &reset, &release, error))
+       goto error_exit;
+ 
+    /* Check the renderType value */
+@@ -279,6 +280,11 @@ dri3_create_context_attribs(struct glx_screen *base,
+       ctx_attribs[num_ctx_attribs++] = reset;
+    }
+ 
++   if (release != __DRI_CTX_RELEASE_BEHAVIOR_FLUSH) {
++      ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_RELEASE_BEHAVIOR;
++      ctx_attribs[num_ctx_attribs++] = release;
++   }
++
+    if (flags != 0) {
+       ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_FLAGS;
+ 
+@@ -755,6 +761,10 @@ dri3_bind_extensions(struct dri3_screen *psc, struct glx_display * priv,
+ 
+       if (strcmp(extensions[i]->name, __DRI2_INTEROP) == 0)
+ 	 psc->interop = (__DRI2interopExtension*)extensions[i];
++
++      if (strcmp(extensions[i]->name, __DRI2_FLUSH_CONTROL) == 0)
++         __glXEnableDirectExtension(&psc->base,
++                                    "GLX_ARB_context_flush_control");
+    }
+ }
+ 
+diff --git a/src/glx/dri_common.c b/src/glx/dri_common.c
+index e2bbd48d3a..3b82309fa2 100644
+--- a/src/glx/dri_common.c
++++ b/src/glx/dri_common.c
+@@ -475,7 +475,7 @@ _X_HIDDEN bool
+ dri2_convert_glx_attribs(unsigned num_attribs, const uint32_t *attribs,
+                          unsigned *major_ver, unsigned *minor_ver,
+                          uint32_t *render_type, uint32_t *flags, unsigned *api,
+-                         int *reset, unsigned *error)
++                         int *reset, int *release, unsigned *error)
+ {
+    unsigned i;
+    bool got_profile = false;
+@@ -485,6 +485,7 @@ dri2_convert_glx_attribs(unsigned num_attribs, const uint32_t *attribs,
+    *minor_ver = 0;
+    *render_type = GLX_RGBA_TYPE;
+    *reset = __DRI_CTX_RESET_NO_NOTIFICATION;
++   *release = __DRI_CTX_RELEASE_BEHAVIOR_FLUSH;
+    *flags = 0;
+    *api = __DRI_API_OPENGL;
+ 
+@@ -530,6 +531,19 @@ dri2_convert_glx_attribs(unsigned num_attribs, const uint32_t *attribs,
+             return false;
+          }
+          break;
++      case GLX_CONTEXT_RELEASE_BEHAVIOR_ARB:
++         switch (attribs[i * 2 + 1]) {
++         case GLX_CONTEXT_RELEASE_BEHAVIOR_NONE_ARB:
++            *release = __DRI_CTX_RELEASE_BEHAVIOR_NONE;
++            break;
++         case GLX_CONTEXT_RELEASE_BEHAVIOR_FLUSH_ARB:
++            *release = __DRI_CTX_RELEASE_BEHAVIOR_FLUSH;
++            break;
++         default:
++            *error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
++            return false;
++         }
++         break;
+       default:
+ 	 /* If an unknown attribute is received, fail.
+ 	  */
+diff --git a/src/glx/dri_common.h b/src/glx/dri_common.h
+index 947d331772..4d97ff82b4 100644
+--- a/src/glx/dri_common.h
++++ b/src/glx/dri_common.h
+@@ -78,6 +78,6 @@ extern bool
+ dri2_convert_glx_attribs(unsigned num_attribs, const uint32_t *attribs,
+                          unsigned *major_ver, unsigned *minor_ver,
+                          uint32_t *render_type, uint32_t *flags, unsigned *api,
+-                         int *reset, unsigned *error);
++                         int *reset, int *release, unsigned *error);
+ 
+ #endif /* _DRI_COMMON_H */
+diff --git a/src/glx/drisw_glx.c b/src/glx/drisw_glx.c
+index 110b7f8d92..a471856634 100644
+--- a/src/glx/drisw_glx.c
++++ b/src/glx/drisw_glx.c
+@@ -417,7 +417,8 @@ drisw_create_context_attribs(struct glx_screen *base,
+    uint32_t flags;
+    unsigned api;
+    int reset;
+-   uint32_t ctx_attribs[2 * 4];
++   int release;
++   uint32_t ctx_attribs[2 * 5];
+    unsigned num_ctx_attribs = 0;
+ 
+    if (!psc->base.driScreen)
+@@ -430,7 +431,7 @@ drisw_create_context_attribs(struct glx_screen *base,
+     */
+    if (!dri2_convert_glx_attribs(num_attribs, attribs,
+                                  &major_ver, &minor_ver, &renderType, &flags,
+-                                 &api, &reset, error))
++                                 &api, &reset, &release, error))
+       return NULL;
+ 
+    /* Check the renderType value */
+@@ -441,6 +442,10 @@ drisw_create_context_attribs(struct glx_screen *base,
+    if (reset != __DRI_CTX_RESET_NO_NOTIFICATION)
+       return NULL;
+ 
++   if (release != __DRI_CTX_RELEASE_BEHAVIOR_FLUSH &&
++       release != __DRI_CTX_RELEASE_BEHAVIOR_NONE)
++      return NULL;
++
+    if (shareList) {
+       pcp_shared = (struct drisw_context *) shareList;
+       shared = pcp_shared->driContext;
+@@ -459,6 +464,10 @@ drisw_create_context_attribs(struct glx_screen *base,
+    ctx_attribs[num_ctx_attribs++] = major_ver;
+    ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_MINOR_VERSION;
+    ctx_attribs[num_ctx_attribs++] = minor_ver;
++   if (release != __DRI_CTX_RELEASE_BEHAVIOR_FLUSH) {
++       ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_RELEASE_BEHAVIOR;
++       ctx_attribs[num_ctx_attribs++] = release;
++   }
+ 
+    if (flags != 0) {
+       ctx_attribs[num_ctx_attribs++] = __DRI_CTX_ATTRIB_FLAGS;
+@@ -647,6 +656,10 @@ driswBindExtensions(struct drisw_screen *psc, const __DRIextension **extensions)
+          psc->rendererQuery = (__DRI2rendererQueryExtension *) extensions[i];
+          __glXEnableDirectExtension(&psc->base, "GLX_MESA_query_renderer");
+       }
++      if (strcmp(extensions[i]->name, __DRI2_FLUSH_CONTROL) == 0) {
++	  __glXEnableDirectExtension(&psc->base,
++				     "GLX_ARB_context_flush_control");
++      }
+    }
+ }
+ 
+diff --git a/src/glx/glxextensions.c b/src/glx/glxextensions.c
+index 6882e442fe..af6ffbf660 100644
+--- a/src/glx/glxextensions.c
++++ b/src/glx/glxextensions.c
+@@ -132,6 +132,7 @@ struct extension_info
+ 
+ /* *INDENT-OFF* */
+ static const struct extension_info known_glx_extensions[] = {
++   { GLX(ARB_context_flush_control),   VER(0,0), Y, N, N, N },
+    { GLX(ARB_create_context),          VER(0,0), Y, N, N, N },
+    { GLX(ARB_create_context_profile),  VER(0,0), Y, N, N, N },
+    { GLX(ARB_create_context_robustness), VER(0,0), Y, N, N, N },
+diff --git a/src/glx/glxextensions.h b/src/glx/glxextensions.h
+index 6225742da5..d73128bd0e 100644
+--- a/src/glx/glxextensions.h
++++ b/src/glx/glxextensions.h
+@@ -37,7 +37,8 @@ extern "C" {
+ 
+ enum
+ {
+-   ARB_create_context_bit = 0,
++   ARB_context_flush_control_bit = 0,
++   ARB_create_context_bit,
+    ARB_create_context_profile_bit,
+    ARB_create_context_robustness_bit,
+    ARB_fbconfig_float_bit,
+diff --git a/src/mesa/drivers/dri/common/dri_util.c b/src/mesa/drivers/dri/common/dri_util.c
+index 1cff0ddb2d..d504751c39 100644
+--- a/src/mesa/drivers/dri/common/dri_util.c
++++ b/src/mesa/drivers/dri/common/dri_util.c
+@@ -302,11 +302,13 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+     const struct gl_config *modes = (config != NULL) ? &config->modes : NULL;
+     void *shareCtx = (shared != NULL) ? shared->driverPrivate : NULL;
+     gl_api mesa_api;
+-    unsigned major_version = 1;
+-    unsigned minor_version = 0;
+-    uint32_t flags = 0;
+-    bool notify_reset = false;
+-    unsigned priority = __DRI_CTX_PRIORITY_MEDIUM;
++    struct __DriverContextConfig ctx_config;
++
++    ctx_config.major_version = 1;
++    ctx_config.minor_version = 0;
++    ctx_config.flags = 0;
++    ctx_config.attribute_mask = 0;
++    ctx_config.priority = __DRI_CTX_PRIORITY_MEDIUM;
+ 
+     assert((num_attribs == 0) || (attribs != NULL));
+ 
+@@ -337,21 +339,38 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+     for (unsigned i = 0; i < num_attribs; i++) {
+ 	switch (attribs[i * 2]) {
+ 	case __DRI_CTX_ATTRIB_MAJOR_VERSION:
+-	    major_version = attribs[i * 2 + 1];
++            ctx_config.major_version = attribs[i * 2 + 1];
+ 	    break;
+ 	case __DRI_CTX_ATTRIB_MINOR_VERSION:
+-	    minor_version = attribs[i * 2 + 1];
++	    ctx_config.minor_version = attribs[i * 2 + 1];
+ 	    break;
+ 	case __DRI_CTX_ATTRIB_FLAGS:
+-	    flags = attribs[i * 2 + 1];
++	    ctx_config.flags = attribs[i * 2 + 1];
+ 	    break;
+         case __DRI_CTX_ATTRIB_RESET_STRATEGY:
+-            notify_reset = (attribs[i * 2 + 1]
+-                            != __DRI_CTX_RESET_NO_NOTIFICATION);
++            if (attribs[i * 2 + 1] != __DRI_CTX_RESET_NO_NOTIFICATION) {
++                ctx_config.attribute_mask |=
++                    __DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY;
++                ctx_config.reset_strategy = attribs[i * 2 + 1];
++            } else {
++                ctx_config.attribute_mask &=
++                    ~__DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY;
++            }
+             break;
+ 	case __DRI_CTX_ATTRIB_PRIORITY:
+-	    priority = attribs[i * 2 + 1];
++            ctx_config.attribute_mask |= __DRIVER_CONTEXT_ATTRIB_PRIORITY;
++	    ctx_config.priority = attribs[i * 2 + 1];
+ 	    break;
++        case __DRI_CTX_ATTRIB_RELEASE_BEHAVIOR:
++            if (attribs[i * 2 + 1] != __DRI_CTX_RELEASE_BEHAVIOR_FLUSH) {
++                ctx_config.attribute_mask |=
++                    __DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR;
++                ctx_config.release_behavior = attribs[i * 2 + 1];
++            } else {
++                ctx_config.attribute_mask &=
++                    ~__DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR;
++            }
++            break;
+ 	default:
+ 	    /* We can't create a context that satisfies the requirements of an
+ 	     * attribute that we don't understand.  Return failure.
+@@ -366,12 +385,14 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+      * compatibility profile.  This means that we treat a API_OPENGL_COMPAT 3.1 as
+      * API_OPENGL_CORE and reject API_OPENGL_COMPAT 3.2+.
+      */
+-    if (mesa_api == API_OPENGL_COMPAT && major_version == 3 && minor_version == 1)
++    if (mesa_api == API_OPENGL_COMPAT &&
++        ctx_config.major_version == 3 && ctx_config.minor_version == 1)
+        mesa_api = API_OPENGL_CORE;
+ 
+     if (mesa_api == API_OPENGL_COMPAT
+-        && ((major_version > 3)
+-            || (major_version == 3 && minor_version >= 2))) {
++        && ((ctx_config.major_version > 3)
++            || (ctx_config.major_version == 3 &&
++                ctx_config.minor_version >= 2))) {
+        *error = __DRI_CTX_ERROR_BAD_API;
+        return NULL;
+     }
+@@ -406,9 +427,9 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+      */
+     if (mesa_api != API_OPENGL_COMPAT
+         && mesa_api != API_OPENGL_CORE
+-        && (flags & ~(__DRI_CTX_FLAG_DEBUG |
+-	              __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS |
+-	              __DRI_CTX_FLAG_NO_ERROR))) {
++        && (ctx_config.flags & ~(__DRI_CTX_FLAG_DEBUG |
++                                 __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS |
++                                 __DRI_CTX_FLAG_NO_ERROR))) {
+ 	*error = __DRI_CTX_ERROR_BAD_FLAG;
+ 	return NULL;
+     }
+@@ -424,7 +445,7 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+      *
+      * In Mesa, a debug context is the same as a regular context.
+      */
+-    if ((flags & __DRI_CTX_FLAG_FORWARD_COMPATIBLE) != 0) {
++    if ((ctx_config.flags & __DRI_CTX_FLAG_FORWARD_COMPATIBLE) != 0) {
+        mesa_api = API_OPENGL_CORE;
+     }
+ 
+@@ -432,13 +453,15 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+                                     | __DRI_CTX_FLAG_FORWARD_COMPATIBLE
+                                     | __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS
+                                     | __DRI_CTX_FLAG_NO_ERROR);
+-    if (flags & ~allowed_flags) {
++    if (ctx_config.flags & ~allowed_flags) {
+ 	*error = __DRI_CTX_ERROR_UNKNOWN_FLAG;
+ 	return NULL;
+     }
+ 
+     if (!validate_context_version(screen, mesa_api,
+-                                  major_version, minor_version, error))
++                                  ctx_config.major_version,
++                                  ctx_config.minor_version,
++                                  error))
+        return NULL;
+ 
+     context = calloc(1, sizeof *context);
+@@ -454,9 +477,7 @@ driCreateContextAttribs(__DRIscreen *screen, int api,
+     context->driReadablePriv = NULL;
+ 
+     if (!screen->driver->CreateContext(mesa_api, modes, context,
+-                                       major_version, minor_version,
+-                                       flags, notify_reset, priority,
+-                                       error, shareCtx)) {
++                                       &ctx_config, error, shareCtx)) {
+         free(context);
+         return NULL;
+     }
+@@ -822,6 +843,10 @@ const __DRI2configQueryExtension dri2ConfigQueryExtension = {
+    .configQueryf        = dri2ConfigQueryf,
+ };
+ 
++const __DRI2flushControlExtension dri2FlushControlExtension = {
++   .base = { __DRI2_FLUSH_CONTROL, 1 }
++};
++
+ void
+ dri2InvalidateDrawable(__DRIdrawable *drawable)
+ {
+diff --git a/src/mesa/drivers/dri/common/dri_util.h b/src/mesa/drivers/dri/common/dri_util.h
+index ecc2a47507..5018f2fbf6 100644
+--- a/src/mesa/drivers/dri/common/dri_util.h
++++ b/src/mesa/drivers/dri/common/dri_util.h
+@@ -67,6 +67,42 @@ extern const __DRIswrastExtension driSWRastExtension;
+ extern const __DRIdri2Extension driDRI2Extension;
+ extern const __DRI2configQueryExtension dri2ConfigQueryExtension;
+ extern const __DRIcopySubBufferExtension driCopySubBufferExtension;
++extern const __DRI2flushControlExtension dri2FlushControlExtension;
++
++/**
++ * Description of the attributes used to create a config.
++ *
++ * This is passed as the context_config parameter to CreateContext. The idea
++ * with this struct is that it can be extended without having to modify all of
++ * the drivers. The first three members (major/minor_version and flags) are
++ * always valid, but the remaining members are only valid if the corresponding
++ * flag is set for the attribute. If the flag is not set then the default
++ * value should be assumed. That way the driver can quickly check if any
++ * attributes were set that it doesn't understand and report an error.
++ */
++struct __DriverContextConfig {
++    /* These members are always valid */
++    unsigned major_version;
++    unsigned minor_version;
++    uint32_t flags;
++
++    /* Flags describing which of the remaining members are valid */
++    uint32_t attribute_mask;
++
++    /* Only valid if __DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY is set */
++    int reset_strategy;
++
++    /* Only valid if __DRIVER_CONTEXT_PRIORITY is set */
++    unsigned priority;
++
++    /* Only valid if __DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR is set */
++    int release_behavior;
++};
++
++#define __DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY   (1 << 0)
++#define __DRIVER_CONTEXT_ATTRIB_PRIORITY         (1 << 1)
++#define __DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR (1 << 2)
++
+ /**
+  * Driver callback functions.
+  *
+@@ -85,11 +121,7 @@ struct __DriverAPIRec {
+     GLboolean (*CreateContext)(gl_api api,
+                                const struct gl_config *glVis,
+                                __DRIcontext *driContextPriv,
+-                               unsigned major_version,
+-                               unsigned minor_version,
+-                               uint32_t flags,
+-                               bool notify_reset,
+-                               unsigned priority,
++                               const struct __DriverContextConfig *ctx_config,
+                                unsigned *error,
+                                void *sharedContextPrivate);
+ 
+diff --git a/src/mesa/drivers/dri/i915/intel_context.c b/src/mesa/drivers/dri/i915/intel_context.c
+index e0766a0e3f..96d09ca947 100644
+--- a/src/mesa/drivers/dri/i915/intel_context.c
++++ b/src/mesa/drivers/dri/i915/intel_context.c
+@@ -626,21 +626,12 @@ intelMakeCurrent(__DRIcontext * driContextPriv,
+                  __DRIdrawable * driReadPriv)
+ {
+    struct intel_context *intel;
+-   GET_CURRENT_CONTEXT(curCtx);
+ 
+    if (driContextPriv)
+       intel = (struct intel_context *) driContextPriv->driverPrivate;
+    else
+       intel = NULL;
+ 
+-   /* According to the glXMakeCurrent() man page: "Pending commands to
+-    * the previous context, if any, are flushed before it is released."
+-    * But only flush if we're actually changing contexts.
+-    */
+-   if (intel_context(curCtx) && intel_context(curCtx) != intel) {
+-      _mesa_flush(curCtx);
+-   }
+-
+    if (driContextPriv) {
+       struct gl_context *ctx = &intel->ctx;
+       struct gl_framebuffer *fb, *readFb;
+diff --git a/src/mesa/drivers/dri/i915/intel_screen.c b/src/mesa/drivers/dri/i915/intel_screen.c
+index 1621a6246b..5024a69bd4 100644
+--- a/src/mesa/drivers/dri/i915/intel_screen.c
++++ b/src/mesa/drivers/dri/i915/intel_screen.c
+@@ -958,11 +958,7 @@ static GLboolean
+ intelCreateContext(gl_api api,
+                    const struct gl_config * mesaVis,
+                    __DRIcontext * driContextPriv,
+-                   unsigned major_version,
+-                   unsigned minor_version,
+-                   uint32_t flags,
+-                   bool notify_reset,
+-                   unsigned priority,
++                   const struct __DriverContextConfig *ctx_config,
+                    unsigned *error,
+                    void *sharedContextPrivate)
+ {
+@@ -971,24 +967,28 @@ intelCreateContext(gl_api api,
+    __DRIscreen *sPriv = driContextPriv->driScreenPriv;
+    struct intel_screen *intelScreen = sPriv->driverPrivate;
+ 
+-   if (flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
++   if (ctx_config->flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_FLAG;
+       return false;
+    }
+ 
+-   if (notify_reset) {
++   if (ctx_config->attribute_mask) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
+       return false;
+    }
+ 
+    if (IS_GEN3(intelScreen->deviceID)) {
+       success = i915CreateContext(api, mesaVis, driContextPriv,
+-                                  major_version, minor_version, flags,
++                                  ctx_config->major_version,
++                                  ctx_config->minor_version,
++                                  ctx_config->flags,
+                                   error, sharedContextPrivate);
+    } else {
+       intelScreen->no_vbo = true;
+       success = i830CreateContext(api, mesaVis, driContextPriv,
+-                                  major_version, minor_version, flags,
++                                  ctx_config->major_version,
++                                  ctx_config->minor_version,
++                                  ctx_config->flags,
+                                   error, sharedContextPrivate);
+    }
+ 
+diff --git a/src/mesa/drivers/dri/i965/brw_context.c b/src/mesa/drivers/dri/i965/brw_context.c
+index 037e349fdb..879daae774 100644
+--- a/src/mesa/drivers/dri/i965/brw_context.c
++++ b/src/mesa/drivers/dri/i965/brw_context.c
+@@ -826,11 +826,7 @@ GLboolean
+ brwCreateContext(gl_api api,
+                  const struct gl_config *mesaVis,
+                  __DRIcontext *driContextPriv,
+-                 unsigned major_version,
+-                 unsigned minor_version,
+-                 uint32_t flags,
+-                 bool notify_reset,
+-                 unsigned priority,
++                 const struct __DriverContextConfig *ctx_config,
+                  unsigned *dri_ctx_error,
+                  void *sharedContextPrivate)
+ {
+@@ -849,11 +845,36 @@ brwCreateContext(gl_api api,
+    if (screen->has_context_reset_notification)
+       allowed_flags |= __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS;
+ 
+-   if (flags & ~allowed_flags) {
++   if (ctx_config->flags & ~allowed_flags) {
+       *dri_ctx_error = __DRI_CTX_ERROR_UNKNOWN_FLAG;
+       return false;
+    }
+ 
++   if (ctx_config->attribute_mask &
++       ~(__DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY |
++         __DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR)) {
++      *dri_ctx_error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
++      return false;
++   }
++
++   bool notify_reset =
++      ((ctx_config->attribute_mask & __DRIVER_CONTEXT_ATTRIB_RESET_STRATEGY) &&
++       ctx_config->reset_strategy != __DRI_CTX_RESET_NO_NOTIFICATION);
++
++   GLenum release_behavior = GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH;
++   if (ctx_config->attribute_mask & __DRIVER_CONTEXT_ATTRIB_RELEASE_BEHAVIOR) {
++      switch (ctx_config->release_behavior) {
++      case __DRI_CTX_RELEASE_BEHAVIOR_NONE:
++         release_behavior = GL_NONE;
++         break;
++      case __DRI_CTX_RELEASE_BEHAVIOR_FLUSH:
++         break;
++      default:
++         *dri_ctx_error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
++         return false;
++      }
++   }
++
+    struct brw_context *brw = rzalloc(NULL, struct brw_context);
+    if (!brw) {
+       fprintf(stderr, "%s: failed to alloc context\n", __func__);
+@@ -902,7 +923,7 @@ brwCreateContext(gl_api api,
+       return false;
+    }
+ 
+-   driContextSetFlags(ctx, flags);
++   driContextSetFlags(ctx, ctx_config->flags);
+ 
+    /* Initialize the software rasterizer and helper modules.
+     *
+@@ -962,19 +983,21 @@ brwCreateContext(gl_api api,
+       }
+ 
+       int hw_priority = BRW_CONTEXT_MEDIUM_PRIORITY;
+-      switch (priority) {
+-      case __DRI_CTX_PRIORITY_LOW:
+-         hw_priority = BRW_CONTEXT_LOW_PRIORITY;
+-         break;
+-      case __DRI_CTX_PRIORITY_HIGH:
+-         hw_priority = BRW_CONTEXT_HIGH_PRIORITY;
+-         break;
++      if (ctx_config->attribute_mask & __DRIVER_CONTEXT_ATTRIB_PRIORITY) {
++         switch (ctx_config->priority) {
++         case __DRI_CTX_PRIORITY_LOW:
++            hw_priority = BRW_CONTEXT_LOW_PRIORITY;
++            break;
++         case __DRI_CTX_PRIORITY_HIGH:
++            hw_priority = BRW_CONTEXT_HIGH_PRIORITY;
++            break;
++         }
+       }
+       if (hw_priority != I915_CONTEXT_DEFAULT_PRIORITY &&
+           brw_hw_context_set_priority(brw->bufmgr, brw->hw_ctx, hw_priority)) {
+          fprintf(stderr,
+ 		 "Failed to set priority [%d:%d] for hardware context.\n",
+-                 priority, hw_priority);
++                 ctx_config->priority, hw_priority);
+          intelDestroyContext(driContextPriv);
+          return false;
+       }
+@@ -1013,16 +1036,18 @@ brwCreateContext(gl_api api,
+ 
+    brw_draw_init( brw );
+ 
+-   if ((flags & __DRI_CTX_FLAG_DEBUG) != 0) {
++   if ((ctx_config->flags & __DRI_CTX_FLAG_DEBUG) != 0) {
+       /* Turn on some extra GL_ARB_debug_output generation. */
+       brw->perf_debug = true;
+    }
+ 
+-   if ((flags & __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS) != 0) {
++   if ((ctx_config->flags & __DRI_CTX_FLAG_ROBUST_BUFFER_ACCESS) != 0) {
+       ctx->Const.ContextFlags |= GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB;
+       ctx->Const.RobustAccess = GL_TRUE;
+    }
+ 
++   ctx->Const.ContextReleaseBehavior = release_behavior;
++
+    if (INTEL_DEBUG & DEBUG_SHADER_TIME)
+       brw_init_shader_time(brw);
+ 
+@@ -1171,21 +1196,12 @@ intelMakeCurrent(__DRIcontext * driContextPriv,
+                  __DRIdrawable * driReadPriv)
+ {
+    struct brw_context *brw;
+-   GET_CURRENT_CONTEXT(curCtx);
+ 
+    if (driContextPriv)
+       brw = (struct brw_context *) driContextPriv->driverPrivate;
+    else
+       brw = NULL;
+ 
+-   /* According to the glXMakeCurrent() man page: "Pending commands to
+-    * the previous context, if any, are flushed before it is released."
+-    * But only flush if we're actually changing contexts.
+-    */
+-   if (brw_context(curCtx) && brw_context(curCtx) != brw) {
+-      _mesa_flush(curCtx);
+-   }
+-
+    if (driContextPriv) {
+       struct gl_context *ctx = &brw->ctx;
+       struct gl_framebuffer *fb, *readFb;
+diff --git a/src/mesa/drivers/dri/i965/brw_context.h b/src/mesa/drivers/dri/i965/brw_context.h
+index 766b5bc073..8aa0c5ff64 100644
+--- a/src/mesa/drivers/dri/i965/brw_context.h
++++ b/src/mesa/drivers/dri/i965/brw_context.h
+@@ -1258,11 +1258,7 @@ void intel_resolve_for_dri2_flush(struct brw_context *brw,
+ GLboolean brwCreateContext(gl_api api,
+                            const struct gl_config *mesaVis,
+                            __DRIcontext *driContextPriv,
+-                           unsigned major_version,
+-                           unsigned minor_version,
+-                           uint32_t flags,
+-                           bool notify_reset,
+-                           unsigned priority,
++                           const struct __DriverContextConfig *ctx_config,
+                            unsigned *error,
+                            void *sharedContextPrivate);
+ 
+diff --git a/src/mesa/drivers/dri/i965/intel_screen.c b/src/mesa/drivers/dri/i965/intel_screen.c
+index cdc36adc78..4bfb6636c3 100644
+--- a/src/mesa/drivers/dri/i965/intel_screen.c
++++ b/src/mesa/drivers/dri/i965/intel_screen.c
+@@ -1431,6 +1431,7 @@ static const __DRIextension *screenExtensions[] = {
+     &intelRendererQueryExtension.base,
+     &dri2ConfigQueryExtension.base,
+     &dri2NoErrorExtension.base,
++    &dri2FlushControlExtension.base,
+     NULL
+ };
+ 
+@@ -1441,6 +1442,7 @@ static const __DRIextension *intelRobustScreenExtensions[] = {
+     &intelImageExtension.base,
+     &intelRendererQueryExtension.base,
+     &dri2ConfigQueryExtension.base,
++    &dri2FlushControlExtension.base,
+     &dri2Robustness.base,
+     &dri2NoErrorExtension.base,
+     NULL
+diff --git a/src/mesa/drivers/dri/nouveau/nouveau_context.c b/src/mesa/drivers/dri/nouveau/nouveau_context.c
+index 39620e1021..397e39603d 100644
+--- a/src/mesa/drivers/dri/nouveau/nouveau_context.c
++++ b/src/mesa/drivers/dri/nouveau/nouveau_context.c
+@@ -51,11 +51,7 @@
+ GLboolean
+ nouveau_context_create(gl_api api,
+ 		       const struct gl_config *visual, __DRIcontext *dri_ctx,
+-		       unsigned major_version,
+-		       unsigned minor_version,
+-		       uint32_t flags,
+-		       bool notify_reset,
+-                       unsigned priority,
++		       const struct __DriverContextConfig *ctx_config,
+ 		       unsigned *error,
+ 		       void *share_ctx)
+ {
+@@ -64,12 +60,12 @@ nouveau_context_create(gl_api api,
+ 	struct nouveau_context *nctx;
+ 	struct gl_context *ctx;
+ 
+-	if (flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
++	if (ctx_config->flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
+ 		*error = __DRI_CTX_ERROR_UNKNOWN_FLAG;
+ 		return false;
+ 	}
+ 
+-	if (notify_reset) {
++	if (ctx_config->attribute_mask) {
+ 		*error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
+ 		return false;
+ 	}
+@@ -80,14 +76,15 @@ nouveau_context_create(gl_api api,
+ 		return GL_FALSE;
+ 	}
+ 
+-	driContextSetFlags(ctx, flags);
++	driContextSetFlags(ctx, ctx_config->flags);
+ 
+ 	nctx = to_nouveau_context(ctx);
+ 	nctx->dri_context = dri_ctx;
+ 	dri_ctx->driverPrivate = ctx;
+ 
+ 	_mesa_compute_version(ctx);
+-	if (ctx->Version < major_version * 10 + minor_version) {
++	if (ctx->Version < (ctx_config->major_version * 10 +
++			    ctx_config->minor_version)) {
+ 	   nouveau_context_destroy(dri_ctx);
+ 	   *error = __DRI_CTX_ERROR_BAD_VERSION;
+ 	   return GL_FALSE;
+diff --git a/src/mesa/drivers/dri/nouveau/nouveau_context.h b/src/mesa/drivers/dri/nouveau/nouveau_context.h
+index 6ab865c7bd..dcb7bbb23a 100644
+--- a/src/mesa/drivers/dri/nouveau/nouveau_context.h
++++ b/src/mesa/drivers/dri/nouveau/nouveau_context.h
+@@ -110,8 +110,7 @@ struct nouveau_context {
+ GLboolean
+ nouveau_context_create(gl_api api,
+ 		       const struct gl_config *visual, __DRIcontext *dri_ctx,
+-		       unsigned major_version, unsigned minor_version,
+-		       uint32_t flags, bool notify_reset, unsigned priority,
++		       const struct __DriverContextConfig *ctx_config,
+ 		       unsigned *error, void *share_ctx);
+ 
+ GLboolean
+diff --git a/src/mesa/drivers/dri/r200/r200_context.c b/src/mesa/drivers/dri/r200/r200_context.c
+index bd4f8b62cd..edd433ae97 100644
+--- a/src/mesa/drivers/dri/r200/r200_context.c
++++ b/src/mesa/drivers/dri/r200/r200_context.c
+@@ -174,11 +174,7 @@ static void r200_init_vtbl(radeonContextPtr radeon)
+ GLboolean r200CreateContext( gl_api api,
+ 			     const struct gl_config *glVisual,
+ 			     __DRIcontext *driContextPriv,
+-			     unsigned major_version,
+-			     unsigned minor_version,
+-			     uint32_t flags,
+-                             bool notify_reset,
+-                             unsigned priority,
++			     const struct __DriverContextConfig *ctx_config,
+ 			     unsigned *error,
+ 			     void *sharedContextPrivate)
+ {
+@@ -190,12 +186,12 @@ GLboolean r200CreateContext( gl_api api,
+    int i;
+    int tcl_mode;
+ 
+-   if (flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
++   if (ctx_config->flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_FLAG;
+       return false;
+    }
+ 
+-   if (notify_reset) {
++   if (ctx_config->attribute_mask) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
+       return false;
+    }
+@@ -251,7 +247,7 @@ GLboolean r200CreateContext( gl_api api,
+ 
+    ctx = &rmesa->radeon.glCtx;
+ 
+-   driContextSetFlags(ctx, flags);
++   driContextSetFlags(ctx, ctx_config->flags);
+ 
+    /* Initialize the software rasterizer and helper modules.
+     */
+diff --git a/src/mesa/drivers/dri/r200/r200_context.h b/src/mesa/drivers/dri/r200/r200_context.h
+index 200e0a2431..f9ba6835e8 100644
+--- a/src/mesa/drivers/dri/r200/r200_context.h
++++ b/src/mesa/drivers/dri/r200/r200_context.h
+@@ -628,11 +628,8 @@ extern void r200DestroyContext( __DRIcontext *driContextPriv );
+ extern GLboolean r200CreateContext( gl_api api,
+ 				    const struct gl_config *glVisual,
+ 				    __DRIcontext *driContextPriv,
+-				    unsigned major_version,
+-				    unsigned minor_version,
+-				    uint32_t flags,
+-                                    bool notify_reset,
+-                                    unsigned priority,
++				    const struct __DriverContextConfig *
++				       ctx_config,
+ 				    unsigned *error,
+ 				    void *sharedContextPrivate);
+ extern GLboolean r200MakeCurrent( __DRIcontext *driContextPriv,
+diff --git a/src/mesa/drivers/dri/radeon/radeon_context.c b/src/mesa/drivers/dri/radeon/radeon_context.c
+index 866dc80c98..04c76cdba1 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_context.c
++++ b/src/mesa/drivers/dri/radeon/radeon_context.c
+@@ -140,11 +140,7 @@ GLboolean
+ r100CreateContext( gl_api api,
+ 		   const struct gl_config *glVisual,
+ 		   __DRIcontext *driContextPriv,
+-		   unsigned major_version,
+-		   unsigned minor_version,
+-		   uint32_t flags,
+-                   bool notify_reset,
+-		   unsigned priority,
++		   const struct __DriverContextConfig *ctx_config,
+ 		   unsigned *error,
+ 		   void *sharedContextPrivate)
+ {
+@@ -156,12 +152,12 @@ r100CreateContext( gl_api api,
+    int i;
+    int tcl_mode, fthrottle_mode;
+ 
+-   if (flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
++   if (ctx_config->flags & ~(__DRI_CTX_FLAG_DEBUG | __DRI_CTX_FLAG_NO_ERROR)) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_FLAG;
+       return false;
+    }
+ 
+-   if (notify_reset) {
++   if (ctx_config->attribute_mask) {
+       *error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
+       return false;
+    }
+@@ -214,7 +210,7 @@ r100CreateContext( gl_api api,
+ 
+    ctx = &rmesa->radeon.glCtx;
+ 
+-   driContextSetFlags(ctx, flags);
++   driContextSetFlags(ctx, ctx_config->flags);
+ 
+    /* Initialize the software rasterizer and helper modules.
+     */
+diff --git a/src/mesa/drivers/dri/radeon/radeon_context.h b/src/mesa/drivers/dri/radeon/radeon_context.h
+index 4124f50db5..94917cf30b 100644
+--- a/src/mesa/drivers/dri/radeon/radeon_context.h
++++ b/src/mesa/drivers/dri/radeon/radeon_context.h
+@@ -452,11 +452,8 @@ R100_CONTEXT(struct gl_context *ctx)
+ extern GLboolean r100CreateContext( gl_api api,
+ 				    const struct gl_config *glVisual,
+ 				    __DRIcontext *driContextPriv,
+-				    unsigned major_version,
+-				    unsigned minor_version,
+-				    uint32_t flags,
+-                                    bool notify_reset,
+-                                    unsigned priority,
++				    const struct __DriverContextConfig *
++				       ctx_config,
+ 				    unsigned *error,
+ 				    void *sharedContextPrivate);
+ 
+diff --git a/src/mesa/drivers/dri/swrast/swrast.c b/src/mesa/drivers/dri/swrast/swrast.c
+index 6b71d806f0..f9bd1b9d56 100644
+--- a/src/mesa/drivers/dri/swrast/swrast.c
++++ b/src/mesa/drivers/dri/swrast/swrast.c
+@@ -752,11 +752,7 @@ static GLboolean
+ dri_create_context(gl_api api,
+ 		   const struct gl_config * visual,
+ 		   __DRIcontext * cPriv,
+-		   unsigned major_version,
+-		   unsigned minor_version,
+-		   uint32_t flags,
+-		   bool notify_reset,
+-		   unsigned priority,
++		   const struct __DriverContextConfig *ctx_config,
+ 		   unsigned *error,
+ 		   void *sharedContextPrivate)
+ {
+@@ -770,7 +766,13 @@ dri_create_context(gl_api api,
+ 
+     /* Flag filtering is handled in dri2CreateContextAttribs.
+      */
+-    (void) flags;
++    (void) ctx_config->flags;
++
++    /* The swrast driver doesn't understand any of the attributes */
++    if (ctx_config->attribute_mask != 0) {
++	*error = __DRI_CTX_ERROR_UNKNOWN_ATTRIBUTE;
++	return false;
++    }
+ 
+     ctx = CALLOC_STRUCT(dri_context);
+     if (ctx == NULL) {
+@@ -797,7 +799,7 @@ dri_create_context(gl_api api,
+ 	goto context_fail;
+     }
+ 
+-    driContextSetFlags(mesaCtx, flags);
++    driContextSetFlags(mesaCtx, ctx_config->flags);
+ 
+     /* create module contexts */
+     _swrast_CreateContext( mesaCtx );
+diff --git a/src/mesa/state_tracker/st_manager.c b/src/mesa/state_tracker/st_manager.c
+index eebde62183..48260df0c3 100644
+--- a/src/mesa/state_tracker/st_manager.c
++++ b/src/mesa/state_tracker/st_manager.c
+@@ -882,6 +882,9 @@ st_api_create_context(struct st_api *stapi, struct st_manager *smapi,
+       st_install_device_reset_callback(st);
+    }
+ 
++   if (attribs->flags & ST_CONTEXT_FLAG_RELEASE_NONE)
++       st->ctx->Const.ContextReleaseBehavior = GL_NONE;
++
+    /* need to perform version check */
+    if (attribs->major > 1 || attribs->minor > 0) {
+       /* Is the actual version less than the requested version?
+-- 
+2.14.3
+
