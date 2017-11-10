@@ -28,7 +28,7 @@
 %define with_omx    1
 %endif
 
-%ifarch x86_64
+%ifarch %{ix86} x86_64
 %define with_vulkan 1
 %else
 %define with_vulkan 0
@@ -58,26 +58,29 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        17.2.2
+Version:        17.2.4
 Release:        2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
-Source0:        https://mesa.freedesktop.org/archive/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+#Source0:        https://mesa.freedesktop.org/archive/%{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
+Source0:        %{name}-%{version}%{?rctag:-%{rctag}}.tar.xz
 Source1:        vl_decoder.c
 Source2:        vl_mpeg12_decoder.c
+Source3:        Makefile
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
 # Source4 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
-Source3:        Mesa-MLAA-License-Clarification-Email.txt
+Source4:        Mesa-MLAA-License-Clarification-Email.txt
 
 # https://cgit.freedesktop.org/~ajax/mesa/log/?h=mesa-17.2-s3tc
-Patch0:		0001-mesa-Squash-merge-of-S3TC-support.patch
+Patch0:         0001-mesa-Squash-merge-of-S3TC-support.patch
 
 Patch1:         0001-llvm-SONAME-without-version.patch
 Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
+Patch5:         vc4-Don-t-advertise-tiled-dmabuf-modifiers-if-we-can-t-use-them.patch
 
 # glvnd support patches
 # non-upstreamed ones
@@ -374,7 +377,7 @@ Headers for development with the Vulkan API.
   cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
 %endif
 
-cp %{SOURCE3} docs/
+cp %{SOURCE4} docs/
 
 # this is a hack for S3TC support. r200_screen.c is symlinked to
 # radeon_screen.c in git, but is its own file in the tarball.
@@ -680,14 +683,37 @@ popd
 %files vulkan-drivers
 %{_libdir}/libvulkan_intel.so
 %{_libdir}/libvulkan_radeon.so
+%ifarch x86_64
 %{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
 %{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
+%else
+%{_datadir}/vulkan/icd.d/intel_icd.i686.json
+%{_datadir}/vulkan/icd.d/radeon_icd.i686.json
+%endif
 
 %files vulkan-devel
 %{_includedir}/vulkan/
 %endif
 
 %changelog
+* Fri Nov 10 2017 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 17.2.4-2
+- Sanitize tarball
+
+* Tue Oct 31 2017 Peter Robinson <pbrobinson@fedoraproject.org> 17.2.4-1
+- Update to 17.2.4 GA
+
+* Mon Oct 23 2017 Tom Stellard <tstellar@redhat.com> - 17.2.3-2
+- Rebuild for LLVM 5.0.0
+
+* Thu Oct 19 2017 Gwyn Ciesla <limburgher@gmail.com> - 17.2.3-1
+- 17.2.3, bugfix release.
+
+* Wed Oct 11 2017 Peter Robinson <pbrobinson@fedoraproject.org> - 17.2.2-4
+- Fix for vc4/Raspberry Pi
+
+* Mon Oct 09 2017 Dave Airlie <airlied@redhat.com> - 17.2.2-3
+- enable vulkan on 32-bit x86
+
 * Tue Oct 03 2017 Adam Jackson <ajax@redhat.com> - 17.2.2-2
 - Backport S3TC support from master
 
