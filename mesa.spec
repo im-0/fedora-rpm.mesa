@@ -82,7 +82,6 @@ Patch4:         0004-bigendian-assert.patch
 # non-upstreamed ones
 Patch10:        glvnd-fix-gl-dot-pc.patch
 Patch11:        0001-Fix-linkage-against-shared-glapi.patch
-Patch12:        0001-link-mesautil-with-pthreads.patch
 
 # backport from upstream
 
