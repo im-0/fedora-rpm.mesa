@@ -59,7 +59,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        17.3.5
-Release:        1%{?rctag:.%{rctag}}%{?dist}
+Release:        2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -84,6 +84,7 @@ Patch10:        glvnd-fix-gl-dot-pc.patch
 Patch11:        0001-Fix-linkage-against-shared-glapi.patch
 
 # backport from upstream
+Patch1001:	0001-loader_dri3-glx-egl-Reinstate-the-loader_dri3_vtable.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -692,6 +693,9 @@ popd
 %endif
 
 %changelog
+* Mon Feb 26 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 17.3.5-2
+- Backport patch to fix video corruption
+
 * Tue Feb 20 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 17.3.5-1
 - Update to 17.3.5
 
