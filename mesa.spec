@@ -56,7 +56,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        18.0.2
+Version:        18.0.3
 Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
@@ -681,6 +681,9 @@ popd
 %endif
 
 %changelog
+* Sat May 12 2018 Peter Robinson <pbrobinson@fedoraproject.org> 18.0.3-1
+- Mesa 18.0.3
+
 * Tue May  1 2018 Peter Robinson <pbrobinson@fedoraproject.org> 18.0.2-1
 - Mesa 18.0.2
 
