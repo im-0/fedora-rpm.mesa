@@ -370,11 +370,13 @@ Headers for development with the Vulkan API.
 %endif
 
 %prep
-%autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
 %if 0%{sanitize}
+%setup -q -n %{name}-%{version}%{?rctag:-%{rctag}}
   cp -f %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
   cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
+  exit
 %else
+%autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
   cmp %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
   cmp %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
 %endif
