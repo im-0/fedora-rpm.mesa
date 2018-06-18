@@ -28,7 +28,9 @@
 %define platform_drivers ,i915,i965
 %define with_vmware 1
 %define with_xa     1
-%define with_vulkan 1
+%define vulkan_drivers --with-vulkan-drivers=intel,radeon
+%else
+%define vulkan_drivers --with-vulkan-drivers=radeon
 %endif
 
 %ifarch %{arm} aarch64
@@ -45,10 +47,6 @@
 %endif
 
 %define dri_drivers --with-dri-drivers=%{?base_drivers}%{?platform_drivers}
-
-%if 0%{?with_vulkan}
-%define vulkan_drivers --with-vulkan-drivers=intel,radeon
-%endif
 
 %global sanitize 0
 
@@ -139,7 +137,7 @@ BuildRequires: libomxil-bellagio-devel
 %if 0%{?with_opencl}
 BuildRequires: libclc-devel opencl-filesystem
 %endif
-%if 0%{?with_vulkan}
+%if 0%{?with_hardware}
 BuildRequires: vulkan-devel
 %endif
 BuildRequires: python3-mako
@@ -351,7 +349,6 @@ Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}}%{version}-%{release}
 %{summary}.
 %endif
 
-%if 0%{?with_vulkan}
 %package vulkan-drivers
 Summary:        Mesa Vulkan drivers
 Requires:       vulkan%{_isa}
@@ -366,7 +363,6 @@ Requires:       vulkan-devel
 
 %description vulkan-devel
 Headers for development with the Vulkan API.
-%endif
 
 %prep
 %if 0%{sanitize}
@@ -409,7 +405,7 @@ autoreconf -vfi
     %{?with_opencl:--enable-opencl --enable-opencl-icd} %{!?with_opencl:--disable-opencl} \
     --enable-glx-tls \
     --enable-texture-float=yes \
-%if 0%{?with_vulkan}
+%if 0%{?with_hardware}
     %{?vulkan_drivers} \
 %endif
     %{?with_llvm:--enable-llvm} \
@@ -455,6 +451,7 @@ ln -s %{_libdir}/libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_fedora.so.0
 rm -f %{buildroot}%{_includedir}/GL/w*.h
 
 # these are shipped already in vulkan-devel
+mkdir -p %{buildroot}/%{_includedir}/vulkan/
 rm -f %{buildroot}/%{_includedir}/vulkan/vk_platform.h
 rm -f %{buildroot}/%{_includedir}/vulkan/vulkan.h
 
@@ -666,23 +663,24 @@ popd
 %endif
 %endif
 
-%if 0%{?with_vulkan}
 %files vulkan-drivers
+%if 0%{?with_hardware}
+%ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/intel_icd.*.json
+%endif
 %{_libdir}/libvulkan_radeon.so
-%ifarch x86_64
-%{_datadir}/vulkan/icd.d/intel_icd.x86_64.json
-%{_datadir}/vulkan/icd.d/radeon_icd.x86_64.json
-%else
-%{_datadir}/vulkan/icd.d/intel_icd.i686.json
-%{_datadir}/vulkan/icd.d/radeon_icd.i686.json
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %endif
 
 %files vulkan-devel
 %{_includedir}/vulkan/
-%endif
 
 %changelog
+* Mon Jun 18 2018 Adam Jackson <ajax@redhat.com> - 18.0.5-2
+- Build mesa-vulkan-drivers everywhere
+- Build actual vulkan drivers on all but s390x
+
 * Fri Jun 15 2018 Adam Jackson <ajax@redhat.com> - 18.0.5-1
 - Mesa 18.0.5
 
