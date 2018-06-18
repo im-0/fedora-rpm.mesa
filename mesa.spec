@@ -55,7 +55,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        18.0.5
-Release:        1%{?rctag:.%{rctag}}%{?dist}
+Release:        2%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
