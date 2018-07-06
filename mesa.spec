@@ -55,7 +55,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        18.0.5
-Release:        2%{?rctag:.%{rctag}}%{?dist}
+Release:        3%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -70,7 +70,6 @@ Source3:        Makefile
 Source4:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch1:         0001-llvm-SONAME-without-version.patch
-Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
 
@@ -677,6 +676,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Jul 06 2018 Adam Jackson <ajax@redhat.com> - 18.0.5-3
+- Drop texture float patch
+
 * Mon Jun 18 2018 Adam Jackson <ajax@redhat.com> - 18.0.5-2
 - Build mesa-vulkan-drivers everywhere
 - Build actual vulkan drivers on all but s390x
