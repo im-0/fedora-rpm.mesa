@@ -52,13 +52,13 @@
 %define vulkan_drivers --with-vulkan-drivers=intel,radeon
 %endif
 
-%global sanitize 1
+%global sanitize 0
 
 #global rctag rc3
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-Version:        17.3.6
+Version:        17.3.9
 Release:        1%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
@@ -74,7 +74,6 @@ Source3:        Makefile
 Source4:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch1:         0001-llvm-SONAME-without-version.patch
-Patch2:         0002-hardware-gloat.patch
 Patch3:         0003-evergreen-big-endian.patch
 Patch4:         0004-bigendian-assert.patch
 
@@ -84,7 +83,7 @@ Patch10:        glvnd-fix-gl-dot-pc.patch
 Patch11:        0001-Fix-linkage-against-shared-glapi.patch
 
 # backport from upstream
-Patch1001:      0001-loader_dri3-glx-egl-Reinstate-the-loader_dri3_vtable.patch
+# Patch1001:      0001-loader_dri3-glx-egl-Reinstate-the-loader_dri3_vtable.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -368,10 +367,12 @@ Headers for development with the Vulkan API.
 %endif
 
 %prep
-%autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
 %if 0%{sanitize}
+%setup -q -n %{name}-%{version}%{?rctag:-%{rctag}}
   cp -f %{SOURCE1} src/gallium/auxiliary/vl/vl_decoder.c
   cp -f %{SOURCE2} src/gallium/auxiliary/vl/vl_mpeg12_decoder.c
+%else
+%autosetup -n %{name}-%{version}%{?rctag:-%{rctag}} -p1
 %endif
 
 cp %{SOURCE4} docs/
@@ -693,6 +694,10 @@ popd
 %endif
 
 %changelog
+* Fri Jul 06 2018 Adam Jackson <ajax@redhat.com> - 17.3.9-1
+- Mesa 17.3.9
+- Drop texture float patch
+
 * Tue Feb 27 2018 Adam Jackson <ajax@redhat.com> - 17.3.6-1
 - Update to 17.3.6
 
