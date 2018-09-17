@@ -1,0 +1,42 @@
+From 817efd89685efc6b5866e09cbdad01c4ff21c737 Mon Sep 17 00:00:00 2001
+From: Roland Scheidegger <sroland@vmware.com>
+Date: Wed, 4 Jul 2018 04:44:17 +0200
+Subject: [PATCH] r600/sb: fix crash in fold_alu_op3
+
+fold_assoc() called from fold_alu_op3() can lower the number of src to 2,
+which then leads to an invalid access to n.src[2]->gvalue().
+This didn't seem to have caused much harm in the past, but on Fedora 28
+it will crash (presumably because -D_GLIBCXX_ASSERTIONS is used, although
+with libstdc++ 4.8.5 this didn't do anything, -D_GLIBCXX_DEBUG was
+needed to show the issue).
+
+An alternative fix would be to instead call fold_alu_op2() from within
+fold_assoc() when the number of src is reduced and return always TRUE
+from fold_assoc() in this case, with the only actual difference being
+the return value from fold_alu_op3() then. I'm not sure what the return
+value actually should be in this case (or whether it even can make a
+difference).
+
+https://bugs.freedesktop.org/show_bug.cgi?id=106928
+Cc: mesa-stable@lists.freedesktop.org
+Reviewed-by: Dave Airlie <airlied@redhat.com>
+---
+ src/gallium/drivers/r600/sb/sb_expr.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/gallium/drivers/r600/sb/sb_expr.cpp b/src/gallium/drivers/r600/sb/sb_expr.cpp
+index 1df78da6608..ad798453bc1 100644
+--- a/src/gallium/drivers/r600/sb/sb_expr.cpp
++++ b/src/gallium/drivers/r600/sb/sb_expr.cpp
+@@ -945,6 +945,8 @@ bool expr_handler::fold_alu_op3(alu_node& n) {
+ 	if (!sh.safe_math && (n.bc.op_ptr->flags & AF_M_ASSOC)) {
+ 		if (fold_assoc(&n))
+ 			return true;
++		if (n.src.size() < 3)
++			return fold_alu_op2(n);
+ 	}
+ 
+ 	value* v0 = n.src[0]->gvalue();
+-- 
+2.17.1
+

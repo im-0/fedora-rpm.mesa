@@ -55,7 +55,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 Version:        18.0.5
-Release:        3%{?rctag:.%{rctag}}%{?dist}
+Release:        4%{?rctag:.%{rctag}}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -83,6 +83,10 @@ Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 # non-upstreamed ones
 Patch10:        glvnd-fix-gl-dot-pc.patch
 Patch11:        0001-Fix-linkage-against-shared-glapi.patch
+
+# r600 backport
+Patch20:	0001-r600-sb-cleanup-if_conversion-iterator-to-be-legal-C.patch
+Patch21:	0001-r600-sb-fix-crash-in-fold_alu_op3.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -676,6 +680,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Mon Sep 17 2018 Dave Airlie <Airlied@redhat.com> - 18.0.5-4
+- Fix r600 sb crash (#1629401)
+
 * Fri Jul 06 2018 Adam Jackson <ajax@redhat.com> - 18.0.5-3
 - Drop texture float patch
 

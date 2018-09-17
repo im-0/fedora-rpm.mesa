@@ -1,0 +1,51 @@
+From 8c51caab2404c5c9f5211936d27e9fe1c0af2e7d Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@redhat.com>
+Date: Fri, 29 Jun 2018 03:47:26 +0100
+Subject: [PATCH] r600/sb: cleanup if_conversion iterator to be legal C++
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The current code causes:
+/usr/include/c++/8/debug/safe_iterator.h:207:
+Error: attempt to copy from a singular iterator.
+
+This is due to the iterators getting invalidated, fix the
+reverse iterator to use the return value from erase, and
+cast it properly.
+
+(used Mathias suggestion)
+Cc: <mesa-stable@lists.freedesktop.org>
+Reviewed-by: Mathias Fröhlich <mathias.froehlich@web.de>
+---
+ src/gallium/drivers/r600/sb/sb_if_conversion.cpp | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/src/gallium/drivers/r600/sb/sb_if_conversion.cpp b/src/gallium/drivers/r600/sb/sb_if_conversion.cpp
+index 3f6431b80f5..017153434fc 100644
+--- a/src/gallium/drivers/r600/sb/sb_if_conversion.cpp
++++ b/src/gallium/drivers/r600/sb/sb_if_conversion.cpp
+@@ -42,16 +42,13 @@ int if_conversion::run() {
+ 	regions_vec &rv = sh.get_regions();
+ 
+ 	unsigned converted = 0;
+-
+-	for (regions_vec::reverse_iterator N, I = rv.rbegin(), E = rv.rend();
+-			I != E; I = N) {
+-		N = I; ++N;
+-
++	for (regions_vec::reverse_iterator I = rv.rbegin(); I != rv.rend(); ) {
+ 		region_node *r = *I;
+ 		if (run_on(r)) {
+-			rv.erase(I.base() - 1);
++			I = regions_vec::reverse_iterator(rv.erase((++I).base()));
+ 			++converted;
+-		}
++		} else
++			++I;
+ 	}
+ 	return 0;
+ }
+-- 
+2.17.1
+
