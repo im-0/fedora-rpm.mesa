@@ -41,9 +41,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 18.2.4
+%global ver 18.2.6
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -621,6 +621,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Tue Dec  4 2018 Peter Robinson <pbrobinson@fedoraproject.org> 18.2.6-1
+- Update to 18.2.6
+
 * Tue Nov 06 2018 Dave Airlie <airlied@redhat.com> - 18.2.4-2
 - workaround bug with gcc 8.2.1-4
 
