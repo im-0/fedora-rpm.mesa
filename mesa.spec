@@ -65,6 +65,10 @@ Patch4:         0004-bigendian-assert.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
 
+# https://lists.freedesktop.org/archives/mesa-dev/2018-November/210797.html
+# https://bugzilla.redhat.com/show_bug.cgi?id=1650929
+Patch10:        0001-wayland-egl-Ensure-EGL-surface-is-resized-on-DRI-upd.patch
+
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  automake
@@ -619,6 +623,7 @@ popd
 
 %changelog
 * Tue Dec 04 2018 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 18.2.6-2
+- Backport patch to fix totem
 - Remove GCC workaround
 
 * Tue Dec  4 2018 Peter Robinson <pbrobinson@fedoraproject.org> 18.2.6-1
