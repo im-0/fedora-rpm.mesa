@@ -41,9 +41,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 18.2.6
+%global ver 18.2.8
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        3%{?dist}
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -633,6 +633,9 @@ popd
 %{_includedir}/vulkan/
 
 %changelog
+* Fri Dec 28 2018 Pete Walter <pwalter@fedoraproject.org> - 18.2.8-1
+- Update to 18.2.8
+
 * Tue Dec 11 2018 Adam Jackson <ajax@redhat.com> - 18.2.6-3
 - Add mesa-khr-devel subpackage to hold <KHR/khrplatform.h>, and make
   mesa-lib{GL,GLES,EGL}-devel Require it.
