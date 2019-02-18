@@ -47,7 +47,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 18.3.3
+%global ver 18.3.4
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        1%{?dist}
 License:        MIT
@@ -62,9 +62,6 @@ Source3:        Makefile
 # Source4 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source4:        Mesa-MLAA-License-Clarification-Email.txt
-
-# Fix the build on arm
-Patch0:         vc4-Fix-copy-and-paste-fail-in-backport-of-NEON-asm-fixes..patch
 
 Patch3:         0003-evergreen-big-endian.patch
 
@@ -635,6 +632,9 @@ popd
 %endif
 
 %changelog
+* Mon Feb 18 2019 Pete Walter <pwalter@fedoraproject.org> - 18.3.4-1
+- Update to 18.3.4
+
 * Tue Feb 12 2019 Pete Walter <pwalter@fedoraproject.org> - 18.3.3-1
 - Update to 18.3.3
 
