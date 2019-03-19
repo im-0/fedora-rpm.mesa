@@ -47,7 +47,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 18.3.4
+%global ver 18.3.5
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        1%{?dist}
 License:        MIT
@@ -68,10 +68,6 @@ Patch3:         0003-evergreen-big-endian.patch
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
-
-# https://lists.freedesktop.org/archives/mesa-dev/2018-November/210797.html
-# https://bugzilla.redhat.com/show_bug.cgi?id=1650929
-Patch10:        0001-wayland-egl-Ensure-EGL-surface-is-resized-on-DRI-upd.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -632,6 +628,9 @@ popd
 %endif
 
 %changelog
+* Tue Mar 19 2019 Pete Walter <pwalter@fedoraproject.org> - 18.3.5-1
+- Update to 18.3.5
+
 * Mon Feb 18 2019 Pete Walter <pwalter@fedoraproject.org> - 18.3.4-1
 - Update to 18.3.4
 
