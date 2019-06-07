@@ -46,9 +46,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 19.0.5
+%global ver 19.0.6
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -57,9 +57,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
-
-# Local revert for 19.0.5 issue
-Patch0:		0001-Revert-mesa-unreference-current-winsys-buffers-when-.patch
 
 Patch3:         0003-evergreen-big-endian.patch
 
@@ -616,6 +613,9 @@ popd
 %endif
 
 %changelog
+* Fri Jun 07 2019 Pete Walter <pwalter@fedoraproject.org> - 19.0.6-1
+- Update to 19.0.6
+
 * Mon May 27 2019 Dave Airlie <airlied@redhat.com> - 19.0.5-2
 - Revert broken patch in 19.0.5
 
