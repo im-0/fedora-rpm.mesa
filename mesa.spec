@@ -25,6 +25,7 @@
 %global with_kmsro     1
 %global with_tegra     1
 %global with_vc4       1
+%global with_v3d       1
 %global with_xa        1
 %endif
 
@@ -48,7 +49,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 19.0.6
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -357,7 +358,7 @@ cp %{SOURCE1} docs/
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_kmsro:,kmsro} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -546,6 +547,9 @@ popd
 %if 0%{?with_vc4}
 %{_libdir}/dri/vc4_dri.so
 %endif
+%if 0%{?with_v3d}
+%{_libdir}/dri/v3d_dri.so
+%endif
 %if 0%{?with_freedreno}
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
@@ -613,6 +617,9 @@ popd
 %endif
 
 %changelog
+* Mon Jun 24 2019 Peter Robinson <pbrobinson@fedoraproject.org> 19.0.6-2
+- Enable v3d driver
+
 * Fri Jun 07 2019 Pete Walter <pwalter@fedoraproject.org> - 19.0.6-1
 - Update to 19.0.6
 
