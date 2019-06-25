@@ -47,9 +47,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 19.0.6
+%global ver 19.0.7
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -617,6 +617,9 @@ popd
 %endif
 
 %changelog
+* Tue Jun 25 2019 Pete Walter <pwalter@fedoraproject.org> - 19.0.7-1
+- Update to 19.0.7
+
 * Mon Jun 24 2019 Peter Robinson <pbrobinson@fedoraproject.org> 19.0.6-2
 - Enable v3d driver
 
