@@ -47,9 +47,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 19.0.7
+%global ver 19.0.8
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -64,9 +64,6 @@ Patch3:         0003-evergreen-big-endian.patch
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
-
-# Backport dri2 x11 platform crash fix
-Patch8:         0001-egl-x11-calloc-dri2_surf-so-it-s-properly-zeroed.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -620,6 +617,11 @@ popd
 %endif
 
 %changelog
+* Wed Jun 26 2019 Lyude Paul <lyude@redhat.com> - 19.0.8-1
+- Update to 19.0.8
+- Remove Jonas's backport of the dri2 x11 platform crash fix, since it's
+  included in 19.0.8
+
 * Wed Jun 26 2019 Jonas Ådahl <jadahl@redhat.com> - 19.0.7-2
 - Backport dri2 x11 platform crash fix
 
