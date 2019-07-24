@@ -23,6 +23,8 @@
 %global with_etnaviv   1
 %global with_freedreno 1
 %global with_kmsro     1
+%global with_lima      1
+%global with_panfrost  1
 %global with_tegra     1
 %global with_vc4       1
 %global with_v3d       1
@@ -47,7 +49,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 19.0.8
+%global ver 19.1.3
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        1%{?dist}
 License:        MIT
@@ -58,6 +60,8 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
+
+Source2:	glesv2.pc
 
 Patch3:         0003-evergreen-big-endian.patch
 
@@ -351,6 +355,8 @@ Headers for development with the Vulkan API.
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
 
+cp %{SOURCE2} .
+
 %build
 
 %meson -Dcpp_std=gnu++11 \
@@ -358,7 +364,7 @@ cp %{SOURCE1} docs/
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro} \
+  -Dgallium-drivers=swrast,virgl,r300,nouveau%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -390,6 +396,8 @@ cp %{SOURCE1} docs/
 
 %install
 %meson_install
+
+install glesv2.pc %{buildroot}%{_libdir}/pkgconfig/
 
 # libvdpau opens the versioned name, don't bother including the unversioned
 rm -vf %{buildroot}%{_libdir}/vdpau/*.so
@@ -561,6 +569,12 @@ popd
 %if 0%{?with_tegra}
 %{_libdir}/dri/tegra_dri.so
 %endif
+%if 0%{?with_lima}
+%{_libdir}/dri/lima_dri.so
+%endif
+%if 0%{?with_panfrost}
+%{_libdir}/dri/panfrost_dri.so
+%endif
 %{_libdir}/dri/nouveau_dri.so
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
@@ -576,8 +590,19 @@ popd
 %{_libdir}/gallium-pipe/*.so
 %endif
 %if 0%{?with_kmsro}
+%{_libdir}/dri/armada-drm_dri.so
+%{_libdir}/dri/exynos_dri.so
 %{_libdir}/dri/hx8357d_dri.so
+%{_libdir}/dri/ili9225_dri.so
+%{_libdir}/dri/ili9341_dri.so
+%{_libdir}/dri/meson_dri.so
+%{_libdir}/dri/mi0283qt_dri.so
 %{_libdir}/dri/pl111_dri.so
+%{_libdir}/dri/repaper_dri.so
+%{_libdir}/dri/rockchip_dri.so
+%{_libdir}/dri/st7586_dri.so
+%{_libdir}/dri/st7735r_dri.so
+%{_libdir}/dri/sun4i-drm_dri.so
 %endif
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
@@ -617,6 +642,9 @@ popd
 %endif
 
 %changelog
+* Wed Jul 24 2019 Pete Walter <pwalter@fedoraproject.org> - 19.1.3-1
+- Update to 19.1.3
+
 * Wed Jun 26 2019 Lyude Paul <lyude@redhat.com> - 19.0.8-1
 - Update to 19.0.8
 - Remove Jonas's backport of the dri2 x11 platform crash fix, since it's
