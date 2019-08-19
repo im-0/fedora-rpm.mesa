@@ -51,7 +51,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 %global ver 19.1.4
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -68,6 +68,9 @@ Patch3:         0003-evergreen-big-endian.patch
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
+
+# fix nouveau video
+Patch10:	0001-gallium-vl-use-compute-preference-for-all-multimedia.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -642,6 +645,9 @@ popd
 %endif
 
 %changelog
+* Mon Aug 19 2019 Dave Airlie <airlied@redhat.com> - 19.1.4-2
+- Fix crashes with nouveau video (#1736814)
+
 * Thu Aug 08 2019 Pete Walter <pwalter@fedoraproject.org> - 19.1.4-1
 - Update to 19.1.4
 
