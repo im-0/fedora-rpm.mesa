@@ -49,9 +49,9 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 19.1.4
+%global ver 19.1.5
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
-Release:        2%{?dist}
+Release:        1%{?dist}
 License:        MIT
 URL:            http://www.mesa3d.org
 
@@ -645,6 +645,9 @@ popd
 %endif
 
 %changelog
+* Fri Aug 23 2019 Pete Walter <pwalter@fedoraproject.org> - 19.1.5-1
+- Update to 19.1.5
+
 * Mon Aug 19 2019 Dave Airlie <airlied@redhat.com> - 19.1.4-2
 - Fix crashes with nouveau video (#1736814)
 
