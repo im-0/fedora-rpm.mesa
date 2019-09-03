@@ -49,7 +49,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 19.1.5
+%global ver 19.1.6
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        1%{?dist}
 License:        MIT
@@ -68,9 +68,6 @@ Patch3:         0003-evergreen-big-endian.patch
 # Disable rgb10 configs by default:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1560481
 Patch7:         0001-gallium-Disable-rgb10-configs-by-default.patch
-
-# fix nouveau video
-Patch10:	0001-gallium-vl-use-compute-preference-for-all-multimedia.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -645,6 +642,9 @@ popd
 %endif
 
 %changelog
+* Tue Sep 03 2019 Pete Walter <pwalter@fedoraproject.org> - 19.1.6-1
+- Update to 19.1.6
+
 * Fri Aug 23 2019 Pete Walter <pwalter@fedoraproject.org> - 19.1.5-1
 - Update to 19.1.5
 
