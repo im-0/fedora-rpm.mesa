@@ -50,7 +50,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 20.1.10
+%global ver 20.2.2
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        1%{?dist}
 License:        MIT
@@ -61,8 +61,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
-
-Patch3:         0003-evergreen-big-endian.patch
 
 BuildRequires:  meson >= 0.45
 BuildRequires:  gcc
@@ -114,7 +112,7 @@ BuildRequires:  pkgconfig(libva) >= 0.38.0
 BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libelf)
-BuildRequires:  pkgconfig(libglvnd) >= 0.2.0
+BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
 BuildRequires:  llvm-devel >= 7.0.0
 %if 0%{?with_opencl}
 BuildRequires:  clang-devel
@@ -143,7 +141,7 @@ Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}:}%{version}-%{release}
 %package libGL
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.9
+Requires:       libglvnd-glx%{?_isa} >= 1:1.3.2
 
 %description libGL
 %{summary}.
@@ -151,16 +149,17 @@ Requires:       libglvnd-glx%{?_isa} >= 1:1.0.1-0.9
 %package libGL-devel
 Summary:        Mesa libGL development package
 Requires:       %{name}-libGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       libglvnd-devel%{?_isa}
+Requires:       libglvnd-devel%{?_isa} >= 1:1.3.2
 Provides:       libGL-devel
 Provides:       libGL-devel%{?_isa}
+Recommends:     gl-manpages
 
 %description libGL-devel
 %{summary}.
 
 %package libEGL
 Summary:        Mesa libEGL runtime libraries
-Requires:       libglvnd-egl%{?_isa}
+Requires:       libglvnd-egl%{?_isa} >= 1:1.3.2
 
 %description libEGL
 %{summary}.
@@ -168,7 +167,7 @@ Requires:       libglvnd-egl%{?_isa}
 %package libEGL-devel
 Summary:        Mesa libEGL development package
 Requires:       %{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       libglvnd-devel%{?_isa}
+Requires:       libglvnd-devel%{?_isa} >= 1:1.3.2
 Requires:       %{name}-khr-devel%{?_isa}
 Provides:       libEGL-devel
 Provides:       libEGL-devel%{?_isa}
@@ -314,22 +313,13 @@ Headers for development with the Vulkan API.
 %autosetup -n %{name}-%{ver} -p1
 cp %{SOURCE1} docs/
 
-# Make sure the build uses gnu++14 as llvm 10 headers require that
-sed -i -e 's/cpp_std=gnu++11/cpp_std=gnu++14/g' meson.build
-
-# cElementTree no longer exists in Python 3.9
-sed -i -e 's/import xml.etree.cElementTree/import xml.etree.ElementTree/g' \
-    src/amd/vulkan/radv_extensions.py \
-    src/freedreno/vulkan/tu_extensions.py \
-    src/intel/vulkan/anv_extensions_gen.py
-
 %build
+# We've gotten a report that enabling LTO for mesa breaks some games. See
+# https://bugzilla.redhat.com/show_bug.cgi?id=1862771 for details.
+# Disable LTO for now
+%define _lto_cflags %{nil}
 
-# Build with -fcommon until the omx build with gcc10 is fixed upstream
-# https://gitlab.freedesktop.org/mesa/mesa/issues/2385
-%global optflags %{optflags} -fcommon
-
-%meson -Dcpp_std=gnu++14 \
+%meson \
   -Dplatforms=x11,wayland,drm,surfaceless \
   -Ddri3=true \
   -Ddri-drivers=%{?dri_drivers} \
@@ -589,6 +579,9 @@ popd
 %endif
 
 %changelog
+* Sat Nov 07 2020 Pete Walter <pwalter@fedoraproject.org> - 20.2.2-1
+- Update to 20.2.2
+
 * Fri Oct 16 2020 Pete Walter <pwalter@fedoraproject.org> - 20.1.10-1
 - Update to 20.1.10
 
