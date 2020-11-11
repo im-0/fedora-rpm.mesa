@@ -13,10 +13,14 @@
 %global with_iris   1
 %global with_vmware 1
 %global with_xa     1
-%global vulkan_drivers intel,amd
+%global vulkan_drivers intel,amd,swrast
 %else
 %ifnarch s390x
-%global vulkan_drivers amd
+%ifarch aarch64
+%global vulkan_drivers amd,broadcom,swrast
+%else
+%global vulkan_drivers amd,swrast
+%endif
 %endif
 %endif
 
@@ -50,7 +54,7 @@
 
 Name:           mesa
 Summary:        Mesa graphics libraries
-%global ver 20.2.2
+%global ver 20.3.0-rc1
 Version:        %{lua:ver = string.gsub(rpm.expand("%{ver}"), "-", "~"); print(ver)}
 Release:        1%{?dist}
 License:        MIT
@@ -530,6 +534,8 @@ popd
 %{_libdir}/dri/hx8357d_dri.so
 %{_libdir}/dri/ili9225_dri.so
 %{_libdir}/dri/ili9341_dri.so
+%{_libdir}/dri/imx-dcss_dri.so
+%{_libdir}/dri/mediatek_dri.so
 %{_libdir}/dri/meson_dri.so
 %{_libdir}/dri/mi0283qt_dri.so
 %{_libdir}/dri/pl111_dri.so
@@ -567,8 +573,14 @@ popd
 %endif
 %{_libdir}/libvulkan_radeon.so
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
+%{_libdir}/libvulkan_lvp.so
+%{_datadir}/vulkan/icd.d/lvp_icd.*.json
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
+%ifarch aarch64
+%{_libdir}/libvulkan_broadcom.so
+%{_datadir}/vulkan/icd.d/broadcom_icd.*.json
+%endif
 %endif
 
 %files vulkan-devel
@@ -579,6 +591,11 @@ popd
 %endif
 
 %changelog
+* Wed Nov 11 2020 Ivan Mironov <mironov.ivan@gmail.com> - 20.3.0~rc1-1
+- Update to 20.3.0~rc1
+- Enable v3dv (Vulkan driver for some Broadcom SoCs)
+- Enable lavapipe (Vulkan software implementation based on LLVMpipe)
+
 * Sat Nov 07 2020 Pete Walter <pwalter@fedoraproject.org> - 20.2.2-1
 - Update to 20.2.2
 
